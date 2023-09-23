@@ -1,0 +1,50 @@
+{% extends 'auth/base.html.twig' %}
+
+{% block title %}Hello AuthController!{% endblock %}
+
+{% block body %}
+    <div class="container card-container ">
+        <div class="card bg-dark login-card">
+            <div class="card-body p-5 text-center">
+                <div class="mb-md-5 mt-md-4 pb-2">
+                    <h2 class="fw-bold mb-2 text-light text-uppercase">Register</h2>
+                    <p class="text-white-50 mb-4">Please enter your credentials!</p>
+
+                    <form action="" methods="POST">
+                        <div class="form-outline form-white mb-2">
+                            <input type="text" id="typeName" name="name" class="form-control form-control-lg" />
+                            <label class="form-label text-light" for="typeName">Name</label>
+                        </div>
+
+                        <div class="form-outline form-white mb-2">
+                            <input type="text" id="typeUserName" name="userName" class="form-control form-control-lg" />
+                            <label class="form-label text-light" for="typeUserName">User Name</label>
+                        </div>
+
+                        <div class="form-outline form-white mb-2">
+                            <input type="email" id="typeEmailX" name="email" class="form-control form-control-lg" />
+                            <label class="form-label text-light" for="typeEmailX">Email</label>
+                        </div>
+
+                        <div class="form-outline form-white mb-2">
+                            <input type="password" id="typePassword" name="password" class="form-control form-control-lg" />
+                            <label class="form-label text-light" for="typePassword">Password</label>
+                        </div>
+
+                        <div class="form-outline form-white mb-4">
+                            <input type="password" id="typeConfirmPassword" name="confirmPassword" class="form-control form-control-lg" />
+                            <label class="form-label text-light" for="typeConfirmPassword">Confirm Password</label>
+                        </div>
+
+                        <button class="btn btn-outline-light btn-lg px-5" type="submit">Register</button>
+                    </form>
+                </div>
+                <div>
+                    <p class="mb-0 text-light">Already have an account? 
+                        <a href="{{ path('app_login') }}" class="text-white-50 fw-bold">Log In</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
