@@ -3,41 +3,41 @@
 {% block title %}Hello AuthController!{% endblock %}
 
 {% block body %}
-    <div class="container card-container ">
+    <div class="container card-container">
         <div class="card bg-dark login-card">
-            <div class="card-body p-5 text-center">
+            <div class="card-body p-5">
                 <div class="mb-md-5 mt-md-4 pb-2">
                     <h2 class="fw-bold mb-2 text-light text-uppercase">Register</h2>
                     <p class="text-white-50 mb-4">Please enter your credentials!</p>
 
-                    <form action="" methods="POST">
-                        <div class="form-outline form-white mb-2">
-                            <input type="text" id="typeName" name="name" class="form-control form-control-lg" />
-                            <label class="form-label text-light" for="typeName">Name</label>
-                        </div>
+                    {{ form_start(registerForm) }}
+                    <div class="form-outline form-white mb-2">
+                        {{ form_widget(registerForm.name) }}
+                        {{ form_label(registerForm.name) }}
+                    </div>
 
-                        <div class="form-outline form-white mb-2">
-                            <input type="text" id="typeUserName" name="userName" class="form-control form-control-lg" />
-                            <label class="form-label text-light" for="typeUserName">User Name</label>
-                        </div>
+                    <div class="form-outline form-white mb-2">
+                        {{ form_widget(registerForm.user_name) }}
+                        {{ form_label(registerForm.user_name)}}
+                    </div>
 
-                        <div class="form-outline form-white mb-2">
-                            <input type="email" id="typeEmailX" name="email" class="form-control form-control-lg" />
-                            <label class="form-label text-light" for="typeEmailX">Email</label>
-                        </div>
+                    <div class="form-outline form-white mb-2">
+                        {{ form_widget(registerForm.email) }}
+                        {{ form_label(registerForm.email) }}
+                    </div>
 
-                        <div class="form-outline form-white mb-2">
-                            <input type="password" id="typePassword" name="password" class="form-control form-control-lg" />
-                            <label class="form-label text-light" for="typePassword">Password</label>
-                        </div>
+                    <div class="form-outline form-white mb-2">
+                        {{ form_widget(registerForm.password) }}
+                        {{ form_label(registerForm.password) }}
+                    </div>
 
-                        <div class="form-outline form-white mb-4">
-                            <input type="password" id="typeConfirmPassword" name="confirmPassword" class="form-control form-control-lg" />
-                            <label class="form-label text-light" for="typeConfirmPassword">Confirm Password</label>
-                        </div>
+                    <div class="form-outline form-white mb-4">
+                        {{ form_widget(registerForm.confirm_password) }}
+                        {{ form_label(registerForm.confirm_password) }}
+                    </div>
 
-                        <button class="btn btn-outline-light btn-lg px-5" type="submit">Register</button>
-                    </form>
+                    {{ form_row(registerForm.submit) }}
+                    {{ form_end(registerForm) }}
                 </div>
                 <div>
                     <p class="mb-0 text-light">Already have an account? 

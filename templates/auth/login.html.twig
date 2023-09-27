@@ -5,22 +5,24 @@
 {% block body %}
     <div class="container card-container ">
         <div class="card bg-dark login-card">
-            <div class="card-body p-5 text-center">
+            <div class="card-body p-5">
                 <div class="mb-md-5 mt-md-4 pb-2">
                     <h2 class="fw-bold mb-2 text-light text-uppercase">Login</h2>
-                    <p class="text-white-50 mb-4">Please enter your login and password!</p>
+                    <p class="text-white-50 mb-4">Please enter your email and password!</p>
 
+                    {{ form_start(loginForm) }}
                     <div class="form-outline form-white mb-2">
-                        <input type="email" id="typeEmail" name="email" class="form-control form-control-lg" />
-                        <label class="form-label text-light" for="typeEmail">Email</label>
+                        {{ form_widget(loginForm.email) }}
+                        {{ form_label(loginForm.email) }}
                     </div>
 
                     <div class="form-outline form-white mb-4">
-                        <input type="password" id="typePassword" name="password" class="form-control form-control-lg" />
-                        <label class="form-label text-light" for="typePassword">Password</label>
+                        {{ form_widget(loginForm.password) }}
+                        {{ form_label(loginForm.password) }}
                     </div>
 
-                    <button class="btn btn-outline-light btn-lg px-5" type="submit">Login</button>
+                    {{ form_row(loginForm.submit) }}
+                    {{ form_end(loginForm) }}
                 </div>
                 <div>
                     <p class="mb-0 text-light">Don't have an account? 

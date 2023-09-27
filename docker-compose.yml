@@ -1,8 +1,36 @@
 version: '3'
 
 services:
+  app:
+    build:
+      context: ""
+      dockerfile: Dockerfile
+      args:
+        USER_ID: '${WWWUSER:-1000}'
+        GROUP_ID: '${WWWGROUP:-1000}'
+        USER: '${USER:-whoami}'
+    container_name: PrivatePublicTexting-app
+    restart: always
+    working_dir: /var/www/
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "9003:9003"
+    volumes:
+      - ./:/var/www
+      - ./local.ini:/usr/local/etc/php/conf.d/local.ini
+  nginx:
+    image: nginx:1.19-alpine
+    container_name: PrivatePublicTexting-nginx
+    restart: always
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www
+      - ./nginx:/etc/nginx/conf.d
 ###> doctrine/doctrine-bundle ###
   database:
+    container_name: PrivatePublicTexting-db
     image: postgres:${POSTGRES_VERSION:-15}-alpine
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-app}
