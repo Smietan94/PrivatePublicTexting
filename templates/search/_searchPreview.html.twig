@@ -1,0 +1,18 @@
+<div class="rounded-3">
+    <ul class="list-group">
+        {% for user in users %}
+            <li class="list-group-item bg-light">
+                <div class="row">
+                    <div class="col my-auto">User name: {{ user.username }}</div>
+                    <div class="col text-end my-auto">
+                        <form action="" method="POST">
+                            <button type="submit" class="ms-auto btn btn btn-dark" value="{{ user.id }}">
+                                Add friend <i class="bi bi-person-fill-add"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+</div>

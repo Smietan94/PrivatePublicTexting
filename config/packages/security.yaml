@@ -25,6 +25,7 @@ security:
                 password_parameter: login_form[password]
             logout: 
                 path: app_logout
+                csrf_token_generator: security.csrf.token_manager
         registration:
             lazy: true
             provider: app_user_provider
@@ -43,7 +44,7 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/(login|register)$, roles: PUBLIC_ACCESS }
-        - { path: ^/?$, roles: ROLE_USER }
+        - { path: ^/, roles: ROLE_USER }
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
 

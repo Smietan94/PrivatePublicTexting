@@ -7,6 +7,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
+use Symfony\Component\Form\Extension\Core\Type\SearchType;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
@@ -73,6 +74,32 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         ->getOneOrNullResult();
 
         return $user;
+    }
+
+    public function getAllFriends(User $user): array
+    {
+        $friendsCollection = $user->getFriends();
+
+        return $friendsCollection->toArray();
+    }
+
+    public function findUsers(?string $searchTerm, string $username)
+    {
+        $qB = $this->entityManager->createQueryBuilder();
+        return $qB->select('u')
+                    ->from(User::class, 'u')
+                    ->andWhere(
+                        $qB->expr()->orX(
+                            $qB->expr()->like('u.username', ':searchTerm'),
+                            $qB->expr()->like('u.email', ':searchTerm')
+                    ))
+                    ->andWhere('u.username != :username')
+                    ->setParameters([
+                        'searchTerm' => '%' . $searchTerm . '%',
+                        'username'   => $username
+                    ])
+                    ->getQuery()
+                    ->getResult();
     }
 
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -33,6 +35,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'json')]
     private array $roles = [];
+
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'friends')]
+    private ?self $friendOf = null;
+
+    #[ORM\OneToMany(mappedBy: 'friendOf', targetEntity: self::class)]
+    private Collection $friends;
+
+    #[ORM\OneToMany(mappedBy: 'requestingUser', targetEntity: FriendRequests::class, orphanRemoval: true)]
+    private Collection $sentFriendRequests;
+
+    #[ORM\OneToMany(mappedBy: 'requestedUser', targetEntity: FriendRequests::class, orphanRemoval: true)]
+    private Collection $receivedFriendRequests;
+
+    public function __construct()
+    {
+        $this->friends = new ArrayCollection();
+        $this->sentFriendRequests = new ArrayCollection();
+        $this->receivedFriendRequests = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -102,5 +123,107 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials(): void
     {
+    }
+
+    public function getFriendOf(): ?self
+    {
+        return $this->friendOf;
+    }
+
+    public function setFriendOf(?self $friendOf): static
+    {
+        $this->friendOf = $friendOf;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getFriends(): Collection
+    {
+        return $this->friends;
+    }
+
+    public function addFriend(self $friend): static
+    {
+        if (!$this->friends->contains($friend)) {
+            $this->friends->add($friend);
+            $friend->setFriendOf($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFriend(self $friend): static
+    {
+        if ($this->friends->removeElement($friend)) {
+            // set the owning side to null (unless already changed)
+            if ($friend->getFriendOf() === $this) {
+                $friend->setFriendOf(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, FriendRequests>
+     */
+    public function getSentFriendRequests(): Collection
+    {
+        return $this->sentFriendRequests;
+    }
+
+    public function addSentFriendRequest(FriendRequests $sentFriendRequest): static
+    {
+        if (!$this->sentFriendRequests->contains($sentFriendRequest)) {
+            $this->sentFriendRequests->add($sentFriendRequest);
+            $sentFriendRequest->setRequestingUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSentFriendRequest(FriendRequests $sentFriendRequest): static
+    {
+        if ($this->sentFriendRequests->removeElement($sentFriendRequest)) {
+            // set the owning side to null (unless already changed)
+            if ($sentFriendRequest->getRequestingUser() === $this) {
+                $sentFriendRequest->setRequestingUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, FriendRequests>
+     */
+    public function getReceivedFriendRequests(): Collection
+    {
+        return $this->receivedFriendRequests;
+    }
+
+    public function addReceivedFriendRequest(FriendRequests $receivedFriendRequest): static
+    {
+        if (!$this->receivedFriendRequests->contains($receivedFriendRequest)) {
+            $this->receivedFriendRequests->add($receivedFriendRequest);
+            $receivedFriendRequest->setRequestedUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReceivedFriendRequest(FriendRequests $receivedFriendRequest): static
+    {
+        if ($this->receivedFriendRequests->removeElement($receivedFriendRequest)) {
+            // set the owning side to null (unless already changed)
+            if ($receivedFriendRequest->getRequestedUser() === $this) {
+                $receivedFriendRequest->setRequestedUser(null);
+            }
+        }
+
+        return $this;
     }
 }

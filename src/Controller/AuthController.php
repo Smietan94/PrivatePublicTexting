@@ -30,7 +30,7 @@ class AuthController extends AbstractController
 
     #[Route('/login', name: 'app_login')]
     #[IsGranted('PUBLIC_ACCESS')]
-    public function index(AuthenticationUtils $authenticationUtils): Response
+    public function login(AuthenticationUtils $authenticationUtils): Response
     {
         if ($this->security->isGranted('ROLE_USER')) {
             return $this->redirectToRoute('app_home');
@@ -74,7 +74,7 @@ class AuthController extends AbstractController
     #[Route('/logout', name: 'app_logout')]
     public function logout(): Response
     {
-        $this->security->logout(false);
+        $this->security->logout();
 
         return $this->redirectToRoute('login_app');
     }
@@ -94,6 +94,7 @@ class AuthController extends AbstractController
             // creating new user in database
             $newUser = $this->userRepository->store($formData);
             // login user automatically after adding to db
+            $this->addFlash('success', 'User Registration Succeded');
             $this->security->login($newUser, null, 'registration');
 
             return $this->redirectToRoute('app_home');
