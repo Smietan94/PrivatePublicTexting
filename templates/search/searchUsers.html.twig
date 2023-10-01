@@ -3,11 +3,11 @@
 {% block title %}Search for new friends!{% endblock %}
 
 {% block body %}
-    <div class="container container-body container-shadow m-auto mt-5 p-5">
+    <div class="container container-body container-shadow m-auto mt-5 p-5 bg-dark">
         <h2 class="fw-bold mb-2 text-light text-uppercase">Find new friends</h2>
         <p class="text-white-50 mb-4">Please type username or email!</p>
         <div class="form-outline form-white" {{ stimulus_controller('search', {
-            url: path('app_search')
+            url: path('app_search_users')
         }) }}>
             {{ form_widget(searchForm.query, { 'attr': {'data-action': 'search#onSearchInput'}}) }}
             <div class="search" data-search-target="result">

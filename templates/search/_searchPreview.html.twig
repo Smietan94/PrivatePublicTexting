@@ -4,12 +4,28 @@
             <li class="list-group-item bg-light">
                 <div class="row">
                     <div class="col my-auto">User name: {{ user.username }}</div>
-                    <div class="col text-end my-auto">
-                        <form action="" method="POST">
-                            <button type="submit" class="ms-auto btn btn btn-dark" value="{{ user.id }}">
-                                Add friend <i class="bi bi-person-fill-add"></i>
+                    <div class="col text-end">
+                        {% if user in alreadyReceived %}
+                            <button 
+                                class="px-3 btn btn btn-dark btn-search" 
+                                disabled>
+                                Request Received <i class="bi bi-person-raised-hand"></i>
                             </button>
-                        </form>
+                        {% elseif user in alreadyRequested %}
+                            <button 
+                                class="px-3 btn btn btn-dark btn-search" 
+                                disabled>
+                                Request Sent <i class="bi bi-person-raised-hand"></i>
+                            </button>
+                        {% else %}
+                            <form action="{{ path('app_send_friend_request') }}" method="POST">
+                                <button name="requestUserId" type="submit" 
+                                    class="px-4 btn btn btn-dark btn-search" 
+                                    value="{{ user.id }}">
+                                    Add friend <i class="bi bi-person-plus"></i>
+                                </button>
+                            </form>
+                        {% endif %}
                     </div>
                 </div>
             </li>

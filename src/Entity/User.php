@@ -42,10 +42,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'friendOf', targetEntity: self::class)]
     private Collection $friends;
 
-    #[ORM\OneToMany(mappedBy: 'requestingUser', targetEntity: FriendRequests::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'requestingUser', targetEntity: FriendRequest::class, orphanRemoval: true)]
     private Collection $sentFriendRequests;
 
-    #[ORM\OneToMany(mappedBy: 'requestedUser', targetEntity: FriendRequests::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'requestedUser', targetEntity: FriendRequest::class, orphanRemoval: true)]
     private Collection $receivedFriendRequests;
 
     public function __construct()
@@ -168,14 +168,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, FriendRequests>
+     * @return Collection<int, FriendRequest>
      */
     public function getSentFriendRequests(): Collection
     {
         return $this->sentFriendRequests;
     }
 
-    public function addSentFriendRequest(FriendRequests $sentFriendRequest): static
+    public function addSentFriendRequest(FriendRequest $sentFriendRequest): static
     {
         if (!$this->sentFriendRequests->contains($sentFriendRequest)) {
             $this->sentFriendRequests->add($sentFriendRequest);
@@ -185,7 +185,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function removeSentFriendRequest(FriendRequests $sentFriendRequest): static
+    public function removeSentFriendRequest(FriendRequest $sentFriendRequest): static
     {
         if ($this->sentFriendRequests->removeElement($sentFriendRequest)) {
             // set the owning side to null (unless already changed)
@@ -198,14 +198,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, FriendRequests>
+     * @return Collection<int, FriendRequest>
      */
     public function getReceivedFriendRequests(): Collection
     {
         return $this->receivedFriendRequests;
     }
 
-    public function addReceivedFriendRequest(FriendRequests $receivedFriendRequest): static
+    public function addReceivedFriendRequest(FriendRequest $receivedFriendRequest): static
     {
         if (!$this->receivedFriendRequests->contains($receivedFriendRequest)) {
             $this->receivedFriendRequests->add($receivedFriendRequest);
@@ -215,7 +215,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function removeReceivedFriendRequest(FriendRequests $receivedFriendRequest): static
+    public function removeReceivedFriendRequest(FriendRequest $receivedFriendRequest): static
     {
         if ($this->receivedFriendRequests->removeElement($receivedFriendRequest)) {
             // set the owning side to null (unless already changed)

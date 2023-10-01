@@ -37,19 +37,21 @@ body {
     color: #f1f7f8;
 }
 
-.container-shadow {
-    background-color: #2f3132;
-    box-shadow: 0px 0px 10px #2f3132;
+.bi-user-icon {
+    font-size: 25px;
 }
 
-svg.icon {
-    width: 25px;
-    height: 25px;
+.btn-search {
+    width: 16rem !important;
+}
+
+.container-shadow {
+    box-shadow: 0px 0px 10px #2f3132;
 }
 
 .container-body {
     border-radius: 1rem;
-    height: 700px;
+    min-height: 700px;
 }
 
 .container_list {

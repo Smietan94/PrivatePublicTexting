@@ -4,10 +4,14 @@ namespace App\Entity;
 
 use App\Repository\FriendRequestsRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: FriendRequestsRepository::class)]
-class FriendRequests
+#[ORM\Table(name: 'friend_requests')]
+class FriendRequest
 {
+    use TimestampableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
