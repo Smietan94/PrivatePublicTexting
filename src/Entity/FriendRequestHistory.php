@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\FriendRequestRepository;
+use App\Repository\FriendRequestHistoryRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
-#[ORM\Entity(repositoryClass: FriendRequestRepository::class)]
-#[ORM\Table(name: 'friend_requests')]
-class FriendRequest
+#[ORM\Entity(repositoryClass: FriendRequestHistoryRepository::class)]
+#[ORM\Table(name: 'friend_requests_history')]
+class FriendRequestHistory
 {
     use TimestampableEntity;
 
@@ -20,11 +20,11 @@ class FriendRequest
     #[ORM\Column]
     private ?int $status = null;
 
-    #[ORM\ManyToOne(inversedBy: 'sentFriendRequests')]
+    #[ORM\ManyToOne(inversedBy: 'sentFriendRequestsHistory')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $requestingUser = null;
 
-    #[ORM\ManyToOne(inversedBy: 'receivedFriendRequests')]
+    #[ORM\ManyToOne(inversedBy: 'receivedFriendRequestsHistory')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $requestedUser = null;
 

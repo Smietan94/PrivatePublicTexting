@@ -48,11 +48,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'requestedUser', targetEntity: FriendRequest::class, orphanRemoval: true)]
     private Collection $receivedFriendRequests;
 
+    #[ORM\OneToMany(mappedBy: 'requestingUser', targetEntity: FriendRequest::class, orphanRemoval: true)]
+    private Collection $sentFriendRequestsHistory;
+
+    #[ORM\OneToMany(mappedBy: 'requestedUser', targetEntity: FriendRequest::class, orphanRemoval: true)]
+    private Collection $receivedFriendRequestsHistory;
+
     public function __construct()
     {
         $this->friends = new ArrayCollection();
         $this->sentFriendRequests = new ArrayCollection();
         $this->receivedFriendRequests = new ArrayCollection();
+        $this->sentFriendRequestsHistory = new ArrayCollection();
+        $this->receivedFriendRequestsHistory = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -221,6 +229,66 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($receivedFriendRequest->getRequestedUser() === $this) {
                 $receivedFriendRequest->setRequestedUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, FriendRequestHistory>
+     */
+    public function getSentFriendRequestsHistory(): Collection
+    {
+        return $this->sentFriendRequestsHistory;
+    }
+
+    public function addSentFriendRequestHistory(FriendRequestHistory $sentFriendRequestHistory): static
+    {
+        if (!$this->sentFriendRequestsHistory->contains($sentFriendRequestHistory)) {
+            $this->sentFriendRequestsHistory->add($sentFriendRequestHistory);
+            $sentFriendRequestHistory->setRequestingUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSentFriendRequestHistory(FriendRequestHistory $sentFriendRequestHistory): static
+    {
+        if ($this->sentFriendRequestsHistory->removeElement($sentFriendRequestHistory)) {
+            // set the owning side to null (unless already changed)
+            if ($sentFriendRequestHistory->getRequestingUser() === $this) {
+                $sentFriendRequestHistory->setRequestingUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, FriendRequestHistory>
+     */
+    public function getReceivedFriendRequestsHistory(): Collection
+    {
+        return $this->receivedFriendRequestsHistory;
+    }
+
+    public function addReceivedFriendRequestHistory(FriendRequestHistory $receivedFriendRequestHistory): static
+    {
+        if (!$this->receivedFriendRequestsHistory->contains($receivedFriendRequestHistory)) {
+            $this->receivedFriendRequestsHistory->add($receivedFriendRequestHistory);
+            $receivedFriendRequestHistory->setRequestedUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReceivedFriendRequestHistory(FriendRequestHistory $receivedFriendRequestHistory): static
+    {
+        if ($this->receivedFriendRequestsHistory->removeElement($receivedFriendRequestHistory)) {
+            // set the owning side to null (unless already changed)
+            if ($receivedFriendRequestHistory->getRequestedUser() === $this) {
+                $receivedFriendRequestHistory->setRequestedUser(null);
             }
         }
 
