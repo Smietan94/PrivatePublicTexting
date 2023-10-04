@@ -35,7 +35,7 @@
                             <a class="nav-link" href="#">Group Chats</a>
                         </li>
                         <li class="nav-item mx-2 my-auto">
-                            <a class="nav-link" href="#">Friends</a>
+                            <a class="nav-link" href="{{ path('app_friends_list') }}">Friends</a>
                         </li>
                         <li class="nav-item mx-2 my-auto">
                             <a class="nav-link" href="{{ path('app_search_users') }}">Search Friends</a>
@@ -79,5 +79,7 @@
         {% include '_flashes.html.twig' %}
         {% block body %}{% endblock %}
     </body>
+    <footer class="mt-5 container-shadow">
+    </footer>
 </html>
 

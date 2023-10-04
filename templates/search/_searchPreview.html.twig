@@ -5,7 +5,13 @@
                 <div class="row">
                     <div class="col my-auto">User name: {{ user.username }}</div>
                     <div class="col text-end">
-                        {% if user in alreadyReceived %}
+                        {% if user in friends %}
+                            <button 
+                                class="px-3 btn btn btn-dark btn-search" 
+                                disabled>
+                                You are Friends <i class="bi bi-person-raised-hand"></i>
+                            </button>
+                        {% elseif user in alreadyReceived %}
                             <button 
                                 class="px-3 btn btn btn-dark btn-search" 
                                 disabled>

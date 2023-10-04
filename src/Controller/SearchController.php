@@ -49,6 +49,7 @@ class SearchController extends AbstractController
             $currentUser      = $this->userRepository->findOneBy(['username' => $username]);
             $sentRequests     = $currentUser->getSentFriendRequests()->toArray();
             $receivedRequests = $currentUser->getReceivedFriendRequests()->toArray();
+            $friends          = $currentUser->getFriends()->toArray();
 
             // getting list of already invated users from sentRequests
             $alreadyRequested = array_map(
@@ -64,6 +65,7 @@ class SearchController extends AbstractController
 
         return $this->render('search/_searchPreview.html.twig', [
             'users'            => $users ?? null,
+            'friends'          => $friends ?? null,
             'alreadyRequested' => $alreadyRequested ?? null,
             'alreadyReceived'  => $alreadyReceived ?? null,
         ]);

@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -49,6 +50,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->entityManager->flush();
 
         return $user;
+    }
+
+    public function getFriendsQuery(User $user): QueryBuilder
+    {
+        return $this->entityManager->createQueryBuilder()
+            ->select('u')
+            ->from(User::class, 'u')
+            ->leftJoin('u.friends', 'f')
+            ->andWhere(':user MEMBER OF u.friends')
+            ->setParameter('user', $user);
     }
 
     public function checkPassword(array $data): bool
@@ -102,8 +113,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         return $query->getResult();
     }
-
-    
 
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
     {

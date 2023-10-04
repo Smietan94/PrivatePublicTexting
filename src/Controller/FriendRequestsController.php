@@ -2,15 +2,16 @@
 
 namespace App\Controller;
 
+use App\Enum\FriendStatus;
 use App\Repository\FriendRequestRepository;
 use App\Repository\UserRepository;
+use App\Service\FriendRequestService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Role\Role;
 
 class FriendRequestsController extends AbstractController
 {
@@ -19,6 +20,7 @@ class FriendRequestsController extends AbstractController
         private UserRepository $userRepository,
         private FriendRequestRepository $friendRequestRepository,
         private EntityManagerInterface $entityManager,
+        private FriendRequestService $friendRequestService,
     ) {
     }
 
@@ -51,22 +53,29 @@ class FriendRequestsController extends AbstractController
     #[Route('/friendRequests/accept', methods: ['POST'], name: 'app_accept_friend_request')]
     public function accept(Request $request): Response
     {
-        dd($request->request->get('accept'));
+        $currentUser = $this->userRepository->findOneBy(['username' => $this->security->getUser()->getUserIdentifier()]);
+        $requestId = (int) $request->request->get('accept');
+        $this->friendRequestService->acceptRequest($currentUser, $requestId, FriendStatus::ACCEPTED->value);
+
+        $this->addFlash('success', 'You are friends now');
+
+        return $this->redirectToRoute('app_friends_requests');
     }
 
     #[Route('/friendRequests/decline', methods: ['POST'], name: 'app_decline_friend_request')]
     public function decline(Request $request): Response
     {
-        dd($request->request->get('decline'));
+        $requestId = (int) $request->request->get('decline');
+        $this->friendRequestService->deleteRequest($requestId, FriendStatus::REJECTED->value);
+
+        return $this->redirectToRoute('app_friends_requests');
     }
 
     #[Route('/friendRequest/cancel', methods: ['POST'], name: 'app_cancel_friend_request')]
     public function cancel(Request $request): Response
     {
         $requestId = (int) $request->request->get('cancel');
-        $friendRequest = $this->friendRequestRepository->find($requestId);
-        $this->entityManager->remove($friendRequest);
-        $this->entityManager->flush();
+        $this->friendRequestService->deleteRequest($requestId, FriendStatus::CANCELLED->value);
 
         return $this->redirectToRoute('app_friends_requests');
     }

@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello FriendController!{% endblock %}
+
+{% block body %}
+<div class="container container-body container-shadow m-auto mt-5 p-5 bg-dark">
+    <h2 class="fw-bold mb-2 text-light text-uppercase">Your Friends</h2>
+    <p class="text-white-50 mb-4">Please type username or email!</p>
+    <turbo-frame id="mix-browse-list-{{ pager.currentPage }}" target="_top">
+        <div class="row">
+            {# {% for friend in friends %} #}
+            {% for friend in pager %}
+                <div class="col-xl-4 col-lg-6 col-md-12  col-xs-12 mt-4 rounded-3">
+                    <div class=" mx-auto card friend-card bg-light">
+                        <div class="card-body">
+                            <p>Username: <h2>{{ friend.username }}</h2></p>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">name: {{ friend.name }}</li>
+                            <li class="list-group-item">email: {{ friend.email }}</li>
+                            <li class="list-group-item">You made friends {{ friendsSince[friend.username] | ago }} </li>
+                        </ul>
+                        <div class="card-body row">
+                            <div class="col">
+                                <form action="{{ path('app_friends_remove') }}" action="" method="post">
+                                    <button type="submit" name="friendId" value="{{ friend.id }}" class="btn btn-dark">Remove friend</button>
+                                </form>
+                            </div>
+                            <div class="col">
+                                <a href="#" role="button" class="btn btn-dark">Send Message</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            {% if pager.hasNextPage %}
+                <turbo-frame id="mix-browse-list-{{ pager.nextPage }}" src="{{ pagerfanta_page_url(pager, pager.nextPage) }}" loading="lazy"></turbo-frame>
+            {% endif %}
+        </div>
+    </turbo-frame>
+</div>
+{% endblock %}

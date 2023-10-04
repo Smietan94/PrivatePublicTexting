@@ -2,7 +2,7 @@
 
 namespace App\Twig\Runtime;
 
-use App\Enum\FriendRequestStatus;
+use App\Enum\FriendStatus;
 use Twig\Extension\RuntimeExtensionInterface;
 
 class StatusEnumRuntime implements RuntimeExtensionInterface
@@ -14,6 +14,6 @@ class StatusEnumRuntime implements RuntimeExtensionInterface
 
     public function formatEnum($value)
     {
-        return FriendRequestStatus::tryFrom((int) $value)->toString();
+        return FriendStatus::tryFrom((int) $value)->toString();
     }
 }
