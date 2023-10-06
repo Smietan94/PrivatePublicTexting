@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'users')]
@@ -24,6 +25,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
+    #[Assert\Email(message: 'This value is not a valid email address')]
     #[ORM\Column(length: 50, unique: true)]
     private ?string $email = null;
 
@@ -140,6 +142,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function addSentFriendRequest(FriendRequest $sentFriendRequest): static
     {
+        // checks if sent request already in collection
         if (!$this->sentFriendRequests->contains($sentFriendRequest)) {
             $this->sentFriendRequests->add($sentFriendRequest);
             $sentFriendRequest->setRequestingUser($this);
@@ -170,6 +173,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function addReceivedFriendRequest(FriendRequest $receivedFriendRequest): static
     {
+        // checks if received request already in collection
         if (!$this->receivedFriendRequests->contains($receivedFriendRequest)) {
             $this->receivedFriendRequests->add($receivedFriendRequest);
             $receivedFriendRequest->setRequestedUser($this);
@@ -200,6 +204,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function addSentFriendHistory(FriendHistory $sentFriendHistory): static
     {
+        // checks if sent history already in collection
         if (!$this->sentFriendHistory->contains($sentFriendHistory)) {
             $this->sentFriendHistory->add($sentFriendHistory);
             $sentFriendHistory->setRequestingUser($this);
@@ -230,6 +235,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function addReceivedFriendHistory(FriendHistory $receivedFriendHistory): static
     {
+        // checks if received history already in collection
         if (!$this->receivedFriendHistory->contains($receivedFriendHistory)) {
             $this->receivedFriendHistory->add($receivedFriendHistory);
             $receivedFriendHistory->setRequestedUser($this);

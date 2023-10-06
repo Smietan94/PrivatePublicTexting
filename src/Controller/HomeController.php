@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -11,18 +12,22 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class HomeController extends AbstractController
 {
+    private User $currentUser;
+
     public function __construct(
         private Security $security,
         private UserRepository $userRepository,
     ) {
+        // collecting logged user
+        $username = $this->security->getUser()->getUserIdentifier();
+        $this->currentUser = $this->userRepository->findOneBy(['username' => $username]);
     }
 
     #[Route(['/', '/home'], name: 'app_home')]
-    // #[IsGranted('ROLE_USER')]
     public function index(): Response
     {
-        $user    = $this->security->getUser();
-        $friends = $this->userRepository->getAllFriends($user);
+        // collecting all user friends
+        $friends = $this->currentUser->getFriends()->toArray();
 
         return $this->render('home/index.html.twig', [
             'friends' => $friends,

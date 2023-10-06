@@ -2,11 +2,9 @@
 
 namespace App\Twig\Extension;
 
-use App\Enum\FriendRequestStatus;
 use App\Twig\Runtime\StatusEnumRuntime;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
-use Twig\TwigFunction;
 
 class StatusEnumExtension extends AbstractExtension
 {

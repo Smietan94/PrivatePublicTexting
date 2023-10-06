@@ -27,28 +27,24 @@
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item mx-2 my-auto">
+                    <ul class="navbar-nav ms-auto me-2">
+                        <li class="nav-item my-auto">
                             <a class="nav-link" href="#">Chats</a>
                         </li>
-                        <li class="nav-item mx-2 my-auto">
+                        <li class="nav-item my-auto">
                             <a class="nav-link" href="#">Group Chats</a>
                         </li>
-                        <li class="nav-item mx-2 my-auto">
+                        <li class="nav-item my-auto">
                             <a class="nav-link" href="{{ path('app_friends_list') }}">Friends</a>
                         </li>
-                        <li class="nav-item mx-2 my-auto">
+                        <li class="nav-item my-auto">
                             <a class="nav-link" href="{{ path('app_search_users') }}">Search Friends</a>
                         </li>
-                        <li class="nav-item mx-2 my-auto">
+                        <li class="nav-item my-auto">
                             <div class="dropdown user-dropdown-menu">
                                 <a href="#" class="text-decoration-none d-flex align-items-center text-light" id="userDropDownMenu" data-bs-toggle="dropdown"
                                     aria-expanded="false">
                                     <i class="bi bi-person-lines-fill bi-user-icon me-2"></i>
-
-                                    {# <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon">
-                                        <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" />
-                                    </svg> #}
                                     <span>{{ app.user.username }}</span>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end dropstart" aria-labelledby="userDropDownMenu">

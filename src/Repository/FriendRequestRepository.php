@@ -26,9 +26,8 @@ class FriendRequestRepository extends ServiceEntityRepository
         parent::__construct($registry, FriendRequest::class);
     }
 
-    public function setNewFriendRequest(User $user, int $requestedUserId): FriendRequest
+    public function setNewFriendRequest(User $user, User $requestedUser): FriendRequest
     {
-        $requestedUser = $this->userRepository->find($requestedUserId);
         $friendRequest = new FriendRequest();
 
         $friendRequest->setRequestingUser($user);
@@ -39,6 +38,24 @@ class FriendRequestRepository extends ServiceEntityRepository
         $this->entityManager->flush();
 
         return $friendRequest;
+    }
+
+    public function getFriendRequest(User $currentUser, User $requestedUser, int $status): ?FriendRequest
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+
+        return $qb->select('fh')
+            ->from(FriendRequest::class, 'fh')
+            ->andWhere('fh.requestingUser = :currentUser')
+            ->andWhere('fh.requestedUser   = :requestedUser')
+            ->andWhere('fh.status         = :status')
+            ->setParameters([
+                'currentUser'   => $currentUser,
+                'requestedUser' => $requestedUser,
+                'status'        => $status
+            ])
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
 //    /**

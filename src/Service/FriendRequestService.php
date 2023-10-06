@@ -9,7 +9,6 @@ use App\Entity\FriendHistory;
 use App\Entity\User;
 use App\Repository\FriendHistoryRepository;
 use App\Repository\FriendRequestRepository;
-use Doctrine\Common\Cache\Psr6\InvalidArgument;
 use Doctrine\ORM\EntityManagerInterface;
 
 class FriendRequestService
@@ -21,34 +20,28 @@ class FriendRequestService
     ) {
     }
 
-    public function acceptRequest(User $currentUser, int $requestId, int $status): FriendHistory
+    public function acceptRequest(User $currentUser, FriendRequest $request, int $status): FriendHistory
     {
-        $request = $this->friendRequestRepository->find($requestId);
-
-        if (!($currentUser === $request->getRequestedUser())) {
-            throw new InvalidArgument(message: "Invalid User");
-        }
-
+        // collecting requesting user
         $requestingUser = $request->getRequestingUser();
+
         $currentUser->addFriend($requestingUser);
         $requestingUser->addFriend($currentUser);
 
-        return $this->deleteRequest($request, $status);
+        return $this->deleteRequestAndSetHistory($request, $status);
     }
 
     // Deleting request record from requests table, and adding it to FriendHistory
-    public function deleteRequest(int|FriendRequest $request, int $status): FriendHistory
+    public function deleteRequestAndSetHistory(FriendRequest $request, int $status): FriendHistory
     {
-        if (!($request instanceof FriendRequest)) {
-            $request = $this->friendRequestRepository->find($request);
-        }
-
+        // creating new instace of friend history
         $newFriendHistory = new FriendHistory();
         $newFriendHistory->setStatus($status);
         $newFriendHistory->setSentAt($request->getCreatedAt());
         $newFriendHistory->setRequestedUser($request->getRequestedUser());
         $newFriendHistory->setRequestingUser($request->getRequestingUser());
 
+        // removing request and saving new record to friend history
         $this->entityManager->remove($request);
         $this->entityManager->persist($newFriendHistory);
         $this->entityManager->flush();

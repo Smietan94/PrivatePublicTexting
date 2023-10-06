@@ -13,8 +13,8 @@ class SearchFormType extends AbstractType
     {
         $builder
             ->add('query', TextType::class, [
-                'attr'       => [
-                    'class'       => 'form-control form-control-lg'
+                'attr' => [
+                    'class' => 'form-control form-control-lg'
                 ]
             ]
         );

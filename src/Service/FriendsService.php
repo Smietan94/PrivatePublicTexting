@@ -21,9 +21,8 @@ class FriendsService
 
     public function getHowLongFriends(User $currentUser): array
     {
-        // retriving names and dates of received requests
+        // collectiong names and dates of received requests
         $receivedFriendHistory = $currentUser->getReceivedFriendHistory()->toArray();
-        // dd($currentUser->getFriends());
 
         $receivedFriendNames = array_filter(array_map(function ($request) {
             return $request->getStatus() === FriendStatus::ACCEPTED->value ? $request->getRequestingUser()->getUsername() : null;
@@ -32,7 +31,7 @@ class FriendsService
             return $request->getStatus() === FriendStatus::ACCEPTED->value ? $request->getCreatedAt() : null;
         }, $receivedFriendHistory));
 
-        // retriving names and dates of sent requests
+        // collectiong names and dates of sent requests
         $friendSentHistory = $currentUser->getSentFriendHistory()->toArray();
 
         $sentFriendNames = array_filter(array_map(function ($request) {
@@ -42,17 +41,14 @@ class FriendsService
             return $request->getStatus() === FriendStatus::ACCEPTED->value ? $request->getCreatedAt() : null;
         }, $friendSentHistory));
 
-        // dd(array_combine($receivedFriendNames + $sentFriendNames, $receivedFriendDates + $sentFriendDates));
         return array_combine(
             $receivedFriendNames + $sentFriendNames,
             $receivedFriendDates + $sentFriendDates
         );
     }
 
-    public function removeFriend(string $username, int $friendId): void
+    public function removeFriend(User $currentUser, User $friend): void
     {
-        $currentUser   = $this->userRepository->findOneBy(['username' => $username]);
-        $friend        = $this->userRepository->find($friendId);
         $friendHistory = $this->friendHistoryRepository->getFriendHistory($currentUser, $friend);
 
         $currentUser->removeFriend($friend);

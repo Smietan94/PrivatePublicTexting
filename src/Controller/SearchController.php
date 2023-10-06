@@ -17,23 +17,27 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class SearchController extends AbstractController
 {
+    private User $currentUser;
+
     public function __construct(
         private Security $security,
         private UserRepository $userRepository,
         private FormFactoryInterface $formFactory,
         private FriendRequestRepository $friendRequestRepository,
     ) {
+        // collecting logged in user
+        $username          = $this->security->getUser()->getUserIdentifier();
+        $this->currentUser = $this->userRepository->findOneBy(['username' => $username]);
     }
 
     #[Route('/search', methods: ['GET'], name: 'app_search_users')]
     public function index(Request $request): Response
     {
-        $user       = $this->security->getUser();
-        $username   = $user->getUserIdentifier();
         $searchTerm = $request->query->get('q');
 
+        // checking if ajax call made
         if ($request->query->get('preview')) {
-            return $this->processSearch($searchTerm, $username);
+            return $this->processSearch($searchTerm);
         }
 
         $form = $this->formFactory->create(SearchFormType::class);
@@ -42,14 +46,18 @@ class SearchController extends AbstractController
         ]);
     }
 
-    private function processSearch(string $searchTerm, string $username): Response
+    private function processSearch(string $searchTerm): Response
     {
+        // checking if searchterm was sent
         if ($searchTerm) {
-            $users            = $this->userRepository->findUsers($searchTerm, $username);
-            $currentUser      = $this->userRepository->findOneBy(['username' => $username]);
-            $sentRequests     = $currentUser->getSentFriendRequests()->toArray();
-            $receivedRequests = $currentUser->getReceivedFriendRequests()->toArray();
-            $friends          = $currentUser->getFriends()->toArray();
+            $users = $this->userRepository->findUsers(
+                $searchTerm,
+                $this->currentUser->getUsername()
+            );
+
+            $sentRequests     = $this->currentUser->getSentFriendRequests()->toArray();
+            $receivedRequests = $this->currentUser->getReceivedFriendRequests()->toArray();
+            $friends          = $this->currentUser->getFriends()->toArray(); // collecting friend list
 
             // getting list of already invated users from sentRequests
             $alreadyRequested = array_map(
@@ -57,12 +65,14 @@ class SearchController extends AbstractController
                 $sentRequests
             );
 
+            // collecting list of already received requests
             $alreadyReceived = array_map(
                 fn($friendRequest) => $friendRequest->getRequestingUser(),
                 $receivedRequests,
             );
         }
 
+        // in case no search term or empty result null is sent back
         return $this->render('search/_searchPreview.html.twig', [
             'users'            => $users ?? null,
             'friends'          => $friends ?? null,
