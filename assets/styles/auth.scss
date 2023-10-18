@@ -1,9 +1,11 @@
 @import "./variables.scss";
 @import "~bootstrap/scss/bootstrap";
 @import "~bootstrap-icons/font/bootstrap-icons";
+@import url('https://fonts.googleapis.com/css2?family=Arvo&family=Open+Sans:wght@500&family=Roboto+Mono&display=swap');
 
 html {
     height: 100%;
+    background-color: #2f3132;
 }
 
 body {
@@ -11,6 +13,7 @@ body {
     background-image: linear-gradient(144deg, rgba(241,247,248,1) 0%, rgba(95,118,119,1) 78%, rgba(47,49,50,1) 100%);
     background-attachment: fixed;
     background-size: cover;
+    font-family: 'Roboto Mono', monospace;
 }
 
 .form-control {

@@ -3,12 +3,12 @@
 {% block title %}Hello AuthController!{% endblock %}
 
 {% block body %}
-    <div class="container container-center">
+    <div class="container container-center text-uppercase">
         <div class="card bg-dark login-card">
             <div class="card-body p-5">
                 <div class="mb-md-5 mt-md-4">
-                    <h2 class="fw-bold mb-2 text-light text-uppercase">Register</h2>
-                    <p class="text-white-50 mb-4">Please enter your credentials!</p>
+                    <h2 class="fw-bold mb-2 text-light text-uppercase">REGISTER</h2>
+                    <p class="text-white-50 mb-4">PLEASE ENTER YOUR CREDENTIALS!</p>
 
                     {{ form_start(registerForm) }}
                     <div class="form-outline form-white mb-2">
@@ -18,7 +18,7 @@
 
                     <div class="form-outline form-white mb-2">
                         {{ form_widget(registerForm.user_name) }}
-                        {{ form_label(registerForm.user_name)}}
+                        {{ form_label(registerForm.user_name) }}
                     </div>
 
                     <div class="form-outline form-white mb-2">

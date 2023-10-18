@@ -3,12 +3,12 @@
 {% block title %}Hello AuthController!{% endblock %}
 
 {% block body %}
-    <div class="container container-center">
+    <div class="container container-center text-uppercase">
         <div class="card bg-dark login-card">
             <div class="card-body p-5">
                 <div class="mb-md-5 mt-md-4">
-                    <h2 class="fw-bold mb-2 text-light text-uppercase">Login</h2>
-                    <p class="text-white-50 mb-4">Please enter your email and password!</p>
+                    <h2 class="fw-bold mb-2 text-light text-uppercase">LOGIN</h2>
+                    <p class="text-white-50 mb-4">PLEASE ENTER YOUR EMAIL AND PASSWORD!</p>
 
                     {{ form_start(loginForm) }}
                     <div class="form-outline form-white mb-2">
@@ -25,7 +25,7 @@
                     {{ form_end(loginForm) }}
                 </div>
                 <div>
-                    <p class="mb-0 text-light">Don't have an account? 
+                    <p class="mb-0 text-light text-uppercase">Don't have an account? 
                         <a href="{{ path('app_register') }}" class="text-white-50 fw-bold">Sign Up</a>
                     </p>
                 </div>

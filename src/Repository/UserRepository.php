@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\User;
+use App\Enum\UserSatatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
@@ -43,6 +44,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $user->setUsername($data['user_name']);
         $user->setName($data['name']);
         $user->setPassword($hashedPassword);
+        $user->setStatus(UserSatatus::ACTIVE->toInt());
+        $user->setLastSeen(new \DateTime());
 
         $this->upgradePassword($user, $hashedPassword);
 
@@ -112,6 +115,18 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getQuery();
 
         return $query->getResult();
+    }
+
+    public function changeStatus(int $status, User $user): void
+    {
+        $user->setStatus($status);
+        $this->entityManager->flush();
+    }
+
+    public function updateLastSeen(User $user): void
+    {
+        $user->setLastSeen(new \DateTime());
+        $this->entityManager->flush();
     }
 
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void

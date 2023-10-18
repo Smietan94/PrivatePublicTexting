@@ -8,7 +8,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class HomeController extends AbstractController
 {
@@ -19,7 +18,7 @@ class HomeController extends AbstractController
         private UserRepository $userRepository,
     ) {
         // collecting logged user
-        $username = $this->security->getUser()->getUserIdentifier();
+        $username          = $this->security->getUser()->getUserIdentifier();
         $this->currentUser = $this->userRepository->findOneBy(['username' => $username]);
     }
 

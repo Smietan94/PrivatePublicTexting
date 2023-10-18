@@ -27,7 +27,7 @@ class FriendController extends AbstractController
         private EntityManagerInterface $entityManager
     ) {
         // collecting logged user
-        $username    = $this->security->getUser()->getUserIdentifier();
+        $username          = $this->security->getUser()->getUserIdentifier();
         $this->currentUser = $this->userRepository->findOneBy(['username' => $username]);
     }
 
@@ -53,8 +53,8 @@ class FriendController extends AbstractController
     public function removeFriend(Request $request): Response
     {
         // collecting frieng to remove
-        $friendId    = (int) $request->request->get('friendId');
-        $friend      = $this->userRepository->find($friendId);
+        $friendId = (int) $request->request->get('friendId');
+        $friend   = $this->userRepository->find($friendId);
 
         // check if friend exists
         if (!$friend) {

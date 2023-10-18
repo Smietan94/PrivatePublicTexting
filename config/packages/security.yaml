@@ -23,8 +23,8 @@ security:
                 check_path:         app_login
                 username_parameter: login_form[email]
                 password_parameter: login_form[password]
-            logout: 
-                path: app_logout
+            logout:
+                path:                 app_logout
                 csrf_token_generator: security.csrf.token_manager
         registration:
             lazy: true

@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -53,6 +54,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: self::class)]
     private Collection $friends;
 
+    #[ORM\ManyToMany(targetEntity: Conversation::class, mappedBy: 'conversationMembers')]
+    private Collection $conversations;
+
+    #[ORM\Column]
+    private ?int $status = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $lastSeen = null;
+
     public function __construct()
     {
         $this->friends = new ArrayCollection();
@@ -60,6 +70,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->receivedFriendRequests = new ArrayCollection();
         $this->sentFriendHistory = new ArrayCollection();
         $this->receivedFriendHistory = new ArrayCollection();
+        $this->conversations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -276,6 +287,57 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeFriend(self $friend): static
     {
         $this->friends->removeElement($friend);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Conversation>
+     */
+    public function getConversations(): Collection
+    {
+        return $this->conversations;
+    }
+
+    public function addConversation(Conversation $conversation): static
+    {
+        if (!$this->conversations->contains($conversation)) {
+            $this->conversations->add($conversation);
+            $conversation->addConversationMember($this);
+        }
+
+        return $this;
+    }
+
+    public function removeConversation(Conversation $conversation): static
+    {
+        if ($this->conversations->removeElement($conversation)) {
+            $conversation->removeConversationMember($this);
+        }
+
+        return $this;
+    }
+
+    public function getStatus(): ?int
+    {
+        return $this->status;
+    }
+
+    public function setStatus(int $status): static
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getLastSeen(): ?\DateTime
+    {
+        return $this->lastSeen;
+    }
+
+    public function setLastSeen(\DateTime $lastSeen): static
+    {
+        $this->lastSeen = $lastSeen;
 
         return $this;
     }

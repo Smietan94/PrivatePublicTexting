@@ -20,7 +20,10 @@
     <div class="container-shadow bg-dark">
         <div class="container">
             <nav class="navbar navbar-expand-lg navbar-dark">
-                <a class="navbar-brand fw-bold fs-1" href="{{ path('app_home') }}">PrivatePublicTexting</a>
+
+                <a class="navbar-brand fw-bold fs-1" href="{{ path('app_home') }}">
+                    <span>P</span><small class="fs-6 fw-lighter">(rivate)</small><span>P</span><small class="fs-6 fw-lighter">(ublic)</small><span>T</span><small class="fs-6 fw-lighter">(exting)</small>
+                </a>
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -28,17 +31,17 @@
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto me-2">
-                        <li class="nav-item my-auto">
-                            <a class="nav-link" href="#">Chats</a>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">chats</a>
                         </li>
-                        <li class="nav-item my-auto">
-                            <a class="nav-link" href="#">Group Chats</a>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">group chats</a>
                         </li>
-                        <li class="nav-item my-auto">
-                            <a class="nav-link" href="{{ path('app_friends_list') }}">Friends</a>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('app_friends_list') }}">friends</a>
                         </li>
-                        <li class="nav-item my-auto">
-                            <a class="nav-link" href="{{ path('app_search_users') }}">Search Friends</a>
+                        <li class="nav-item me-2">
+                            <a class="nav-link" href="{{ path('app_search_users') }}">search friends</a>
                         </li>
                         <li class="nav-item my-auto">
                             <div class="dropdown user-dropdown-menu">
@@ -49,19 +52,19 @@
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end dropstart" aria-labelledby="userDropDownMenu">
                                     <li>
-                                        <a class="dropdown-item" href="#">Notifications</a>
+                                        <a class="dropdown-item" href="#">notifications</a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="{{ path('app_friends_requests') }}">Friends Requests</a>
+                                        <a class="dropdown-item" href="{{ path('app_friends_requests') }}">friend requests</a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="#">Settings</a>
+                                        <a class="dropdown-item" href="#">settings</a>
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <form action="{{ path('app_logout') }}" method="post">
                                             <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
-                                            <button class="dropdown-item" href="#">Log Out</button>
+                                            <button class="dropdown-item" href="#">log out</button>
                                         </form>
                                     </li>
                                 </ul>

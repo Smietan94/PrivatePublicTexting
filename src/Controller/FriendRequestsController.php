@@ -27,7 +27,7 @@ class FriendRequestsController extends AbstractController
         private FriendRequestService $friendRequestService,
     ) {
         // collecting logged user
-        $username = $this->security->getUser()->getUserIdentifier();
+        $username          = $this->security->getUser()->getUserIdentifier();
         $this->currentUser = $this->userRepository->findOneBy(['username' => $username]);
     }
 

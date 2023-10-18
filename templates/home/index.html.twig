@@ -3,5 +3,29 @@
 {% block title %}Hello HomeController!{% endblock %}
 
 {% block body %}
-
+<div class="container container-body container-shadow m-auto mt-5 p-5 bg-dark ">
+    <h2 class="fw-bold mb-2 text-light">Friends</h2>
+    <p class="text-white-50 mb-4">Choose a friend to talk</p>
+    <div class="row mx-2 mb-2">
+        <div class="col-xl-4 col-lg-5 col-sm-12 bg-light rounded mt-4">
+            <div class="list-group-scroll mt-2 ps-2 pe-4 py-2">
+                {% for friend in friends %}
+                    <button type="button" class="list-group-item text-start w-100 rounded btn-friend-msg-list ps-3 py-2">
+                        <div class="d-flex w-100">
+                            <h5 class="mb-1"><small class="fs-6">name: </small>{{ friend.username }}</h5>
+                        </div>
+                        <p class="mb-1">you: last message {# last message #}</p>
+                        <small>last seen:{# TODO last seen #}</small>
+                    </button>
+                    {% if loop.index != loop.last %}
+                        <hr class="hr w-100"/>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-xl-8 col-lg-7 col-sm-12 bg-light rounded messanger-window mt-4">
+            {# TODO messenger #}
+        </div>
+    </div>
+</div>
 {% endblock %}

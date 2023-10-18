@@ -6,6 +6,7 @@ namespace App\Service;
 
 use App\Entity\User;
 use App\Enum\FriendStatus;
+use App\Enum\UserSatatus;
 use App\Repository\FriendHistoryRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,9 +28,7 @@ class FriendsService
         $receivedFriendNames = array_filter(array_map(function ($request) {
             return $request->getStatus() === FriendStatus::ACCEPTED->value ? $request->getRequestingUser()->getUsername() : null;
         }, $receivedFriendHistory));
-        $receivedFriendDates = array_filter(array_map(function ($request) {
-            return $request->getStatus() === FriendStatus::ACCEPTED->value ? $request->getCreatedAt() : null;
-        }, $receivedFriendHistory));
+        $receivedFriendDates = $this->getDates($receivedFriendHistory);
 
         // collectiong names and dates of sent requests
         $friendSentHistory = $currentUser->getSentFriendHistory()->toArray();
@@ -37,13 +36,11 @@ class FriendsService
         $sentFriendNames = array_filter(array_map(function ($request) {
             return $request->getStatus() === FriendStatus::ACCEPTED->value ? $request->getRequestedUser()->getUsername() : null;
         }, $friendSentHistory));
-        $sentFriendDates = array_filter(array_map(function ($request) {
-            return $request->getStatus() === FriendStatus::ACCEPTED->value ? $request->getCreatedAt() : null;
-        }, $friendSentHistory));
+        $sentFriendDates = $this->getDates($friendSentHistory);
 
         return array_combine(
-            $receivedFriendNames + $sentFriendNames,
-            $receivedFriendDates + $sentFriendDates
+            array_merge($receivedFriendNames, $sentFriendNames),
+            array_merge($receivedFriendDates, $sentFriendDates)
         );
     }
 
@@ -56,5 +53,12 @@ class FriendsService
         $friendHistory->setStatus(FriendStatus::DELETED->value);
 
         $this->entityManager->flush();
+    }
+
+    private function getDates(array $friendHistory): array
+    {
+        return array_filter(array_map(function ($request) {
+            return $request->getStatus() === FriendStatus::ACCEPTED->value ? $request->getCreatedAt() : null;
+        }, $friendHistory));
     }
 }

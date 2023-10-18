@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\User;
+use App\Enum\UserSatatus;
 use App\Form\LoginFormType;
 use App\Form\RegisterFormType;
 use App\Repository\UserRepository;
@@ -21,10 +23,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use TypeError;
 
 class AuthController extends AbstractController
 {
+    private User $currentUser;
+
     public function __construct(
         private UserRepository $userRepository,
         private FormFactoryInterface $formFactory,
@@ -32,6 +35,11 @@ class AuthController extends AbstractController
         private Security $security,
         private LoggerInterface $logger,
     ) {
+        // collecting logged user if logged in
+        if ($this->security->isGranted('ROLE_USER')) {
+            $username          = $this->security->getUser()->getUserIdentifier();
+            $this->currentUser = $this->userRepository->findOneBy(['username' => $username]);
+        }
     }
 
     #[Route('/login', name: 'app_login')]
@@ -40,6 +48,7 @@ class AuthController extends AbstractController
     {
         try {
             if ($this->security->isGranted('ROLE_USER')) {
+                $this->userRepository->changeStatus(UserSatatus::ACTIVE->toInt(), $this->currentUser);
                 return $this->redirectToRoute('app_home');
             }
 
@@ -91,12 +100,11 @@ class AuthController extends AbstractController
         ]);
     }
 
+    // ogarnąć wylogowywanie zeby updatowalo baze danych 
     #[Route('/logout', name: 'app_logout')]
     public function logout(): Response
     {
-        $this->security->logout();
-
-        return $this->redirectToRoute('login_app');
+        return $this->redirectToRoute('app_login');
     }
 
     private function processRegisterForm(FormInterface $form): Response
