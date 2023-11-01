@@ -55,6 +55,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         return $user;
     }
 
+    public function getFriendsArray(User $user): array
+    {
+        $qb = $this->getFriendsQuery($user);
+
+        return $qb->getQuery()->getResult();
+    }
+
     public function getFriendsQuery(User $user): QueryBuilder
     {
         return $this->entityManager->createQueryBuilder()
@@ -62,6 +69,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->from(User::class, 'u')
             ->leftJoin('u.friends', 'f')
             ->andWhere(':user MEMBER OF u.friends')
+            ->orderBy('u.username', 'ASC')
             ->setParameter('user', $user);
     }
 

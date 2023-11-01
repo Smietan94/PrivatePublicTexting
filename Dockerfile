@@ -31,6 +31,8 @@ RUN apt-get -y update \
     intl 
     # && docker-php-ext-install intl
 
+RUN apt-get install -y telnet
+
 RUN pecl install xdebug \
     && docker-php-ext-enable xdebug
 

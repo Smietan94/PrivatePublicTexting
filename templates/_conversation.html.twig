@@ -1,0 +1,57 @@
+{% if conversation %}
+    <div class="card-header messenger-card p-3">
+        <small class="fs-4 fw-light">{{conversation.conversationMembers[1].username}}</small class="fs-3">
+    </div>
+    <div class="card-body messenger-card list-group-msg-scroll">
+        {% if pager %}
+            <turbo-frame id="mix-message-list-{{ pager.currentPage }}" target="_top">
+                <div class="row">
+                    {% if pager.hasNextPage %}
+                        <turbo-frame id="mix-message-list-{{ pager.nextPage }}" src="{{ pagerfanta_page_url(pager, pager.nextPage) }}" loading="lazy"></turbo-frame>
+                    {% endif %}
+                    {% for message in pager | reverse %}
+                        {% if message.senderId == currentUser.id %}
+                            <div class="col-6"></div>
+                            <div class="col-6 border rounded-5 mb-2 bg-primary text-light p-3">
+                                <p class="text-start mx-2">{{ message.message }}</p>
+                                <p class="text-start mx-2"><small>{{ message.createdAt | ago }}</small></p>
+                            </div>
+                        {% else %}
+                            <div class="col-6 border rounded-5 mb-2 bg-secondary p-3">
+                                <p class="text-start mx-2">{{ message.message }}</p>
+                                <p class="text-start mx-2"><small>{{ message.createdAt | ago }}</small></p>
+                            </div>
+                            <div class="col-6"></div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </turbo-frame>
+        {% endif %}
+    </div>
+    <div class="card-footer messenger-card">
+        <form action="" class="mb-3 mt-2 input-group">
+            <div class="input-group">
+                <textarea rows="2" class="form-control messenger-input" aria-describedby="button-addon2"></textarea>
+                <button class="btn btn-primary px-4" type="submit" id="button-addon2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
+                        <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/>
+                    </svg>
+                </button>
+            </div>
+        </form>
+    </div>
+{% else %}
+    <div class="d-flex align-items-center justify-content-center h-100">
+        <form action="{{ path('app_start_private_conversation') }}" method="post">
+            <button name="friendId" value=
+                "
+                {% if friends is defined %}
+                    {{ friends[0].id }}
+                {% else %}
+                    {{ friendId }}
+                {% endif %}
+                "
+            type="submit" class="btn btn-lg btn-dark btn-start-conversation">Start Conversation</button>
+        </form>
+    </div>
+{% endif %}

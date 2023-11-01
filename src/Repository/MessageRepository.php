@@ -2,8 +2,12 @@
 
 namespace App\Repository;
 
+use App\Entity\Conversation;
 use App\Entity\Message;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -16,9 +20,29 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class MessageRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+        private EntityManagerInterface $entityManager
+    ) {
         parent::__construct($registry, Message::class);
+    }
+
+    public function getMessageQuery(User $user, User $friend, Conversation $conversation): QueryBuilder
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+
+        return $qb->select('m')
+            ->from(Message::class, 'm')
+            ->join('m.conversation', 'c')
+            ->andWhere($qb->expr()->andX(
+                $qb->expr()->isMemberOf(':user', 'c.conversationMembers'),
+                $qb->expr()->isMemberOf(':friend', 'c.conversationMembers')
+            ))
+            ->orderBy('m.createdAt', 'DESC')
+            ->setParameters([
+                'user'         => $user,
+                'friend'       => $friend
+            ]);
     }
 
 //    /**

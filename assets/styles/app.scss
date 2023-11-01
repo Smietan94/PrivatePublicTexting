@@ -70,8 +70,19 @@ footer {
     border-radius: 1rem;
 }
 
-.messanger-window {
+.messenger-window {
     height: 600px;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.messenger-card {
+    width: 100%;
+}
+
+.messenger-input {
+    resize: none;
+    background-color: #f1f7f8 !important;
 }
 
 .list-group-scroll{
@@ -81,6 +92,18 @@ footer {
     -webkit-overflow-scrolling: touch;
 }
 
+.list-group-msg-scroll {
+    display: flex;
+    flex-direction: column-reverse;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.btn-start-conversation {
+    border: none;
+}
+
+.btn-start-conversation:hover,
 .btn-friend-msg-list:hover {
     background-color: #9eb2b3;
     color: #f1f7f8;

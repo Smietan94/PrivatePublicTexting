@@ -8,7 +8,6 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "babdev/pagerfanta-bundle": "^4.2",
-        "cboden/ratchet": "^0.4.4",
         "doctrine/doctrine-bundle": "^2.10",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.16",
@@ -29,6 +28,7 @@
         "symfony/http-client": "6.3.*",
         "symfony/intl": "6.3.*",
         "symfony/mailer": "6.3.*",
+        "symfony/mercure-bundle": "^0.3.7",
         "symfony/mime": "6.3.*",
         "symfony/monolog-bundle": "^3.0",
         "symfony/notifier": "6.3.*",
@@ -95,7 +95,8 @@
     "extra": {
         "symfony": {
             "allow-contrib": true,
-            "require": "6.3.*"
+            "require": "6.3.*",
+            "docker": true
         }
     },
     "require-dev": {
@@ -107,6 +108,7 @@
         "symfony/maker-bundle": "^1.51",
         "symfony/phpunit-bridge": "^6.3",
         "symfony/stopwatch": "6.3.*",
-        "symfony/web-profiler-bundle": "6.3.*"
+        "symfony/web-profiler-bundle": "6.3.*",
+        "zenstruck/foundry": "^1.36"
     }
 }

@@ -36,12 +36,15 @@ class FriendController extends AbstractController
     {
         // collecting paginated query
         $queryBuilder = $this->userRepository->getFriendsQuery($this->currentUser);
+        // dd($queryBuilder);
         $adapter      = new QueryAdapter($queryBuilder);
         $pagerfanta   = Pagerfanta::createForCurrentPageWithMaxPerPage(
             $adapter,
             (int) $request->query->get('page', 1),
             6
         );
+
+        // dd($this->friendsService->getHowLongFriends($this->currentUser));
 
         return $this->render('friend/index.html.twig', [
             'pager'        => $pagerfanta,

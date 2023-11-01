@@ -63,6 +63,7 @@ class Conversation
     {
         if (!$this->conversationMembers->contains($conversationMember)) {
             $this->conversationMembers->add($conversationMember);
+            $conversationMember->addConversation($this);
         }
 
         return $this;
