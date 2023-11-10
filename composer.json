@@ -42,6 +42,7 @@
         "symfony/string": "6.3.*",
         "symfony/translation": "6.3.*",
         "symfony/twig-bundle": "6.3.*",
+        "symfony/ux-autocomplete": "^2.12",
         "symfony/ux-turbo": "^2.0",
         "symfony/validator": "6.3.*",
         "symfony/web-link": "6.3.*",

@@ -1,0 +1,25 @@
+<turbo-stream action="append" target="messages">
+    <template>
+        {# {% set currentUserId = _context['request'].attributes.get('data').get('user-id') %} #}
+        <div class="row">
+            {# {% if message.id == currentUser.id %} #}
+                <div class="col-6"></div>
+                <div class="col-6">
+                    <div class="border rounded-4 mb-2 bg-primary text-light p-3">
+                        <p class="text-start mx-2">{{ message.message }}</p>
+                        <small class="text-start mx-2">{{ 'now'|date('d M, Y h:m') }}</small>
+                    </div>
+                </div>
+            {# {% else %} #}
+                <div class="col-6">
+                    <small class="text-start mx-2">{{ message.id | UserName }}:</small>
+                    <div class="border rounded-4 mb-2 bg-secondary p-3">
+                        <p class="text-start mx-2">{{ message.message }}</p>
+                        <small class="text-start mx-2">{{ 'now'|date('d M, Y h:m') }}</small>
+                    </div>
+                </div>
+                <div class="col-6"></div>
+            {# {% endif %} #}
+        </div>
+    </template>
+</turbo-stream>

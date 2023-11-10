@@ -49,6 +49,15 @@ class ConversationRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    public function getGroupConversations(User $currentUser): array
+    {
+        return array_filter(array_map(function ($conversation) {
+            if (count($conversation->getConversationMembers()->toArray()) > 2) {
+                return $conversation;
+            }
+        }, $currentUser->getConversations()->toArray()));
+    }
+
     public function storeConversation(User $user, User $friend): void
     {
         $conversation = new Conversation();

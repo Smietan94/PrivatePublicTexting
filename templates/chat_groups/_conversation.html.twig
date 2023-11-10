@@ -1,6 +1,25 @@
 {% if conversation %}
-    <div class="card-header messenger-card p-3">
-        <small class="fs-4 fw-light">{{conversation.conversationMembers[1].username}}</small class="fs-3">
+    <div class="card-header messenger-card">
+        <div class="row p-3">
+            <div class="col-6">
+                <small class="fs-4 fw-light">
+                    {% if conversation.name %}
+                        {{ conversation.name }}
+                    {% else %}
+                        {% for member in conversation.conversationMembers %}
+                            {% if member.id != currentUser.id %}
+                                {{ member.username }}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </small class="fs-3">
+            </div>
+            <div class="col-6">
+                {% block conversation_settings %}
+                    
+                {% endblock %}
+            </div>
+        </div>
     </div>
     <div class="card-body messenger-card list-group-msg-scroll">
         {% if pager %}
@@ -12,14 +31,19 @@
                     {% for message in pager | reverse %}
                         {% if message.senderId == currentUser.id %}
                             <div class="col-6"></div>
-                            <div class="col-6 border rounded-5 mb-2 bg-primary text-light p-3">
-                                <p class="text-start mx-2">{{ message.message }}</p>
-                                <p class="text-start mx-2"><small>{{ message.createdAt | ago }}</small></p>
+                            <div class="col-6">
+                                <div class="border rounded-4 mb-2 bg-primary text-light p-3">
+                                    <p class="text-start mx-2">{{ message.message }}</p>
+                                    <small class="text-start mx-2">{{ message.createdAt | date('d M, Y h:m') }}</small>
+                                </div>
                             </div>
                         {% else %}
-                            <div class="col-6 border rounded-5 mb-2 bg-secondary p-3">
-                                <p class="text-start mx-2">{{ message.message }}</p>
-                                <p class="text-start mx-2"><small>{{ message.createdAt | ago }}</small></p>
+                            <div class="col-6">
+                                <small class="text-start mx-2">{{ message.senderId | UserName }}:</small>
+                                <div class="border rounded-4 mb-2 bg-secondary p-3">
+                                    <p class="text-start mx-2">{{ message.message }}</p>
+                                    <small class="text-start mx-2">{{ message.createdAt | date('d M, Y h:m') }}</small>
+                                </div>
                             </div>
                             <div class="col-6"></div>
                         {% endif %}
@@ -44,13 +68,13 @@
     <div class="d-flex align-items-center justify-content-center h-100">
         <form action="{{ path('app_start_private_conversation') }}" method="post">
             <button name="friendId" value=
-                "
+                {# "
                 {% if friends is defined %}
                     {{ friends[0].id }}
                 {% else %}
                     {{ friendId }}
                 {% endif %}
-                "
+                " #}
             type="submit" class="btn btn-lg btn-dark btn-start-conversation">Start Conversation</button>
         </form>
     </div>

@@ -22,6 +22,7 @@ Encore
      */
     // .addEntry('app', './assets/app.js')
     .addEntry('auth', './assets/auth.js')
+    .addEntry('messenger', ['whatwg-fetch', './assets/messenger.js'])
     .addEntry('app', ['whatwg-fetch', './assets/app.js'])
 
     // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
@@ -73,7 +74,7 @@ Encore
     //.enableIntegrityHashes(Encore.isProduction())
 
     // uncomment if you're having problems with a jQuery plugin
-    //.autoProvidejQuery()
+    .autoProvidejQuery()
 ;
 
 module.exports = Encore.getWebpackConfig();

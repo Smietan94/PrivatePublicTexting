@@ -21,12 +21,12 @@
                         </ul>
                         <div class="card-body row">
                             <div class="col">
-                                <form action="{{ path('app_friends_remove') }}" action="" method="post">
-                                    <button type="submit" name="friendId" value="{{ friend.id }}" class="btn btn-dark">Remove friend</button>
+                                <form action="{{ path('app_friends_remove') }}" method="post">
+                                    <button type="submit" name="friendId" value="{{ friend.id }}" class="btn btn-dark" target="_top">Remove friend</button>
                                 </form>
                             </div>
                             <div class="col">
-                                <a href="#" role="button" class="btn btn-dark">Send Message</a>
+                                <a href="{{ path('app_chat', {friendId: friend.id}) }}" class="btn btn-dark" target="_top">Send Message</a>
                             </div>
                         </div>
                     </div>

@@ -27,6 +27,5 @@ class LoginSubscriber implements EventSubscriberInterface
     {
         $user = $event->getPassport()->getUser();
         $this->userRepository->changeStatus(UserSatatus::ACTIVE->toInt(), $user);
-        $this->userRepository->updateLastSeen($user);
     }
 }

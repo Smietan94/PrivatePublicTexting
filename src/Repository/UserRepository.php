@@ -106,23 +106,29 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     public function findUsers(?string $searchTerm, string $username): array
     {
+        $query = $this->findUsersQueryBuilder($searchTerm, $username);
+
+        return $query
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findUsersQueryBuilder(?string $searchTerm, string $username): QueryBuilder
+    {
         $qB = $this->entityManager->createQueryBuilder();
 
-        $query = $qB->select('u')
+        return $qB->select('u')
             ->from(User::class, 'u')
             ->andWhere(
                 $qB->expr()->orX(
-                    $qB->expr()->like('u.username', ':searchTerm'),
-                    $qB->expr()->like('u.email', ':searchTerm')
+                    $qB->expr()->like('LOWER(u.username)', ':searchTerm'),
+                    $qB->expr()->like('LOWER(u.email)', ':searchTerm')
             ))
             ->andWhere('u.username != :username')
             ->setParameters([
-                'searchTerm' => '%' . $searchTerm . '%',
+                'searchTerm' => '%' . strtolower($searchTerm) . '%',
                 'username'   => $username
-            ])
-            ->getQuery();
-
-        return $query->getResult();
+            ]);
     }
 
     public function changeStatus(int $status, User $user): void

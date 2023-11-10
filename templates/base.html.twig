@@ -8,6 +8,7 @@
         <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('/favicon-32x32.png') }}">
         <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('/favicon-16x16.png') }}">
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
         {% endblock %}
@@ -32,10 +33,10 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto me-2">
                         <li class="nav-item">
-                            <a class="nav-link" href="#">chats</a>
+                            <a class="nav-link" href="{{ path('app_home') }}">chats</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">group chats</a>
+                            <a class="nav-link" href="{{ path('app_chat_groups') }}">group chats</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ path('app_friends_list') }}">friends</a>
