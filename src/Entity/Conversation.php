@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\ConversationRepository;
@@ -27,6 +29,9 @@ class Conversation
 
     #[ORM\OneToMany(mappedBy: 'conversation', targetEntity: Message::class)]
     private Collection $messages;
+
+    #[ORM\Column(nullable: false)]
+    private int $conversationType;
 
     public function __construct()
     {
@@ -102,6 +107,18 @@ class Conversation
                 $message->setConversation(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getConversationType(): int
+    {
+        return $this->conversationType;
+    }
+
+    public function setConversationType(int $conversationType): static
+    {
+        $this->conversationType = $conversationType;
 
         return $this;
     }

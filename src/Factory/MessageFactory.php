@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Factory;
 
 use App\Entity\Message;
@@ -48,7 +50,7 @@ final class MessageFactory extends ModelFactory
      */
     protected function getDefaults(): array
     {
-        $conversation = $this->conversationRepository->find(9);
+        $conversation = $this->conversationRepository->find(68);
         $membersIds   = array_map(fn($member) => $member->getId(), $conversation->getConversationMembers()->toArray());
         $date         = self::faker()->dateTimeBetween('-2 months', 'now');
         return [

@@ -2,23 +2,27 @@
 
 {% block title %}Hello HomeController!{% endblock %}
 
+{% block javascripts %}
+    {{ encore_entry_script_tags('chat') }}
+{% endblock %}
+
 {% block body %}
+
 <div class="container container-body container-shadow m-auto mt-5 p-5 bg-dark ">
     <h2 class="fw-bold mb-2 text-light">Conversations</h2>
     <p class="text-white-50 mb-4">Choose a friend to talk</p>
-    <div class="row mx-2 mb-2" {{ stimulus_controller('conversation', {
-        url: path('app_home')
-    }) }}>
+    <div class="row mx-2 mb-2">
         <div class="col-xl-4 col-lg-5 col-sm-12 bg-light rounded">
             <div class="list-group-scroll mt-2 ps-2 pe-4 py-2">
+                {% if friends == null %}
+                    <h5 class="mb-1">No friends</h5>
+                {% endif %}
                 {% for friend in friends %}
-                    <button type="button"
-                        data-action="conversation#chooseConversation"
+                    <a type="button" href="{{ path('app_chat', {friendId: friend.id}) }}"
                         class="list-group-item text-start w-100 rounded btn-friend-msg-list ps-3 py-2"
-                        value="{{ friend.id }}"
-                        >
+                        value="{{ friend.id }}">
                         <div class="d-flex w-100">
-                            <h5 class="mb-1"><small class="fs-6">user name: </small>{{ friend.username }}</h5>
+                            <h5 class="mb-1"><small class="fs-6">user name: <br> </small>{{ friend.username }}</h5>
                         </div>
                         <p class="mb-1">you: last message {# last message #}</p>
                         {% if friend.status == 0 %}
@@ -26,17 +30,29 @@
                         {% else %}
                             <small>last seen: {{ friend.lastSeen | ago }}</small>
                         {% endif %}
-                    </button>
+                    </a>
                     {% if loop.index != loop.last %}
                         <hr class="hr w-100"/>
                     {% endif %}
                 {% endfor %}
             </div>
         </div>
-        <div data-conversation-target="result" class="card col-xl-8 col-lg-7 col-sm-12 bg-light rounded messenger-window">
+        <div class="card col-xl-8 col-lg-7 col-sm-12 bg-light rounded messenger-window">
             {# TODO messenger #}
-            {{ include('home/_conversation.html.twig') }}
+            {% if friends %}
+                {{ include('chat/_conversation.html.twig') }}
+            {% endif %}
         </div>
     </div>
 </div>
+{% if conversation is defined %}
+    <script type="application/json" id="message-url">
+        {{ path('handle_message_app', {conversationId: conversation.id}) }}
+    </script>
+    <script type="application/json" id="mercure-url">
+        {{ mercure('conversation.priv' ~ conversation.id, { subscribe: 'conversation.priv' ~ conversation.id })|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_HEX_TAG'))|raw  }}
+    </script>
+{% endif %}
 {% endblock %}
+
+{# https://symfony.com/bundles/ux-turbo/current/index.html#chat-example #}

@@ -12,6 +12,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.16",
         "knplabs/knp-time-bundle": "^2.1",
+        "lcobucci/jwt": "^5.1",
         "pagerfanta/doctrine-orm-adapter": "^4.2",
         "pagerfanta/twig": "^4.2",
         "phpdocumentor/reflection-docblock": "^5.3",

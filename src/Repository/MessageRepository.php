@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Conversation;
 use App\Entity\Message;
-use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
@@ -27,22 +28,36 @@ class MessageRepository extends ServiceEntityRepository
         parent::__construct($registry, Message::class);
     }
 
-    public function getMessageQuery(User $user, User $friend, Conversation $conversation): QueryBuilder
+    public function getMessageQuery(Conversation $conversation, int $conversationType): QueryBuilder
     {
         $qb = $this->entityManager->createQueryBuilder();
 
-        return $qb->select('m')
+        $qb = $qb->select('m')
             ->from(Message::class, 'm')
             ->join('m.conversation', 'c')
-            ->andWhere($qb->expr()->andX(
-                $qb->expr()->isMemberOf(':user', 'c.conversationMembers'),
-                $qb->expr()->isMemberOf(':friend', 'c.conversationMembers')
-            ))
+            ->andWhere($qb->expr()->eq('c', ':conversation'))
+            ->setParameter('conversation', $conversation);
+
+        foreach ($conversation->getConversationMembers()->toArray() as $loopIndex => $conversationMember) {
+            $qb = $qb->andWhere($qb->expr()->isMemberOf(":conversationMember{$loopIndex}", 'c.conversationMembers'))
+                ->setParameter("conversationMember{$loopIndex}", $conversationMember);
+        }
+
+        return $qb->andWhere($qb->expr()->eq('c.conversationType', ':conversationType'))
             ->orderBy('m.createdAt', 'DESC')
-            ->setParameters([
-                'user'         => $user,
-                'friend'       => $friend
-            ]);
+            ->setParameter('conversationType', $conversationType);
+    }
+
+    public function storeMessage(Conversation $conversation, int $senderId, string $messageText): void
+    {
+        $message = new Message();
+
+        $message->setConversation($conversation);
+        $message->setSenderId($senderId);
+        $message->setMessage($messageText);
+
+        $this->entityManager->persist($message);
+        $this->entityManager->flush();
     }
 
 //    /**

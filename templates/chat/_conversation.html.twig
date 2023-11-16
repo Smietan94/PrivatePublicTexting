@@ -22,8 +22,7 @@
         </div>
     </div>
     <div class="card-body messenger-card list-group-msg-scroll">
-        <div id="messages" {{ turbo_stream_listen('chat') }}>
-        </div>
+        <div id="messages"></div>
         {% if pager %}
             <turbo-frame id="mix-message-list-{{ pager.currentPage }}" target="_top">
                 <div class="row">
@@ -36,7 +35,7 @@
                             <div class="col-6">
                                 <div class="border rounded-4 mb-2 bg-primary text-light p-3">
                                     <p class="text-start mx-2">{{ message.message }}</p>
-                                    <small class="text-start mx-2">{{ message.createdAt | date('d M, Y h:m') }}</small>
+                                    <small class="text-start mx-2">{{ message.createdAt | date('d M, Y H:i') }}</small>
                                 </div>
                             </div>
                         {% else %}
@@ -50,7 +49,7 @@
                                 {% endif %}
                                 <div class="border rounded-4 mb-2 bg-secondary p-3">
                                     <p class="text-start mx-2">{{ message.message }}</p>
-                                    <small class="text-start mx-2">{{ message.createdAt | date('d M, Y h:m') }}</small>
+                                    <small class="text-start mx-2">{{ message.createdAt | date('d M, Y H:i') }}</small>
                                 </div>
                             </div>
                             <div class="col-6"></div>
@@ -63,10 +62,11 @@
     </div>
     <div class="card-footer messenger-card">
         <turbo-frame id="message_form">
-            {{ form_start(form, { 'attr' : { 'class': 'mb-3 mt-2' }}) }}
+            {{ form_start(form, { 'attr' : { 'class': 'mb-3 mt-2'}}) }}
                 <div class="input-group">
                     {{ form_widget(form.message) }}
-                    {{ form_widget(form.id, {'attr': {'value': currentUser.id }}) }}
+                    {{ form_widget(form.senderId, {'attr': {'value': currentUser.id }}) }}
+                    {{ form_widget(form.conversationId, {'attr': {'value': conversation.id }})}}
                     <button class="btn btn-primary px-4" type="submit" id="button-addon2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
                             <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/>

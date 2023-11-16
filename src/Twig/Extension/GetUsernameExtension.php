@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Twig\Extension;
 
 use App\Twig\Runtime\GetUsernameExtensionRuntime;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
-use Twig\TwigFunction;
 
 class GetUsernameExtension extends AbstractExtension
 {

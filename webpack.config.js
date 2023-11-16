@@ -21,9 +21,9 @@ Encore
      * and one CSS file (e.g. app.css) if your JavaScript imports CSS.
      */
     // .addEntry('app', './assets/app.js')
-    .addEntry('auth', './assets/auth.js')
-    .addEntry('messenger', ['whatwg-fetch', './assets/messenger.js'])
-    .addEntry('app', ['whatwg-fetch', './assets/app.js'])
+    .addEntry('auth', './assets/js/auth.js')
+    .addEntry('app', ['whatwg-fetch', './assets/js/app.js'])
+    .addEntry('chat', ['whatwg-fetch', './assets/js/chat.js'])
 
     // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
     .enableStimulusBridge('./assets/controllers.json')

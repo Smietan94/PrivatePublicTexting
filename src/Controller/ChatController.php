@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Conversation;
 use App\Entity\User;
+use App\Enum\ConversationType;
 use App\Form\MessageType;
 use App\Repository\ConversationRepository;
 use App\Repository\MessageRepository;
@@ -20,7 +23,7 @@ use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
 use Symfony\Component\Routing\Annotation\Route;
 
-class HomeController extends AbstractController
+class ChatController extends AbstractController
 {
     private User $currentUser;
 
@@ -29,49 +32,29 @@ class HomeController extends AbstractController
         private UserRepository $userRepository,
         private ConversationRepository $conversationRepository,
         private MessageRepository $messageRepository,
-        private FormFactoryInterface $formFactory
+        private FormFactoryInterface $formFactory,
+        private HubInterface $hub,
     ) {
-        // collecting logged user
         $username          = $this->security->getUser()->getUserIdentifier();
         $this->currentUser = $this->userRepository->findOneBy(['username' => $username]);
     }
 
     #[Route(['/', '/home', '/chats'], name: 'app_home')]
-    public function index(Request $request, HubInterface $hub): Response
+    public function index(Request $request): Response
     {
-        $form      = $this->formFactory->create(MessageType::class);
-        $emptyForm = clone $form;
-
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-
-            $hub->publish(new Update(
-                'chat',
-                $this->renderView('_message.stream.html.twig', [
-                    'message' => $data
-                ])
-            ));
-
-            $form = $emptyForm;
-        }
-
-        if ($request->query->get('preview')) {
-            // display create conversation btn or conversation window
-            return $this->processConversationChoice($request, $form);
-        }
-
         // collecting all user friends
         $friends = $this->userRepository->getFriendsArray($this->currentUser);
 
         // getting conversation between user and first friend on list
-        $conversation = $this->conversationRepository->getFriendConversation($this->currentUser, $friends[0]);
+        $conversation = (count($friends) >= 1) ? $this->conversationRepository->getFriendConversation($this->currentUser, $friends[0]) : null;
 
-        return $this->render('home/index.html.twig', [
+        $form = $this->processMessage($conversation, $request);
+
+        return $this->render('chat/index.html.twig', [
             'friends'       => $friends,
             'conversation'  => $conversation,
             'conversations' => $this->currentUser->getConversations()->toArray(),
-            'pager'         => isset($conversation) ? $this->getMsgPager($request, $friends[0], $conversation) : null,
+            'pager'         => isset($conversation) ? $this->getMsgPager($request, $conversation) : null,
             'currentUser'   => $this->currentUser,
             'form'          => $form->createView(),
         ]);
@@ -81,14 +64,40 @@ class HomeController extends AbstractController
     public function chat(Request $request, int $friendId): Response
     {
         $friend       = $this->userRepository->find($friendId);
-        $conversation = $this->conversationRepository->getFriendConversation($this->currentUser, $friend);
+        $conversation = $this->conversationRepository->getFriendConversation(
+            $this->currentUser,
+            $friend
+        );
 
-        return $this->render('home/index.html.twig', [
+        if (!$this->checkIfFriends($friend)) {
+            // if not, then flashes inforamation
+            $this->addFlash('warning', 'You are not friends');
+            return $this->redirectToRoute('app_home');
+        }
+
+        $form = $this->processMessage($conversation, $request);
+
+        return $this->render('chat/index.html.twig', [
             'friends'       => $this->userRepository->getFriendsArray($this->currentUser),
             'conversation'  => $conversation,
             'conversations' => $this->currentUser->getConversations()->toArray(),
-            'pager'         => isset($conversation) ? $this->getMsgPager($request, $friend, $conversation) : null,
-            'currentUser'   => $this->currentUser
+            'pager'         => isset($conversation) ? $this->getMsgPager($request, $conversation) : null,
+            'currentUser'   => $this->currentUser,
+            'form'          => $form->createView()
+        ]);
+    }
+
+    #[Route('/handleMessage/{conversationId<[0-9]+>}', methods: ['POST'], name: 'handle_message_app')]
+    public function handleMessage(Request $request, int $conversationId): Response
+    {
+        $jsonData = json_decode(
+            $request->getContent(),
+            true
+        );
+
+        return $this->render('_message.stream.html.twig', [
+            'message'       => $jsonData['data'],
+            'currentUserId' => $this->currentUser->getId(),
         ]);
     }
 
@@ -113,51 +122,86 @@ class HomeController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
-        $this->conversationRepository->storeConversation($this->currentUser, $friend);
+        $this->conversationRepository->storeConversation(
+            $this->currentUser,
+            [$friend],
+            ConversationType::SOLO->toInt()
+        );
 
         return $this->redirectToRoute('app_home');
-    }
-
-    private function processConversationChoice(Request $request, FormInterface $form): Response
-    {
-        // gets chosen friend id, then collecting friend and conversation
-        $friendId     = (int) $request->query->get('q');
-        $friend       = $this->userRepository->find($friendId);
-        $conversation = $this->conversationRepository->getFriendConversation($this->currentUser, $friend);
-
-        return $this->render('home/_conversation.html.twig', [
-            'friendId'     => $friendId,
-            'conversation' => $conversation,
-            'pager'        => isset($conversation) ? $this->getMsgPager($request, $friend, $conversation) : null,
-            'currentUser'  => $this->currentUser,
-            'form'         => $form->createView()
-        ]);
     }
 
     private function checkIfFriends(User $friend): bool
     {
         // checks if friend in friends list
-        return in_array($friend, $this->currentUser->getFriends()->toArray()) ? true : false;
+        return in_array($friend, $this->currentUser->getFriends()->toArray());
     }
 
     private function checkIfConversationAlreadyExists(User $friend): bool
     {
-        $conversation = $this->conversationRepository->getFriendConversation($this->currentUser, $friend);
+        $conversation = $this->conversationRepository->getFriendConversation(
+            $this->currentUser,
+            $friend
+        );
 
         // checks if conversation already exists
         return $conversation ? false : true;
     }
 
-    private function getMsgPager(Request $request, User $friend, Conversation $conversation): Pagerfanta
+    private function getMsgPager(Request $request, Conversation $conversation): Pagerfanta
     {
         // gets query which prepering all messages from conversation
-        $queryBuilder = $this->messageRepository->getMessageQuery($this->currentUser, $friend, $conversation);
-        $adapter      = new QueryAdapter($queryBuilder);
+        $queryBuilder = $this->messageRepository->getMessageQuery(
+            $conversation,
+            ConversationType::SOLO->toInt()
+        );
+
+        $adapter = new QueryAdapter($queryBuilder);
 
         return Pagerfanta::createForCurrentPageWithMaxPerPage(
             $adapter,
             (int) $request->query->get('page', 1),
             10
         );
+    }
+
+    private function processMessage(?Conversation $conversation = null, Request $request): FormInterface
+    {
+        $form      = $this->formFactory->create(MessageType::class);
+        $emptyForm = $this->formFactory->create(MessageType::class);
+
+        $form->handleRequest($request);
+
+        // checking if use have any conversations
+        if (!$conversation) {
+            return $form;
+        }
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data   = $form->getData();
+
+            // creating mercure update
+            $update = new Update(
+                'conversation.priv' . $conversation->getId(), // topic
+                json_encode([
+                    'message' => $data,
+                ]),
+                true
+            );
+
+            // publishing mercure update
+            $this->hub->publish($update);
+
+            // saving message in db
+            $this->messageRepository->storeMessage(
+                $conversation,
+                $data['senderId'],
+                $data['message']
+            );
+
+            return $emptyForm;
+        }
+
+        return $form;
     }
 }
