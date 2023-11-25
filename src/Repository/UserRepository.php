@@ -28,6 +28,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 {
     public function __construct(
         ManagerRegistry $registry,
+        private ConversationRepository $conversationRepository,
         private UserPasswordHasherInterface $passwordHasher,
         private EntityManagerInterface $entityManager
     ) {
@@ -133,6 +134,17 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ]);
     }
 
+    public function getFriendsConversationsData(User $currentUser, string $searchTerm): array
+    {
+        $qb = $this->findUsersQueryBuilder($searchTerm, $currentUser->getUsername());
+
+        return $qb
+            ->andWhere($qb->expr()->isMemberOf(':user', 'u.friends'))
+            ->setParameter('user', $currentUser)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function changeStatus(int $status, User $user): void
     {
         $user->setStatus($status);
@@ -143,6 +155,24 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     {
         $user->setLastSeen(new \DateTime());
         $this->entityManager->flush();
+    }
+
+    public function getNotConversationMemberFriends(int $userId, int $conversationId): array
+    {
+        $currentUser  = $this->find($userId);
+        $conversation = $this->conversationRepository->find($conversationId);
+
+        $qb = $this->entityManager->createQueryBuilder();
+
+        return $qb->select('PARTIAL u.{id, username}')->from(User::class, 'u')
+            ->andWhere(':user MEMBER OF u.friends')
+            ->andWhere(':conversation NOT MEMBER OF u.conversations')
+            ->setParameters([
+                'user' => $currentUser,
+                'conversation' => $conversation
+            ])
+            ->getQuery()
+            ->getResult();
     }
 
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void

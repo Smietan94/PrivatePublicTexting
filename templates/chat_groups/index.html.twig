@@ -9,27 +9,24 @@
 {% block body %}
 
 <div class="container container-body container-shadow m-auto mt-5 p-5 bg-dark">
-    <h2 class="fw-bold mb-2 text-light">Conversations</h2>
-    <p class="text-white-50 mb-4">Choose a friend to talk</p>
+    <h2 class="fw-bold mb-2 text-light">Group Conversations</h2>
+    <p class="text-white-50 mb-4">Choose a group to talk</p>
     <div class="row mx-2 mb-2" {{ stimulus_controller('conversation', {
-        url:  path('app_home'),
+        url:  path('app_chat_group_search'),
         url1: path('app_chat_group_form')
     }) }}>
-        <div class="col-xl-4 col-lg-5 col-sm-12 bg-light rounded">
-            <div class="list-group-scroll mt-2 ps-2 pe-4 py-2">
-                {% for conversation in conversations %}
-                    <a type="button" href="{{ path('app_chat_group', {conversationId: conversation.id}) }}"
-                        class="list-group-item text-start w-100 rounded btn-friend-msg-list ps-3 py-2"
-                        value="{{ conversation.id }}">
-                        <div class="d-flex w-100">
-                            <h5 class="mb-1"><small class="fs-6">name: <br> </small>{{ conversation.name }}</h5>
-                        </div>
-                        <p class="mb-1">you: last message {# last message #}</p>
-                    </a>
-                    {# {% if loop.index != loop.last %} #}
-                        <hr class="hr w-100"/>
-                    {# {% endif %} #}
-                {% endfor %}
+        <div class="col-xl-4 col-lg-5 col-sm-12 bg-light rounded card messenger-window">
+            <div class="card-header py-3">
+                {% include "chat_components/_searchConversationForm.html.twig" %}
+            </div>
+            <div data-conversation-target="friendsList" class="card-body list-group-scroll mt-2 ps-3 pe-4 py-2">
+                {% if conversations %}
+                    {% include 'chat_groups/_searchConversationResults.html.twig' %}
+                {% else %}
+                    You have no chat groups yet...
+                {% endif %}
+            </div>
+            <div class="card-footer py-3">
                 <button type="button" class="btn btn-lg btn-dark w-100" data-action="conversation#createGroup">Create Chat Group</button>
             </div>
         </div>
@@ -37,7 +34,6 @@
             {% if conversations | length == 0 %}
                 <h5 class="mb-1">No Groups</h5>
             {% else %}
-                {# TODO messenger #}
                 {{ include('chat_groups/_conversation.html.twig') }}
             {% endif %}
         </div>
@@ -51,4 +47,7 @@
         {{ mercure('conversation.group' ~ conversation.id, { subscribe: 'conversation.group' ~ conversation.id })|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_HEX_TAG'))|raw  }}
     </script>
 {% endif %}
+    {% include 'chat_groups/_participantsListModal.html.twig' %}
+    {% include 'chat_groups/_conversationNameFormModal.html.twig' %}
+    {% include 'chat_groups/_conversationNewMembersModal.html.twig' %}
 {% endblock %}

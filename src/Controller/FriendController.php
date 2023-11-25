@@ -52,7 +52,7 @@ class FriendController extends AbstractController
         ]);
     }
 
-    #[Route('/friends/remove', name: 'app_friends_remove')]
+    #[Route('/friends/remove', methods:['DELETE'], name: 'app_friends_remove')]
     public function removeFriend(Request $request): Response
     {
         // collecting frieng to remove

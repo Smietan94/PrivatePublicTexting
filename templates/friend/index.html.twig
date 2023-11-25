@@ -21,7 +21,7 @@
                         </ul>
                         <div class="card-body row">
                             <div class="col">
-                                <form action="{{ path('app_friends_remove') }}" method="post">
+                                <form action="{{ path('app_friends_remove') }}" method="delete">
                                     <button type="submit" name="friendId" value="{{ friend.id }}" class="btn btn-dark" target="_top">Remove friend</button>
                                 </form>
                             </div>

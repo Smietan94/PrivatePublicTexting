@@ -1,0 +1,21 @@
+{{ form_start(removeMemberForms[currentUserId], {
+    'name':   'remove_conversation_member_' ~ currentUserId,
+    'action': path('app_chat_group_leave_conversation'),
+    'method': 'POST'
+}) }}
+    {{ form_widget(removeMemberForms[currentUserId].memberId, {'attr': {
+        'value': currentUserId
+    }}) }}
+    {{ form_widget(removeMemberForms[currentUserId].conversationId, {
+        'name': 'conversation' ~ conversation.id,
+        'attr': {
+            'value': conversation.id
+    }}) }}
+    {{ form_widget(removeMemberForms[currentUserId].remove, {
+        'label': 'Leave the group',
+        'attr':  {
+            'data-member-id': currentUserId,
+            'class':          'dropdown-item leave-group-btn'
+        }
+    }) }}
+{{ form_end(removeMemberForms[currentUserId]) }}

@@ -7,6 +7,7 @@ namespace App\Repository;
 use App\Entity\Conversation;
 use App\Entity\User;
 use App\Enum\ConversationType;
+use App\Service\ChatService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -23,7 +24,8 @@ class ConversationRepository extends ServiceEntityRepository
 {
     public function __construct(
         ManagerRegistry $registry,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        private ChatService $chatService
     ) {
         parent::__construct($registry, Conversation::class);
     }
@@ -69,16 +71,6 @@ class ConversationRepository extends ServiceEntityRepository
             ])
             ->getQuery()
             ->getResult();
-
-        // return array_values(array_filter(array_map(function ($conversation) use($conversationType) {
-        //     if (
-        //         count($conversation->getConversationMembers()->toArray()) > 2 
-        //         &&
-        //         $conversation->getConversationType() == $conversationType
-        //     ) {
-        //         return $conversation;
-        //     }
-        // }, $currentUser->getConversations()->toArray())));
     }
 
     public function storeConversation(User $user, array $conversationMembers, int $conversationType, ?string $conversationName = null): Conversation
@@ -109,6 +101,51 @@ class ConversationRepository extends ServiceEntityRepository
     {
         $friendUsernames = array_map(fn ($friend) => $friend->getUsername(), $friends);
         return implode(', ', $friendUsernames);
+    }
+
+    public function getConversations(User $currentUser, string $searchTerm, int $conversationType): ?array
+    {
+        // TODO collect conversations names like term or one of members names like but not currentuser
+        $qb = $this->entityManager->createQueryBuilder();
+
+        return $qb->select('c')->from(Conversation::class, 'c')
+            ->join('c.conversationMembers', 'user')
+            ->join('c.conversationMembers', 'cm')
+            ->andWhere($qb->expr()->eq('c.conversationType', ':conversationType'))
+            ->andWhere($qb->expr()->eq('user', ':user'))
+            ->andWhere($qb->expr()->orX(
+                $qb->expr()->like('LOWER(cm.username)', ':searchTerm'),
+                $qb->expr()->like('LOWER(c.name)', ':searchTerm')
+            ))
+            ->setParameters([
+                'conversationType' => $conversationType,
+                'user'             => $currentUser,
+                'searchTerm'       => '%' . strtolower($searchTerm) . '%'
+            ])
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function addNewMember(int $conversationId, array $newMembers): array
+    {
+        $conversation = $this->find($conversationId);
+        $messages = [
+            'success' => [],
+            'warnig'  => []
+        ];
+
+        foreach ($newMembers as $user) {
+            if (!$this->chatService->checkIfUserIsMemberOfConversation($conversation, $user)) {
+                $conversation->addConversationMember($user);
+                array_push($messages['success'], sprintf('%s successfully added to conversation', $user->getUsername()));
+            } else {
+                array_push($messages['warning'], sprintf('%s is not Your friend, cannot be added to conversation', $user->getUsername()));
+            }
+        }
+
+        $this->entityManager->flush();
+
+        return $messages;
     }
 
 //    /**

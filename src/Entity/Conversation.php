@@ -77,6 +77,7 @@ class Conversation
     public function removeConversationMember(User $conversationMember): static
     {
         $this->conversationMembers->removeElement($conversationMember);
+        $conversationMember->removeConversation($this);
 
         return $this;
     }

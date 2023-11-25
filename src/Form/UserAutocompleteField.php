@@ -49,7 +49,7 @@ class UserAutocompleteField extends AbstractType
                         'user'     => $currentUser
                     ]);
             },
-            'filter_query'  => function(QueryBuilder $qB, string $query) use($username, $currentUser) {
+            'filter_query' => function(QueryBuilder $qB, string $query) use($username, $currentUser) {
                 if (!$query) {
                     return;
                 }

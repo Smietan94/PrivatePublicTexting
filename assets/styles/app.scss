@@ -38,7 +38,7 @@ footer {
 .flash-container {
     width: 400px;
     position: absolute;
-    top: 10%;
+    top: 25%;
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 9998;
@@ -71,7 +71,7 @@ footer {
 }
 
 .messenger-window {
-    height: 600px;
+    height: 650px;
     padding: 0 !important;
     margin: 0 !important;
 }
@@ -86,7 +86,7 @@ footer {
 }
 
 .list-group-scroll{
-    height: 580px;
+    height: 100%;
     margin-bottom: 10px;
     overflow-y: scroll;
     -webkit-overflow-scrolling: touch;

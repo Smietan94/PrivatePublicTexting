@@ -8,14 +8,15 @@ export default class extends Controller {
 
     static targets = ['result', 'friendsList'];
 
-    async chooseConversation(event) {
+    async searchConversation(event) {
         const params = new URLSearchParams({
             q:       event.currentTarget.value,
             preview: 1
         });
 
         const respone = await fetch(`${this.urlValue}?${params.toString()}`);
-        this.resultTarget.innerHTML = await respone.text();
+        console.log(`${this.urlValue}?${params.toString()}`);
+        this.friendsListTarget.innerHTML = await respone.text();
     }
 
     async createGroup(event) {

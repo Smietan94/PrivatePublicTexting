@@ -1,0 +1,37 @@
+<div class="modal fade rounded-5" id="conversationNameChangeFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            {{ form_start(changeConversationNameForm, {
+                'action': path('app_chat_group_change_name'),
+                'method': 'POST'
+            }) }}
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Change Conversation Name</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {{ form_widget(changeConversationNameForm.conversationName, {'attr': {
+                    'placeholder': conversation.name
+                }}) }}
+                {{ form_widget(changeConversationNameForm.conversationId, {'attr': {
+                    'value': conversation.id
+                }}) }}
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-6">
+                        {{ form_widget(changeConversationNameForm.changeName, {'attr': {
+                            'class': 'btn btn-primary w-100'
+                        }}) }}
+                    </div>
+                    <div class="col-6">
+                        <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {{ form_end(changeConversationNameForm) }}
+        </div>
+    </div>
+</div>
