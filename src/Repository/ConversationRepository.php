@@ -30,6 +30,13 @@ class ConversationRepository extends ServiceEntityRepository
         parent::__construct($registry, Conversation::class);
     }
 
+    /**
+     * getFriendConversation
+     *
+     * @param  User $user
+     * @param  User $friend
+     * @return Conversation
+     */
     public function getFriendConversation(User $user, User $friend): ?Conversation
     {
         $qb               = $this->entityManager->createQueryBuilder();
@@ -54,6 +61,12 @@ class ConversationRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    /**
+     * getGroupConversations
+     *
+     * @param  User $currentUser
+     * @return Conversation[] array
+     */
     public function getGroupConversations(User $currentUser): array
     {
         $qb               = $this->entityManager->createQueryBuilder();
@@ -72,7 +85,16 @@ class ConversationRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-
+    
+    /**
+     * storeConversation
+     *
+     * @param  User $user
+     * @param  User[] $conversationMembers
+     * @param  int $conversationType
+     * @param  mixed $conversationName
+     * @return Conversation
+     */
     public function storeConversation(User $user, array $conversationMembers, int $conversationType, ?string $conversationName = null): Conversation
     {
         $conversation = new Conversation();
@@ -96,13 +118,27 @@ class ConversationRepository extends ServiceEntityRepository
 
         return $conversation;
     }
-
+    
+    /**
+     * createDefaultConversationName
+     *
+     * @param  User[] $friends
+     * @return string
+     */
     public function createDefaultConversationName(array $friends): string
     {
         $friendUsernames = array_map(fn ($friend) => $friend->getUsername(), $friends);
         return implode(', ', $friendUsernames);
     }
-
+    
+    /**
+     * getConversations
+     *
+     * @param  User $currentUser
+     * @param  string $searchTerm
+     * @param  int $conversationType
+     * @return Conversation[] array
+     */
     public function getConversations(User $currentUser, string $searchTerm, int $conversationType): ?array
     {
         // TODO collect conversations names like term or one of members names like but not currentuser
@@ -126,6 +162,13 @@ class ConversationRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * addNewMember
+     *
+     * @param  int $conversationId
+     * @param  User[] $newMembers
+     * @return array
+     */
     public function addNewMember(int $conversationId, array $newMembers): array
     {
         $conversation = $this->find($conversationId);

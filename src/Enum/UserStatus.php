@@ -12,6 +12,11 @@ enum UserSatatus: int
     case SUSPENDED = 3;
     case BANNED    = 4;
 
+    /**
+     * toString
+     *
+     * @return string
+     */
     public function toString()
     {
         return match($this) {
@@ -23,6 +28,11 @@ enum UserSatatus: int
         };
     }
 
+    /**
+     * toInt
+     *
+     * @return int
+     */
     public function toInt()
     {
         return match($this) {

@@ -12,8 +12,18 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Email;
 
+/**
+ * LoginFormType
+ */
 class LoginFormType extends AbstractType
 {
+    /**
+     * buildForm
+     *
+     * @param  FormBuilderInterface $builder
+     * @param  array $options
+     * @return void
+     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $default_styling = [
@@ -33,6 +43,12 @@ class LoginFormType extends AbstractType
         ;
     }
 
+    /**
+     * configureOptions
+     *
+     * @param  OptionsResolver $resolver
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

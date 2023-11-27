@@ -14,6 +14,9 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * AddUsersToConversationType
+ */
 class AddUsersToConversationType extends AbstractType
 {
     public function __construct(
@@ -24,6 +27,13 @@ class AddUsersToConversationType extends AbstractType
     ) {
     }
 
+    /**
+     * buildForm
+     *
+     * @param  FormBuilderInterface $builder
+     * @param  array $options
+     * @return void
+     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $conversationId = $options['data']['conversationId'];
@@ -44,7 +54,13 @@ class AddUsersToConversationType extends AbstractType
             ->add('addUsers', SubmitType::class)
         ;
     }
-
+    
+    /**
+     * configureOptions
+     *
+     * @param  OptionsResolver $resolver
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

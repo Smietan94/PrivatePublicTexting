@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello HomeController!{% endblock %}
+
+{% block body %}
+
+<div class="container container-body container-shadow m-auto mt-5 p-5 bg-dark">
+    <h2 class="fw-bold mb-2 text-light">Group Conversations</h2>
+    <p class="text-white-50 mb-4">Choose a group to talk</p>
+    <div class="row mx-2 mb-2">
+        <div class="col-xl-4 col-lg-5 col-sm-12 bg-light rounded card messenger-window">
+            <div data-conversation-target="friendsList" class="card-body list-group-scroll mt-2 ps-3 pe-4 py-2">
+                <h5 class="mb-1">You have no chat groups yet...</h5>
+            </div>
+            <div class="card-footer py-3">
+                <button type="button" class="btn btn-lg btn-dark w-100" data-action="conversation#createGroup">Create Chat Group</button>
+            </div>
+        </div>
+        <div data-conversation-target="result" class="card col-xl-8 col-lg-7 col-sm-12 bg-light rounded messenger-window">
+            {% include 'chat_groups/_createGroupConversationForm.html.twig' %}
+        </div>
+    </div>
+</div>
+{% endblock %}

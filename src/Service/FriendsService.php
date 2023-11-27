@@ -6,7 +6,6 @@ namespace App\Service;
 
 use App\Entity\User;
 use App\Enum\FriendStatus;
-use App\Enum\UserSatatus;
 use App\Repository\FriendHistoryRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,6 +19,12 @@ class FriendsService
     ) {
     }
 
+    /**
+     * getHowLongFriends
+     *
+     * @param  User $currentUser
+     * @return array
+     */
     public function getHowLongFriends(User $currentUser): array
     {
         // collectiong names and dates of received requests
@@ -44,6 +49,13 @@ class FriendsService
         );
     }
 
+    /**
+     * removeFriend
+     *
+     * @param  User $currentUser
+     * @param  User $friend
+     * @return void
+     */
     public function removeFriend(User $currentUser, User $friend): void
     {
         $friendHistory = $this->friendHistoryRepository->getFriendHistory($currentUser, $friend);
@@ -55,6 +67,12 @@ class FriendsService
         $this->entityManager->flush();
     }
 
+    /**
+     * getDates
+     *
+     * @param  FriendHistory[] $friendHistory
+     * @return \DateTime[] array
+     */
     private function getDates(array $friendHistory): array
     {
         return array_filter(array_map(function ($request) {

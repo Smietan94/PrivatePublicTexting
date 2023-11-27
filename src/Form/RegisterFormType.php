@@ -16,8 +16,18 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 
+/**
+ * RegisterFormType
+ */
 class RegisterFormType extends AbstractType
 {
+    /**
+     * buildForm
+     *
+     * @param  FormBuilderInterface $builder
+     * @param  array $options
+     * @return void
+     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {   
         $default_styling = [
@@ -44,6 +54,12 @@ class RegisterFormType extends AbstractType
         ;
     }
 
+    /**
+     * configureOptions
+     *
+     * @param  OptionsResolver $resolver
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

@@ -35,6 +35,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         parent::__construct($registry, User::class);
     }
 
+    /**
+     * store
+     *
+     * @param  array $data
+     * @return User
+     */
     public function store(array $data): User
     {
         $user           = new User();
@@ -58,6 +64,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         return $user;
     }
 
+    /**
+     * getFriendsArray
+     *
+     * @param  User $user
+     * @return User[] array
+     */
     public function getFriendsArray(User $user): array
     {
         $qb = $this->getFriendsQuery($user);
@@ -65,6 +77,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         return $qb->getQuery()->getResult();
     }
 
+    /**
+     * getFriendsQuery
+     *
+     * @param  User $user
+     * @return QueryBuilder
+     */
     public function getFriendsQuery(User $user): QueryBuilder
     {
         return $this->entityManager->createQueryBuilder()
@@ -76,6 +94,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->setParameter('user', $user);
     }
 
+    /**
+     * checkPassword
+     *
+     * @param  array $data
+     * @return bool
+     */
     public function checkPassword(array $data): bool
     {
         $user = $this->findOneBy(['username' => $data['username']]);
@@ -86,6 +110,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         return $hashedPassword === $user->getPassword();
     }
 
+    /**
+     * loadUserByIdentifier
+     *
+     * @param  string $identifier
+     * @return UserInterface
+     */
     public function loadUserByIdentifier(string $identifier): ?UserInterface
     {
         $user = $this->entityManager->createQuery(
@@ -100,6 +130,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         return $user;
     }
 
+    /**
+     * getAllFriends
+     *
+     * @param  User $user
+     * @return User[] array
+     */
     public function getAllFriends(User $user): array
     {
         $friendsCollection = $user->getFriends();
@@ -107,6 +143,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         return $friendsCollection->toArray();
     }
 
+    /**
+     * findUsers
+     *
+     * @param  string $searchTerm
+     * @param  string $username
+     * @return User[] array
+     */
     public function findUsers(?string $searchTerm, string $username): array
     {
         $query = $this->findUsersQueryBuilder($searchTerm, $username);
@@ -116,6 +159,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getResult();
     }
 
+    /**
+     * findUsersQueryBuilder
+     *
+     * @param  string $searchTerm
+     * @param  string $username
+     * @return QueryBuilder
+     */
     public function findUsersQueryBuilder(?string $searchTerm, string $username): QueryBuilder
     {
         $qB = $this->entityManager->createQueryBuilder();
@@ -134,6 +184,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ]);
     }
 
+    /**
+     * getFriendsConversationsData
+     *
+     * @param  User $currentUser
+     * @param  string $searchTerm
+     * @return User[] array
+     */
     public function getFriendsConversationsData(User $currentUser, string $searchTerm): array
     {
         $qb = $this->findUsersQueryBuilder($searchTerm, $currentUser->getUsername());
@@ -145,18 +202,38 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getResult();
     }
 
+    /**
+     * changeStatus
+     *
+     * @param  int $status
+     * @param  User $user
+     * @return void
+     */
     public function changeStatus(int $status, User $user): void
     {
         $user->setStatus($status);
         $this->entityManager->flush();
     }
 
+    /**
+     * updateLastSeen
+     *
+     * @param  User $user
+     * @return void
+     */
     public function updateLastSeen(User $user): void
     {
         $user->setLastSeen(new \DateTime());
         $this->entityManager->flush();
     }
 
+    /**
+     * getNotConversationMemberFriends
+     *
+     * @param  int $userId
+     * @param  int $conversationId
+     * @return User[] array
+     */
     public function getNotConversationMemberFriends(int $userId, int $conversationId): array
     {
         $currentUser  = $this->find($userId);

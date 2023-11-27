@@ -9,6 +9,11 @@ enum ConversationType: int
     case SOLO  = 0;
     case GROUP = 1;
 
+    /**
+     * toString
+     *
+     * @return string
+     */
     public function toString()
     {
         return match($this) {
@@ -17,6 +22,11 @@ enum ConversationType: int
         };
     }
 
+    /**
+     * toInt
+     *
+     * @return int
+     */
     public function toInt()
     {
         return match($this) {

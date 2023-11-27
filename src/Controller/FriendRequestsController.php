@@ -33,6 +33,11 @@ class FriendRequestsController extends AbstractController
         $this->currentUser = $this->userRepository->findOneBy(['username' => $username]);
     }
 
+    /**
+     * friendRequest
+     *
+     * @return Response
+     */
     #[Route('/friendsRequests', name: 'app_friends_requests')]
     public function friendRequest(): Response
     {
@@ -43,6 +48,12 @@ class FriendRequestsController extends AbstractController
         ]);
     }
 
+    /**
+     * sendFriendRequest
+     *
+     * @param  Request $request
+     * @return Response
+     */
     #[Route('/sendFriendRequest', methods: ['POST'], name: 'app_send_friend_request')]
     public function sendFriendRequest(Request $request): Response
     {
@@ -67,6 +78,12 @@ class FriendRequestsController extends AbstractController
         return $this->redirectToRoute('app_friends_requests');
     }
 
+    /**
+     * accept
+     *
+     * @param  Request $request
+     * @return Response
+     */
     #[Route('/friendRequests/accept', methods: ['POST'], name: 'app_accept_friend_request')]
     public function accept(Request $request): Response
     {
@@ -89,6 +106,12 @@ class FriendRequestsController extends AbstractController
         return $this->redirectToRoute('app_friends_requests');
     }
 
+    /**
+     * decline
+     *
+     * @param  Request $request
+     * @return Response
+     */
     #[Route('/friendRequests/decline', methods: ['POST'], name: 'app_decline_friend_request')]
     public function decline(Request $request): Response
     {
@@ -105,6 +128,12 @@ class FriendRequestsController extends AbstractController
         return $this->redirectToRoute('app_friends_requests');
     }
 
+    /**
+     * cancel
+     *
+     * @param  Request $request
+     * @return Response
+     */
     #[Route('/friendRequest/cancel', methods: ['POST'], name: 'app_cancel_friend_request')]
     public function cancel(Request $request): Response
     {
@@ -120,7 +149,14 @@ class FriendRequestsController extends AbstractController
 
         return $this->redirectToRoute('app_friends_requests');
     }
-
+    
+    /**
+     * preprocessFriendRequest
+     *
+     * @param  Request $request
+     * @param  string $status
+     * @return FriendRequest
+     */
     private function preprocessFriendRequest(Request $request, string $status): ?FriendRequest
     {
         // collecting friend request

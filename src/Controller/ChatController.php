@@ -17,6 +17,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * ChatController
+ */
 class ChatController extends AbstractController
 {
     private User $currentUser;
@@ -33,37 +36,71 @@ class ChatController extends AbstractController
         $this->currentUser = $this->userRepository->findOneBy(['username' => $username]);
     }
 
+    /**
+     * index
+     *
+     * @param  Request $request
+     */
     #[Route(['/', '/home', '/chats'], name: 'app_home')]
     public function index(Request $request): Response
     {
         // collecting all user friends
         $friends = $this->userRepository->getFriendsArray($this->currentUser);
 
-        // getting conversation between user and first friend on list
-        $conversation = (count($friends) >= 1) ? $this->conversationRepository->getFriendConversation($this->currentUser, $friends[0]) : null;
+        // Checks if the user has friends to talk to
+        if (count($friends) === 0) {
+            $this->addFlash(
+                'warning',
+                'You have no friends to talk'
+            );
+            return $this->redirectToRoute('app_search_users');
+        }
 
-        $form       = $this->chatService->processMessage($conversation, $request, 'conversation.priv');
-        $searchForm = $this->chatService->createSearchForm();
+        // getting conversation between user and first friend on list
+        $conversation = (count($friends) >= 1) ? $this->conversationRepository->getFriendConversation(
+            $this->currentUser,
+            $friends[0]
+        ) : null;
+
+        $searchForm  = $this->chatService->createSearchForm();
+        $messageForm = $this->chatService->processMessage(
+            $conversation,
+            $request,
+            'conversation.priv'
+        );
 
         return $this->render('chat/index.html.twig', [
             'friends'       => $friends,
             'conversation'  => $conversation,
             'conversations' => $this->currentUser->getConversations()->toArray(),
-            'pager'         => isset($conversation) ? $this->chatService->getMsgPager($request, $conversation, ConversationType::SOLO->toInt()) : null,
             'currentUser'   => $this->currentUser,
-            'form'          => $form->createView(),
-            'searchForm'    => $searchForm->createView()
+            'messageForm'   => $messageForm->createView(),
+            'searchForm'    => $searchForm->createView(),
+            'pager'         => isset($conversation) ? $this->chatService->getMsgPager(
+                $request,
+                $conversation,
+                ConversationType::SOLO->toInt()
+            ) : null
         ]);
     }
 
+    /**
+     * chat
+     *
+     * @param  Request $request
+     * @param  int $friendId
+     * @return Response
+     */
     #[Route('/chats/{friendId<[0-9]+>}', name: 'app_chat')]
     public function chat(Request $request, int $friendId): Response
     {
-        $friend       = $this->userRepository->find($friendId);
-        $conversation = $this->conversationRepository->getFriendConversation(
-            $this->currentUser,
-            $friend
-        );
+        $friend = $this->userRepository->find($friendId);
+
+        // cheks if user exists and if friends with current user
+        if (!$friend) {
+            $this->addFlash('warning', 'User does not exists');
+            return $this->redirectToRoute('app_home');
+        }
 
         if (!$this->checkIfFriends($friend)) {
             // if not, then flashes inforamation
@@ -71,20 +108,40 @@ class ChatController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
-        $form = $this->chatService->processMessage($conversation, $request, 'conversation.priv');
-        $searchForm = $this->chatService->createSearchForm();
+        $conversation = $this->conversationRepository->getFriendConversation(
+            $this->currentUser,
+            $friend
+        );
+
+        $searchForm  = $this->chatService->createSearchForm();
+        $messageForm = $this->chatService->processMessage(
+            $conversation,
+            $request,
+            'conversation.priv'
+        );
 
         return $this->render('chat/index.html.twig', [
             'friends'       => $this->userRepository->getFriendsArray($this->currentUser),
             'conversation'  => $conversation,
             'conversations' => $this->currentUser->getConversations()->toArray(),
-            'pager'         => isset($conversation) ? $this->chatService->getMsgPager($request, $conversation, ConversationType::SOLO->toInt()) : null,
             'currentUser'   => $this->currentUser,
-            'form'          => $form->createView(),
+            'messageForm'   => $messageForm->createView(),
             'searchForm'    => $searchForm->createView(),
+            'pager'         => isset($conversation) ? $this->chatService->getMsgPager(
+                $request,
+                $conversation,
+                ConversationType::SOLO->toInt()
+            ) : null
         ]);
     }
 
+    /**
+     * handleMessage
+     *
+     * @param  Request $request
+     * @param  int $conversationId
+     * @return Response
+     */
     #[Route('/handleMessage/{conversationId<[0-9]+>}', methods: ['POST'], name: 'handle_message_app')]
     public function handleMessage(Request $request, int $conversationId): Response
     {
@@ -99,6 +156,12 @@ class ChatController extends AbstractController
         ]);
     }
 
+    /**
+     * startConversation
+     *
+     * @param  Request $request
+     * @return Response
+     */
     #[Route('/startConversation', methods: ['POST'], name: 'app_start_private_conversation')]
     public function startConversation(Request $request): Response
     {
@@ -129,23 +192,12 @@ class ChatController extends AbstractController
         return $this->redirectToRoute('app_home');
     }
 
-    private function checkIfFriends(User $friend): bool
-    {
-        // checks if friend in friends list
-        return in_array($friend, $this->currentUser->getFriends()->toArray());
-    }
-
-    private function checkIfConversationAlreadyExists(User $friend): bool
-    {
-        $conversation = $this->conversationRepository->getFriendConversation(
-            $this->currentUser,
-            $friend
-        );
-
-        // checks if conversation already exists
-        return $conversation ? false : true;
-    }
-
+    /**
+     * processConversationSearch
+     *
+     * @param  Request $request
+     * @return Response
+     */
     #[Route('/chat/search', name: 'app_chat_search')]
     public function processConversationSearch(Request $request): Response
     {
@@ -159,5 +211,34 @@ class ChatController extends AbstractController
         return $this->render('chat/_searchConversationResults.html.twig', [
             'friends' => $friends,
         ]);
+    }
+
+    /**
+     * checkIfFriends
+     *
+     * @param  User $friend
+     * @return bool
+     */
+    private function checkIfFriends(User $friend): bool
+    {
+        // checks if friend in friends list
+        return in_array($friend, $this->currentUser->getFriends()->toArray());
+    }
+
+    /**
+     * checkIfConversationAlreadyExists
+     *
+     * @param  User $friend
+     * @return bool
+     */
+    private function checkIfConversationAlreadyExists(User $friend): bool
+    {
+        $conversation = $this->conversationRepository->getFriendConversation(
+            $this->currentUser,
+            $friend
+        );
+
+        // checks if conversation already exists
+        return $conversation ? false : true;
     }
 }

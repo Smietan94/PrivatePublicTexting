@@ -24,6 +24,9 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+/**
+ * AuthController
+ */
 class AuthController extends AbstractController
 {
     private User $currentUser;
@@ -42,6 +45,12 @@ class AuthController extends AbstractController
         }
     }
 
+    /**
+     * login
+     *
+     * @param  AutheticationUtils $authenticationUtils
+     * @return Response
+     */
     #[Route('/login', name: 'app_login')]
     #[IsGranted('PUBLIC_ACCESS')]
     public function login(AuthenticationUtils $authenticationUtils): Response
@@ -80,6 +89,12 @@ class AuthController extends AbstractController
         }
     }
 
+    /**
+     * register
+     *
+     * @param  Request $request
+     * @return Response
+     */
     #[Route('/register', name: 'app_register')]
     #[IsGranted('PUBLIC_ACCESS')]
     public function register(Request $request): Response
@@ -100,13 +115,24 @@ class AuthController extends AbstractController
         ]);
     }
 
-    // ogarnąć wylogowywanie zeby updatowalo baze danych 
+    // ogarnąć wylogowywanie zeby updatowalo baze danych
+    /**
+     * logout
+     *
+     * @return Response
+     */
     #[Route('/logout', name: 'app_logout')]
     public function logout(): Response
     {
         return $this->redirectToRoute('app_login');
     }
 
+    /**
+     * processRegisterForm
+     *
+     * @param  FormInterface $form
+     * @return Response
+     */
     private function processRegisterForm(FormInterface $form): Response
     {
         try {

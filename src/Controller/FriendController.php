@@ -31,6 +31,12 @@ class FriendController extends AbstractController
         $this->currentUser = $this->userRepository->findOneBy(['username' => $username]);
     }
 
+    /**
+     * index
+     *
+     * @param  Request $request
+     * @return Response
+     */
     #[Route('/friends', name: 'app_friends_list')]
     public function index(Request $request): Response
     {
@@ -52,6 +58,12 @@ class FriendController extends AbstractController
         ]);
     }
 
+    /**
+     * removeFriend
+     *
+     * @param  Request $request
+     * @return Response
+     */
     #[Route('/friends/remove', methods:['DELETE'], name: 'app_friends_remove')]
     public function removeFriend(Request $request): Response
     {

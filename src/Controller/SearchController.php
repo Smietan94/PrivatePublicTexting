@@ -15,6 +15,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * SearchController
+ */
 class SearchController extends AbstractController
 {
     private User $currentUser;
@@ -30,6 +33,12 @@ class SearchController extends AbstractController
         $this->currentUser = $this->userRepository->findOneBy(['username' => $username]);
     }
 
+    /**
+     * index
+     *
+     * @param  Request $request
+     * @return Response
+     */
     #[Route('/search', methods: ['GET'], name: 'app_search_users')]
     public function index(Request $request): Response
     {
@@ -46,6 +55,12 @@ class SearchController extends AbstractController
         ]);
     }
 
+    /**
+     * processSearch
+     *
+     * @param  string $searchTerm
+     * @return Response
+     */
     private function processSearch(string $searchTerm): Response
     {
         // checking if searchterm was sent

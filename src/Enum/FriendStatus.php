@@ -13,6 +13,11 @@ enum FriendStatus: int
     case EXPIRED   = 4;
     case DELETED   = 5;
 
+    /**
+     * toString
+     *
+     * @return string
+     */
     public function toString()
     {
         return match($this) {
@@ -25,6 +30,11 @@ enum FriendStatus: int
         };
     }
 
+    /**
+     * toInt
+     *
+     * @return int
+     */
     public function toInt()
     {
         return match($this) {

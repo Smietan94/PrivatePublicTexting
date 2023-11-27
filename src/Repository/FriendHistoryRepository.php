@@ -30,6 +30,13 @@ class FriendHistoryRepository extends ServiceEntityRepository
         parent::__construct($registry, FriendRequestHistory::class);
     }
 
+    /**
+     * getFriendHistory
+     *
+     * @param  User $currentUser
+     * @param  User $friend
+     * @return FriendHistory
+     */
     public function getFriendHistory(User $currentUser, User $friend): ?FriendHistory
     {
         $qb = $this->entityManager->createQueryBuilder();

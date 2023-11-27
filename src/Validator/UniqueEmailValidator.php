@@ -14,6 +14,7 @@ class UniqueEmailValidator extends ConstraintValidator
         private UserRepository $userRepository,
     ) {
     }
+
     public function validate($value, Constraint $constraint): void
     {
         /* @var App\Validator\UniqueEmail $constraint */

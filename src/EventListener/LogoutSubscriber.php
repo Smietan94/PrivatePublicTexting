@@ -18,6 +18,11 @@ class LogoutSubscriber implements EventSubscriberInterface
     ) {
     }
 
+    /**
+     * getSubscribedEvents
+     *
+     * @return LogoutEvent[] array
+     */
     public static function getSubscribedEvents(): array
     {
         return [
@@ -25,6 +30,12 @@ class LogoutSubscriber implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * onLogout
+     *
+     * @param  LogoutEvent $event
+     * @return void
+     */
     public function onLogout(LogoutEvent $event): void
     {
         $user = $event->getToken()->getUser();

@@ -18,11 +18,22 @@ class LoginSubscriber implements EventSubscriberInterface
     ) {
     }
 
+    /**
+     * getSubscribedEvents
+     *
+     * @return LoginSuccessEvent[] array
+     */
     public static function getSubscribedEvents(): array
     {
         return [LoginSuccessEvent::class => 'onSuccessLogin'];
     }
 
+    /**
+     * onSuccessLogin
+     *
+     * @param  LoginSuccessEvent $event
+     * @return void
+     */
     public function onSuccessLogin(LoginSuccessEvent $event): void
     {
         $user = $event->getPassport()->getUser();

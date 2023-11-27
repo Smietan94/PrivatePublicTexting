@@ -28,6 +28,13 @@ class MessageRepository extends ServiceEntityRepository
         parent::__construct($registry, Message::class);
     }
 
+    /**
+     * getMessageQuery
+     *
+     * @param  Conversation $conversation
+     * @param  int $conversationType
+     * @return QueryBuilder
+     */
     public function getMessageQuery(Conversation $conversation, int $conversationType): QueryBuilder
     {
         $qb = $this->entityManager->createQueryBuilder();
@@ -48,6 +55,14 @@ class MessageRepository extends ServiceEntityRepository
             ->setParameter('conversationType', $conversationType);
     }
 
+    /**
+     * storeMessage
+     *
+     * @param  Conversation $conversation
+     * @param  int $senderId
+     * @param  string $messageText
+     * @return void
+     */
     public function storeMessage(Conversation $conversation, int $senderId, string $messageText): void
     {
         $message = new Message();

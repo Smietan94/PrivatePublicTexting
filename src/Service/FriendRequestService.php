@@ -23,6 +23,14 @@ class FriendRequestService
     ) {
     }
 
+    /**
+     * acceptRequest
+     *
+     * @param  User $currentUser
+     * @param  FriendRequest $request
+     * @param  int $status
+     * @return FriendHistory
+     */
     public function acceptRequest(User $currentUser, FriendRequest $request, int $status): FriendHistory
     {
         // collecting requesting user
@@ -43,7 +51,14 @@ class FriendRequestService
         return $this->deleteRequestAndSetHistory($request, $status);
     }
 
-    // Deleting request record from requests table, and adding it to FriendHistory
+    // Deleting request record from requests table, and adding it to FriendHistory    
+    /**
+     * deleteRequestAndSetHistory
+     *
+     * @param  FriendRequest $request
+     * @param  int $status
+     * @return FriendHistory
+     */
     public function deleteRequestAndSetHistory(FriendRequest $request, int $status): FriendHistory
     {
         // creating new instace of friend history

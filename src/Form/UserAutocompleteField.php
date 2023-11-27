@@ -13,6 +13,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\UX\Autocomplete\Form\AsEntityAutocompleteField;
 use Symfony\UX\Autocomplete\Form\BaseEntityAutocompleteType;
 
+/**
+ * UserAutocompleteField
+ */
 #[AsEntityAutocompleteField]
 class UserAutocompleteField extends AbstractType
 {
@@ -22,6 +25,12 @@ class UserAutocompleteField extends AbstractType
     ) {
     }
 
+    /**
+     * configureOptions
+     *
+     * @param  OptionsRevolver $resolver
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         // collecting current user
@@ -79,6 +88,11 @@ class UserAutocompleteField extends AbstractType
         ]);
     }
 
+    /**
+     * getParent
+     *
+     * @return string
+     */
     public function getParent(): string
     {
         return BaseEntityAutocompleteType::class;

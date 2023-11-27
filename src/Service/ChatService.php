@@ -31,7 +31,15 @@ class ChatService
     ) {
     }
 
-    public function getMsgPager(Request $request, Conversation $conversation, int $conversationType): Pagerfanta
+    /**
+     * getMsgPager
+     *
+     * @param  Request $request
+     * @param  Conversation $conversation
+     * @param  int $conversationType
+     * @return Pagerfanta
+     */
+    public function getMsgPager(Request $request, Conversation $conversation, int $conversationType): ?Pagerfanta
     {
         // gets query which prepering all messages from conversation
         $queryBuilder = $this->messageRepository->getMessageQuery(
@@ -48,7 +56,13 @@ class ChatService
         );
     }
 
-    public function getRemoveConversationMemberForms(array $conversationMembers, User $currentUser): array
+    /**
+     * getRemoveConversationMemberForms
+     *
+     * @param  User[] $conversationMembers
+     * @return array
+     */
+    public function getRemoveConversationMemberForms(array $conversationMembers): array
     {
         $forms = array_map(
             fn() => $this->formFactory->create(RemoveConversationMemberType::class)->createView(),
@@ -64,11 +78,24 @@ class ChatService
         return $formsFormatted;
     }
 
+    /**
+     * getChangeConversationNameForm
+     *
+     * @return FormInterface
+     */
     public function getChangeConversationNameForm(): FormInterface
     {
         return $this->formFactory->create(ChangeConversationNameType::class);
     }
 
+    /**
+     * processMessage
+     *
+     * @param  Conversation $conversation
+     * @param  Request $request
+     * @param  string $topic
+     * @return FormInterface
+     */
     public function processMessage(?Conversation $conversation = null, Request $request, string $topic): FormInterface
     {
         $form      = $this->formFactory->create(MessageType::class);
@@ -110,6 +137,13 @@ class ChatService
         return $form;
     }
 
+    /**
+     * removeMember
+     *
+     * @param  Conversation $conversation
+     * @param  User $memberToRm
+     * @return bool
+     */
     public function removeMember(Conversation $conversation, User $memberToRm ): bool
     {
         if ($this->checkIfUserIsMemberOfConversation($conversation, $memberToRm)) {
@@ -122,6 +156,14 @@ class ChatService
         return false;
     }
 
+    /**
+     * changeConversationName
+     *
+     * @param  Conversation $conversation
+     * @param  string $conversationName
+     * @param  User $user
+     * @return bool
+     */
     public function changeConversationName(Conversation $conversation, string $conversationName, User $user): bool
     {
         if ($this->checkIfUserIsMemberOfConversation($conversation, $user)) {
@@ -134,6 +176,13 @@ class ChatService
         return false;
     }
 
+    /**
+     * createAddUsersForm
+     *
+     * @param  int $conversationId
+     * @param  int $userId
+     * @return FormInterface
+     */
     public function createAddUsersForm(int $conversationId, int $userId): FormInterface
     {
         return $this->formFactory->create(AddUsersToConversationType::class, [
@@ -142,11 +191,23 @@ class ChatService
         ]);
     }
 
+    /**
+     * createSearchForm
+     *
+     * @return FormInterface
+     */
     public function createSearchForm(): FormInterface
     {
         return $this->formFactory->create(SearchFormType::class);
     }
 
+    /**
+     * checkIfUserIsMemberOfConversation
+     *
+     * @param  Conversation $conversation
+     * @param  User $user
+     * @return bool
+     */
     public function checkIfUserIsMemberOfConversation(Conversation $conversation, User $user): bool
     {
         return in_array($conversation, $user->getConversations()->toArray());
