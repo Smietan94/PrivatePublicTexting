@@ -5,6 +5,22 @@ let activeEventSource = null;
 document.addEventListener('turbo:load', function  () {
     const scriptTag              = document.getElementById('mercure-url');
     const msgScriptTag           = document.getElementById('message-url');
+    const rmConversationUserBtns = document.querySelectorAll('.rm-user-btn');
+    const leaveGroupBtn          = document.querySelector('.leave-group-btn');
+
+    rmConversationUserBtns.forEach(button => {
+        button.addEventListener('click', function(event) {
+            confirmMemberRemove(button, event);
+        }) 
+    });
+
+    leaveGroupBtn.addEventListener('click', function(event) {
+        var confirmation = confirm('Do You want to leave this group?');
+
+        if (!confirmation) {
+            event.preventDefault();
+        }
+    })
 
     if (scriptTag) {
         const url   = JSON.parse(scriptTag.textContent);
@@ -66,6 +82,17 @@ async function processMessage(data, msgUrl) {
 
     } catch (error) {
         console.log('Error sending message to server: ', error);
+    }
+}
+
+function confirmMemberRemove(button, event) {
+    var memberId     = button.getAttribute('data-member-id');
+    var username     = document.querySelector(`.username_${ memberId }`).innerHTML;
+    var confirmation = confirm(`Are You sure you want to remove ${ username }?`);
+
+    if (!confirmation) {
+        console.log(username);
+        event.preventDefault();
     }
 }
 

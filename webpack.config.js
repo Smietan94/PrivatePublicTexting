@@ -24,6 +24,7 @@ Encore
     .addEntry('auth', './assets/js/auth.js')
     .addEntry('app', ['whatwg-fetch', './assets/js/app.js'])
     .addEntry('chat', ['whatwg-fetch', './assets/js/chat.js'])
+    .addEntry('groupChat', ['whatwg-fetch', './assets/js/groupChat.js'])
 
     // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
     .enableStimulusBridge('./assets/controllers.json')

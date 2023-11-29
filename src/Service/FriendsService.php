@@ -61,7 +61,7 @@ class FriendsService
         $friendHistory = $this->friendHistoryRepository->getFriendHistory($currentUser, $friend);
 
         $currentUser->removeFriend($friend);
-        $friend->removeFriend($currentUser);
+        // $friend->removeFriend($currentUser);
         $friendHistory->setStatus(FriendStatus::DELETED->value);
 
         $this->entityManager->flush();

@@ -50,7 +50,7 @@ class FriendHistory
         return $this;
     }
 
-    public function getSentAt(): \DateTime
+    public function getSentAt(): ?\DateTime
     {
         return $this->sentAt;
     }

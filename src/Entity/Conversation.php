@@ -36,7 +36,7 @@ class Conversation
     public function __construct()
     {
         $this->conversationMembers = new ArrayCollection();
-        $this->messages = new ArrayCollection();
+        $this->messages            = new ArrayCollection();
     }
 
     public function getId(): ?int

@@ -37,7 +37,7 @@ class FriendRequestService
         $requestingUser = $request->getRequestingUser();
 
         $currentUser->addFriend($requestingUser);
-        $requestingUser->addFriend($currentUser);
+        // $requestingUser->addFriend($currentUser);
 
         // checks if conversation already exists (users could be friends earlier) then creating conversation (or not if it already exists)
         if ($this->conversationRepository->getFriendConversation($currentUser, $requestingUser) == null) {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Enum;
 
-enum UserSatatus: int
+enum UserStatus: int
 {
     case ACTIVE    = 0;
     case LOGGEDOUT = 1;

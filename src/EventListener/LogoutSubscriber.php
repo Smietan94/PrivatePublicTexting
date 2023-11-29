@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\EventListener;
 
-use App\Enum\UserSatatus;
+use App\Enum\UserStatus;
 use App\Repository\UserRepository;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -39,7 +39,7 @@ class LogoutSubscriber implements EventSubscriberInterface
     public function onLogout(LogoutEvent $event): void
     {
         $user = $event->getToken()->getUser();
-        $this->userRepository->changeStatus(UserSatatus::LOGGEDOUT->toInt(), $user);
+        $this->userRepository->changeStatus(UserStatus::LOGGEDOUT->toInt(), $user);
         $this->userRepository->updateLastSeen($user);
     }
 }

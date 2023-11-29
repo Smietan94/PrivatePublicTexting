@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Enum\UserSatatus;
+use App\Enum\UserStatus;
 use App\Form\LoginFormType;
 use App\Form\RegisterFormType;
 use App\Repository\UserRepository;
@@ -57,7 +57,7 @@ class AuthController extends AbstractController
     {
         try {
             if ($this->security->isGranted('ROLE_USER')) {
-                $this->userRepository->changeStatus(UserSatatus::ACTIVE->toInt(), $this->currentUser);
+                $this->userRepository->changeStatus(UserStatus::ACTIVE->toInt(), $this->currentUser);
                 return $this->redirectToRoute('app_home');
             }
 
@@ -115,7 +115,6 @@ class AuthController extends AbstractController
         ]);
     }
 
-    // ogarnąć wylogowywanie zeby updatowalo baze danych
     /**
      * logout
      *

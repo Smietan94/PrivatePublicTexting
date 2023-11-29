@@ -67,12 +67,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __construct()
     {
-        $this->friends = new ArrayCollection();
-        $this->sentFriendRequests = new ArrayCollection();
+        $this->friends                = new ArrayCollection();
+        $this->sentFriendRequests     = new ArrayCollection();
         $this->receivedFriendRequests = new ArrayCollection();
-        $this->sentFriendHistory = new ArrayCollection();
-        $this->receivedFriendHistory = new ArrayCollection();
-        $this->conversations = new ArrayCollection();
+        $this->sentFriendHistory      = new ArrayCollection();
+        $this->receivedFriendHistory  = new ArrayCollection();
+        $this->conversations          = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -281,6 +281,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->friends->contains($friend)) {
             $this->friends->add($friend);
+            $friend->addFriend($this);
         }
 
         return $this;
@@ -289,6 +290,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeFriend(self $friend): static
     {
         $this->friends->removeElement($friend);
+        if ($friend->getFriends()->contains($this)) {
+            $friend->removeFriend($this);
+        }
 
         return $this;
     }

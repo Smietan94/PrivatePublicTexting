@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\EventListener;
 
-use App\Enum\UserSatatus;
+use App\Enum\UserStatus;
 use App\Repository\UserRepository;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -37,6 +37,6 @@ class LoginSubscriber implements EventSubscriberInterface
     public function onSuccessLogin(LoginSuccessEvent $event): void
     {
         $user = $event->getPassport()->getUser();
-        $this->userRepository->changeStatus(UserSatatus::ACTIVE->toInt(), $user);
+        $this->userRepository->changeStatus(UserStatus::ACTIVE->toInt(), $user);
     }
 }
