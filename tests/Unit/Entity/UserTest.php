@@ -13,11 +13,21 @@ use PHPUnit\Framework\TestCase;
 
 class UserTest extends TestCase
 {
+    public function userStatusProvider()
+    {
+        yield [UserStatus::ACTIVE->toInt()];
+        yield [UserStatus::LOGGEDOUT->toInt()];
+        yield [UserStatus::INACTIVE->toInt()];
+        yield [UserStatus::SUSPENDED->toInt()];
+        yield [UserStatus::BANNED->toInt()];
+    }
+
     public function testSetAndGetPassword(): void
     {
         $password = 'haslomaslo1';
         $user     = new User();
         $this->assertNull($user->getPassword());
+
 
         $user->setPassword($password);
         $this->assertSame($password, $user->getPassword());
@@ -53,15 +63,16 @@ class UserTest extends TestCase
         $this->assertSame($name, $user->getName());
     }
 
-    public function testSetAndGetUserStatus(): void
+    /**
+     * @dataProvider userStatusProvider
+     */
+    public function testSetAndGetUserStatus(int $status): void
     {
-        $status = UserStatus::ACTIVE->toInt();
         $user   = new User();
         $this->assertNull($user->getStatus());
 
         $user->setStatus($status);
         $this->assertSame($status, $user->getStatus());
-        $this->assertNotSame(UserStatus::LOGGEDOUT->toInt(), $user->getStatus());
     }
 
     public function testGetRoles(): void

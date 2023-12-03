@@ -8,6 +8,7 @@ use App\Entity\Conversation;
 use App\Entity\Message;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -33,9 +34,9 @@ class MessageRepository extends ServiceEntityRepository
      *
      * @param  Conversation $conversation
      * @param  int $conversationType
-     * @return QueryBuilder
+     * @return Query
      */
-    public function getMessageQuery(Conversation $conversation, int $conversationType): QueryBuilder
+    public function getMessageQuery(Conversation $conversation, int $conversationType): Query
     {
         $qb = $this->entityManager->createQueryBuilder();
 
@@ -50,9 +51,11 @@ class MessageRepository extends ServiceEntityRepository
                 ->setParameter("conversationMember{$loopIndex}", $conversationMember);
         }
 
-        return $qb->andWhere($qb->expr()->eq('c.conversationType', ':conversationType'))
+        $qb->andWhere($qb->expr()->eq('c.conversationType', ':conversationType'))
             ->orderBy('m.createdAt', 'DESC')
             ->setParameter('conversationType', $conversationType);
+
+        return $qb->getQuery();
     }
 
     /**

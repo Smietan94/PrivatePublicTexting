@@ -51,7 +51,7 @@ class FriendRequestService
         return $this->deleteRequestAndSetHistory($request, $status);
     }
 
-    // Deleting request record from requests table, and adding it to FriendHistory    
+    // Deleting request record from requests table, and adding it to FriendHistory
     /**
      * deleteRequestAndSetHistory
      *

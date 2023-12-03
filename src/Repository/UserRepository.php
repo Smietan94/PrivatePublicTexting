@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Enum\UserStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
@@ -74,16 +75,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     {
         $qb = $this->getFriendsQuery($user);
 
-        return $qb->getQuery()->getResult();
+        return $qb->getResult();
     }
 
     /**
      * getFriendsQuery
      *
      * @param  User $user
-     * @return QueryBuilder
+     * @return Query
      */
-    public function getFriendsQuery(User $user): QueryBuilder
+    public function getFriendsQuery(User $user): Query
     {
         return $this->entityManager->createQueryBuilder()
             ->select('u')
@@ -91,7 +92,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->leftJoin('u.friends', 'f')
             ->andWhere(':user MEMBER OF u.friends')
             ->orderBy('u.username', 'ASC')
-            ->setParameter('user', $user);
+            ->setParameter('user', $user)
+            ->getQuery();
     }
 
     /**

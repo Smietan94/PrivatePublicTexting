@@ -28,20 +28,16 @@ class FriendsService
     public function getHowLongFriends(User $currentUser): array
     {
         // collectiong names and dates of received requests
-        $receivedFriendHistory = $currentUser->getReceivedFriendHistory()->toArray();
+        $receivedFriendsHistory = $currentUser->getReceivedFriendHistory()->toArray();
 
-        $receivedFriendNames = array_filter(array_map(function ($request) {
-            return $request->getStatus() === FriendStatus::ACCEPTED->value ? $request->getRequestingUser()->getUsername() : null;
-        }, $receivedFriendHistory));
-        $receivedFriendDates = $this->getDates($receivedFriendHistory);
+        $receivedFriendNames = $this->getReceivedFriendsNames($receivedFriendsHistory);
+        $receivedFriendDates = $this->getDates($receivedFriendsHistory);
 
         // collectiong names and dates of sent requests
-        $friendSentHistory = $currentUser->getSentFriendHistory()->toArray();
+        $friendsSentHistory = $currentUser->getSentFriendHistory()->toArray();
 
-        $sentFriendNames = array_filter(array_map(function ($request) {
-            return $request->getStatus() === FriendStatus::ACCEPTED->value ? $request->getRequestedUser()->getUsername() : null;
-        }, $friendSentHistory));
-        $sentFriendDates = $this->getDates($friendSentHistory);
+        $sentFriendNames = $this->getSentFriendsNames($friendsSentHistory);
+        $sentFriendDates = $this->getDates($friendsSentHistory);
 
         return array_combine(
             array_merge($receivedFriendNames, $sentFriendNames),
@@ -61,10 +57,35 @@ class FriendsService
         $friendHistory = $this->friendHistoryRepository->getFriendHistory($currentUser, $friend);
 
         $currentUser->removeFriend($friend);
-        // $friend->removeFriend($currentUser);
         $friendHistory->setStatus(FriendStatus::DELETED->value);
 
         $this->entityManager->flush();
+    }
+
+    /**
+     * getSentFriendsHistory
+     *
+     * @param  FriendHistory[] $friendsSentHistory
+     * @return array
+     */
+    public function getSentFriendsNames(array $friendsSentHistory): array
+    {
+        return array_filter(array_map(function ($request) {
+            return $request->getStatus() === FriendStatus::ACCEPTED->value ? $request->getRequestedUser()->getUsername() : null;
+        }, $friendsSentHistory));
+    }
+
+    /**
+     * getReceivedFriendsNames
+     *
+     * @param  FriendHistory[] $receivedFriendsHistory
+     * @return array
+     */
+    public function getReceivedFriendsNames(array $receivedFriendsHistory): array
+    {
+        return array_filter(array_map(function ($request) {
+            return $request->getStatus() === FriendStatus::ACCEPTED->value ? $request->getRequestingUser()->getUsername() : null;
+        }, $receivedFriendsHistory));
     }
 
     /**
@@ -73,7 +94,7 @@ class FriendsService
      * @param  FriendHistory[] $friendHistory
      * @return \DateTime[] array
      */
-    private function getDates(array $friendHistory): array
+    public function getDates(array $friendHistory): array
     {
         return array_filter(array_map(function ($request) {
             return $request->getStatus() === FriendStatus::ACCEPTED->value ? $request->getCreatedAt() : null;

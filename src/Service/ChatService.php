@@ -39,15 +39,15 @@ class ChatService
      * @param  int $conversationType
      * @return Pagerfanta
      */
-    public function getMsgPager(Request $request, Conversation $conversation, int $conversationType): ?Pagerfanta
+    public function getMsgPager(Request $request, Conversation $conversation, int $conversationType): Pagerfanta
     {
         // gets query which prepering all messages from conversation
-        $queryBuilder = $this->messageRepository->getMessageQuery(
+        $query = $this->messageRepository->getMessageQuery(
             $conversation,
             $conversationType
         );
 
-        $adapter = new QueryAdapter($queryBuilder);
+        $adapter = new QueryAdapter($query);
 
         return Pagerfanta::createForCurrentPageWithMaxPerPage(
             $adapter,
@@ -144,7 +144,7 @@ class ChatService
      * @param  User $memberToRm
      * @return bool
      */
-    public function removeMember(Conversation $conversation, User $memberToRm ): bool
+    public function removeMember(Conversation $conversation, User $memberToRm): bool
     {
         if ($this->checkIfUserIsMemberOfConversation($conversation, $memberToRm)) {
             $conversation->removeConversationMember($memberToRm);

@@ -11,6 +11,16 @@ use PHPUnit\Framework\TestCase;
 
 class FriendHistoryTest extends TestCase
 {
+    public function friendStatusProvider()
+    {
+        yield [FriendStatus::PENDING->toInt()];
+        yield [FriendStatus::ACCEPTED->toInt()];
+        yield [FriendStatus::REJECTED->toInt()];
+        yield [FriendStatus::CANCELLED->toInt()];
+        yield [FriendStatus::EXPIRED->toInt()];
+        yield [FriendStatus::DELETED->toInt()];
+    }
+
     public function testSetAndGetRequestingAndRequestedUser(): void
     {
         $friendHisotry = new FriendHistory();
@@ -28,14 +38,17 @@ class FriendHistoryTest extends TestCase
         $this->assertSame($requestingUser, $friendHisotry->getRequestingUser());
     }
 
-    public function testSetAndGetStatus(): void
+    /**
+     * @dataProvider friendStatusProvider
+     */
+    public function testSetAndGetStatus(int $status): void
     {
         $friendHistory = new FriendHistory();
 
         $this->assertNull($friendHistory->getStatus());
 
-        $friendHistory->setStatus(FriendStatus::PENDING->toInt());
-        $this->assertEquals(FriendStatus::PENDING->toInt(), $friendHistory->getStatus());
+        $friendHistory->setStatus($status);
+        $this->assertEquals($status, $friendHistory->getStatus());
     }
 
     public function testTimestamps(): void
