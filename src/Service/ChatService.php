@@ -20,6 +20,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ChatService
 {
@@ -27,19 +28,20 @@ class ChatService
         private MessageRepository $messageRepository,
         private FormFactoryInterface $formFactory,
         private HubInterface $hub,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        private ValidatorInterface $validator,
     ) {
     }
 
     /**
      * getMsgPager
      *
-     * @param  Request $request
+     * @param  int $page
      * @param  Conversation $conversation
      * @param  int $conversationType
      * @return Pagerfanta
      */
-    public function getMsgPager(Request $request, Conversation $conversation, int $conversationType): Pagerfanta
+    public function getMsgPager(int $page, Conversation $conversation, int $conversationType): Pagerfanta
     {
         // gets query which prepering all messages from conversation
         $query = $this->messageRepository->getMessageQuery(
@@ -51,7 +53,7 @@ class ChatService
 
         return Pagerfanta::createForCurrentPageWithMaxPerPage(
             $adapter,
-            (int) $request->query->get('page', 1),
+            $page,
             10
         );
     }
@@ -94,23 +96,32 @@ class ChatService
      * @param  Conversation $conversation
      * @param  Request $request
      * @param  string $topic
-     * @return FormInterface
+     * @return array
      */
-    public function processMessage(?Conversation $conversation = null, Request $request, string $topic): FormInterface
-    {
+    public function processMessage(
+        ?Conversation $conversation = null,
+        Request $request, 
+        string $topic
+    ): array {
         $form      = $this->formFactory->create(MessageType::class);
-        $emptyForm = $this->formFactory->create(MessageType::class);
+        $emptyForm = clone $form;
+
+        $result            = [];
+        $result['form']    = $form;
+        $result['success'] = null;
 
         $form->handleRequest($request);
 
         // checking if use have any conversations
         if (!$conversation) {
-            return $form;
+            $result['form']     = $form;
+            $result['success']  = false;
+            $result['messages'] = ['No conversation'];
+            return $result;
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data   = $form->getData();
-
             // creating mercure update
             // TODO make topic env var
             $update = new Update(
@@ -128,13 +139,27 @@ class ChatService
             $this->messageRepository->storeMessage(
                 $conversation,
                 $data['senderId'],
-                $data['message']
+                $data['message'],
+                false // TODO check if attachment sent
             );
 
-            return $emptyForm;
+            $result['success'] = true;
+            $result['form']    = $emptyForm;
+        }
+        else if ($form->isSubmitted() && !$form->isValid()) {
+            $result['messages'] = [];
+
+            foreach($this->validator->validate($form) as $error) {
+                array_push($result['messages'], $error->getMessage());
+                // dd($error->getMessage());
+                // $this->addFlash('warning', $error->getMessage());
+            }
+
+            $result['success'] = false;
+            $result['form']    = $form;
         }
 
-        return $form;
+        return $result;
     }
 
     /**

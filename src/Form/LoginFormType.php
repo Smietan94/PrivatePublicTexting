@@ -37,7 +37,9 @@ class LoginFormType extends AbstractType
             ])
             ->add('password', PasswordType::class, $default_styling)
             ->add('submit', SubmitType::class, [
-                'attr'  => ['class' => 'btn btn-outline-light btn-lg px-5'],
+                'attr'  => [
+                    'class' => 'btn btn-outline-light btn-lg px-5'
+                ],
                 'label' => 'Login'
             ])
         ;

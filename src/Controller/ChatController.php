@@ -4,15 +4,20 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Conversation;
 use App\Entity\User;
 use App\Enum\ConversationType;
+use App\Form\MessageType;
 use App\Repository\ConversationRepository;
 use App\Repository\MessageRepository;
 use App\Repository\UserRepository;
 use App\Service\ChatService;
+use Doctrine\ORM\EntityManagerInterface;
+use League\Flysystem\FilesystemOperator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -30,7 +35,8 @@ class ChatController extends AbstractController
         private ConversationRepository $conversationRepository,
         private MessageRepository $messageRepository,
         private FormFactoryInterface $formFactory,
-        private ChatService $chatService
+        private ChatService $chatService,
+        private EntityManagerInterface $entityManager
     ) {
         $username          = $this->security->getUser()->getUserIdentifier();
         $this->currentUser = $this->userRepository->findOneBy(['username' => $username]);
@@ -40,9 +46,10 @@ class ChatController extends AbstractController
      * index
      *
      * @param  Request $request
+     * @return Response
      */
     #[Route(['/', '/home', '/chats'], name: 'app_home')]
-    public function index(Request $request): Response
+    public function index(Request $request, FilesystemOperator $defaultStorage): Response
     {
         // collecting all user friends
         $friends = $this->userRepository->getFriendsArray($this->currentUser);
@@ -63,21 +70,17 @@ class ChatController extends AbstractController
         ) : null;
 
         $searchForm  = $this->chatService->createSearchForm();
-        $messageForm = $this->chatService->processMessage(
-            $conversation,
-            $request,
-            'conversation.priv'
-        );
+        $messageForm = $this->processMessageForm($conversation, $request);
 
         return $this->render('chat/index.html.twig', [
             'friends'       => $friends,
             'conversation'  => $conversation,
             'conversations' => $this->currentUser->getConversations()->toArray(),
-            'currentUser'   => $this->currentUser,
+            'currentUserId' => $this->currentUser->getId(),
             'messageForm'   => $messageForm->createView(),
             'searchForm'    => $searchForm->createView(),
             'pager'         => isset($conversation) ? $this->chatService->getMsgPager(
-                $request,
+                (int) $request->query->get('page', 1),
                 $conversation,
                 ConversationType::SOLO->toInt()
             ) : null
@@ -114,21 +117,17 @@ class ChatController extends AbstractController
         );
 
         $searchForm  = $this->chatService->createSearchForm();
-        $messageForm = $this->chatService->processMessage(
-            $conversation,
-            $request,
-            'conversation.priv'
-        );
+        $messageForm = $this->processMessageForm($conversation, $request);
 
         return $this->render('chat/index.html.twig', [
             'friends'       => $this->userRepository->getFriendsArray($this->currentUser),
             'conversation'  => $conversation,
             'conversations' => $this->currentUser->getConversations()->toArray(),
-            'currentUser'   => $this->currentUser,
+            'currentUserId' => $this->currentUser->getId(),
             'messageForm'   => $messageForm->createView(),
             'searchForm'    => $searchForm->createView(),
             'pager'         => isset($conversation) ? $this->chatService->getMsgPager(
-                $request,
+                (int) $request->query->get('page', 1),
                 $conversation,
                 ConversationType::SOLO->toInt()
             ) : null
@@ -240,5 +239,40 @@ class ChatController extends AbstractController
 
         // checks if conversation already exists
         return $conversation ? false : true;
+    }
+
+    /**
+     * processMessage
+     *
+     * @param  Conversation $conversation
+     * @param  Request $request
+     * @return FormInterface
+     */
+    private function processMessageForm(Conversation $conversation, Request $request): FormInterface
+    {
+        $messageFormResult = $this->chatService->processMessage(
+            $conversation,
+            $request,
+            'conversation.priv'
+        );
+
+        if (isset($messageFormResult['messages'])) {
+            $this->processFailedAttachmentUpload($messageFormResult['messages']);
+        }
+
+        return $messageFormResult['form'];
+    }
+
+    /**
+     * processFailedAttachmentUpload
+     *
+     * @param  array $messages
+     * @return void
+     */
+    private function processFailedAttachmentUpload(array $messages): void
+    {
+        foreach ($messages as $message) {
+            $this->addFlash('turboWarning', $message);
+        }
     }
 }

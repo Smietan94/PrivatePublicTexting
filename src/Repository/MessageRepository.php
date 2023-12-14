@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Entity\Conversation;
 use App\Entity\Message;
+use App\Enum\HaveAttachment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
@@ -66,13 +67,14 @@ class MessageRepository extends ServiceEntityRepository
      * @param  string $messageText
      * @return void
      */
-    public function storeMessage(Conversation $conversation, int $senderId, string $messageText): void
+    public function storeMessage(Conversation $conversation, int $senderId, string $messageText, bool $haveAttachment): void
     {
         $message = new Message();
 
         $message->setConversation($conversation);
         $message->setSenderId($senderId);
         $message->setMessage($messageText);
+        $message->setAttachment($haveAttachment);
 
         $this->entityManager->persist($message);
         $this->entityManager->flush();

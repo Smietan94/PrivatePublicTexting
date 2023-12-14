@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\MessageRepository;
+use Doctrine\DBAL\Types\BooleanType;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -29,6 +30,9 @@ class Message
     #[ORM\ManyToOne(inversedBy: 'messages')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Conversation $conversation = null;
+
+    #[ORM\Column()]
+    private ?bool $attachment = null;
 
     public function getId(): ?int
     {
@@ -67,6 +71,18 @@ class Message
     public function setConversation(?Conversation $conversation): static
     {
         $this->conversation = $conversation;
+
+        return $this;
+    }
+
+    public function isAttachment(): ?bool
+    {
+        return $this->attachment;
+    }
+
+    public function setAttachment(?bool $attachment): static
+    {
+        $this->attachment = $attachment;
 
         return $this;
     }

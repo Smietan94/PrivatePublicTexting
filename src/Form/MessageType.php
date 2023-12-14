@@ -4,7 +4,13 @@ declare(strict_types=1);
 
 namespace App\Form;
 
+use App\Validator\AttachmentValidator\AttachmentType;
+use App\Validator\AttachmentValidator\MaxFileUploads;
+use App\Validator\AttachmentValidator\UploadSize;
+use App\Validator\AttachmentValidator\FileName;
+use App\Validator\FileExtension;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -32,6 +38,22 @@ class MessageType extends AbstractType
                 'placeholder'      => 'Write a message',
                 'autocomplete'     => 'off'
             ]])
+            ->add('attachment', FileType::class, [
+                'attr' => [
+                    'class' => 'form-control messenger-input',
+                    'style' => 'display:none'
+                ],
+                'error_bubbling' => true,
+                'required' => false,
+                'multiple' => true,
+                'constraints' => [
+                    new FileName(),
+                    new FileExtension(),
+                    new AttachmentType(),
+                    new MaxFileUploads(),
+                    new UploadSize(),
+                ]
+            ])
             ->add('senderId', IntegerType::class, ['attr' => [
                 'hidden' => true
             ]])

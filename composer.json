@@ -13,6 +13,7 @@
         "doctrine/orm": "^2.16",
         "knplabs/knp-time-bundle": "^2.1",
         "lcobucci/jwt": "^5.1",
+        "league/flysystem-bundle": "^3.3",
         "pagerfanta/doctrine-orm-adapter": "^4.2",
         "pagerfanta/twig": "^4.2",
         "phpdocumentor/reflection-docblock": "^5.3",

@@ -37,19 +37,29 @@ class RegisterFormType extends AbstractType
 
         $builder
             ->add('name', TextType::class, $default_styling + [
-                'constraints' => [new Length(['max' => 50])]
+                'constraints' => [
+                    new Length(['max' => 50])
+                ]
             ])
             ->add('user_name', TextType::class, $default_styling + [
-                'constraints' => [new Length(['max' => 50]), new UniqueUserName()]
+                'constraints' => [
+                    new Length(['max' => 50]),
+                    new UniqueUserName()
+                ]
             ])
             ->add('email', EmailType::class, $default_styling + [
-                'constraints' => [new Email(), new UniqueEmail()]
+                'constraints' => [
+                    new Email(),
+                    new UniqueEmail()
+                ]
             ])
             ->add('password', PasswordType::class, $default_styling)
             ->add('confirm_password', PasswordType::class, $default_styling)
             ->add('submit', SubmitType::class, [
-                'attr'  => ['class' => 'btn btn-outline-light btn-lg px-5'],
-                'label' => 'Register'
+                'attr'  => [
+                    'class' => 'btn btn-outline-light btn-lg px-5'
+                ],
+                'label' => 'Register',
             ])
         ;
     }

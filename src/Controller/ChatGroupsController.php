@@ -15,6 +15,7 @@ use App\Service\ChatService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -67,7 +68,7 @@ class ChatGroupsController extends AbstractController
             'conversations' => $groupConversations,
             'conversation'  => $groupConversation,
             'pager'         => $this->chatService->getMsgPager(
-                $request,
+                (int) $request->query->get('page', 1),
                 $groupConversation,
                 ConversationType::GROUP->toInt()
             ) ?? null,
@@ -115,7 +116,7 @@ class ChatGroupsController extends AbstractController
             'conversations' => $groupConversations,
             'conversation'  => $groupConversation ?? null,
             'pager'         => $this->chatService->getMsgPager(
-                $request,
+                (int) $request->query->get('page', 1),
                 $groupConversation,
                 ConversationType::GROUP->toInt()
             ) ?? null,
@@ -197,7 +198,8 @@ class ChatGroupsController extends AbstractController
         $this->messageRepository->storeMessage(
             $conversation, 
             (int) $data['senderId'], 
-            $data['message']
+            $data['message'],
+            false // TODO chek if aatachment added 
         );
 
         // redirecting to new conversation route
@@ -367,11 +369,8 @@ class ChatGroupsController extends AbstractController
     private function createChatForms(Request $request, Conversation $conversation): array
     {
         // creating basic forms to avoid repeating
-        $messageForm = $this->chatService->processMessage(
-            $conversation,
-            $request,
-            'conversation.group'
-        );
+        $messageForm = $this->processMessageForm($conversation, $request);
+
         $searchForm   = $this->chatService->createSearchForm();
         $addUsersForm = $this->chatService->createAddUsersForm(
             $conversation->getId(),
@@ -383,5 +382,40 @@ class ChatGroupsController extends AbstractController
             $searchForm,
             $addUsersForm
         ];
+    }
+
+    /**
+     * processMessage
+     *
+     * @param  Conversation $conversation
+     * @param  Request $request
+     * @return FormInterface
+     */
+    private function processMessageForm(Conversation $conversation, Request $request): FormInterface
+    {
+        $messageFormResult = $this->chatService->processMessage(
+            $conversation,
+            $request,
+            'conversation.group'
+        );
+
+        if (isset($messageFormResult['messages'])) {
+            $this->processFailedAttachmentUpload($messageFormResult['messages']);
+        }
+
+        return $messageFormResult['form'];
+    }
+
+        /**
+     * processFailedAttachmentUpload
+     *
+     * @param  array $messages
+     * @return void
+     */
+    private function processFailedAttachmentUpload(array $messages): void
+    {
+        foreach ($messages as $message) {
+            $this->addFlash('turboWarning', $message);
+        }
     }
 }
