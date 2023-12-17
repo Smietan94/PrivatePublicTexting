@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\MessageRepository;
-use Doctrine\DBAL\Types\BooleanType;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -33,6 +34,14 @@ class Message
 
     #[ORM\Column()]
     private ?bool $attachment = null;
+
+    #[ORM\OneToMany(mappedBy: 'message', targetEntity: MessageAttachment::class, orphanRemoval: true)]
+    private Collection $messageAttachments;
+
+    public function __construct()
+    {
+        $this->messageAttachments = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -83,6 +92,36 @@ class Message
     public function setAttachment(?bool $attachment): static
     {
         $this->attachment = $attachment;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, MessageAttachment>
+     */
+    public function getMessageAttachments(): Collection
+    {
+        return $this->messageAttachments;
+    }
+
+    public function addMessageAttachment(MessageAttachment $messageAttachment): static
+    {
+        if (!$this->messageAttachments->contains($messageAttachment)) {
+            $this->messageAttachments->add($messageAttachment);
+            $messageAttachment->setMessage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMessageAttachment(MessageAttachment $messageAttachment): static
+    {
+        if ($this->messageAttachments->removeElement($messageAttachment)) {
+            // set the owning side to null (unless already changed)
+            if ($messageAttachment->getMessage() === $this) {
+                $messageAttachment->setMessage(null);
+            }
+        }
 
         return $this;
     }

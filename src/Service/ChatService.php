@@ -5,18 +5,25 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\Conversation;
+use App\Entity\Message;
+use App\Entity\MessageAttachment;
 use App\Entity\User;
 use App\Form\AddUsersToConversationType;
 use App\Form\ChangeConversationNameType;
 use App\Form\MessageType;
 use App\Form\RemoveConversationMemberType;
 use App\Form\SearchFormType;
+use App\Repository\ConversationRepository;
+use App\Repository\MessageAttachmentRepository;
 use App\Repository\MessageRepository;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use League\Flysystem\FilesystemOperator;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Pagerfanta\Pagerfanta;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
@@ -26,10 +33,13 @@ class ChatService
 {
     public function __construct(
         private MessageRepository $messageRepository,
+        private MessageAttachmentRepository $messageAttachmentRepository,
+        private ConversationRepository $conversationRepository,
         private FormFactoryInterface $formFactory,
         private HubInterface $hub,
         private EntityManagerInterface $entityManager,
         private ValidatorInterface $validator,
+        private FilesystemOperator $defaultStorage,
     ) {
     }
 
@@ -93,7 +103,7 @@ class ChatService
     /**
      * processMessage
      *
-     * @param  Conversation $conversation
+     * @param  ?Conversation $conversation
      * @param  Request $request
      * @param  string $topic
      * @return array
@@ -121,9 +131,15 @@ class ChatService
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $data   = $form->getData();
+            $data            = $form->getData();
+            $haveAttachments = false;
             // creating mercure update
             // TODO make topic env var
+            if (!empty($data['attachment'])) {
+                $haveAttachments = true;
+                $data['attachmentPaths'] = $this->processAttachmentUpload($data['attachment'], $data['senderId']);
+            }
+
             $update = new Update(
                 sprintf("%s%d", $topic, $conversation->getId()),
                 json_encode([
@@ -136,12 +152,27 @@ class ChatService
             $this->hub->publish($update);
 
             // saving message in db
-            $this->messageRepository->storeMessage(
+            $message = $this->messageRepository->storeMessage(
                 $conversation,
                 $data['senderId'],
                 $data['message'],
-                false // TODO check if attachment sent
+                $haveAttachments
             );
+
+            if ($haveAttachments) {
+                $this->processAttachmentsDataStore(
+                    $data['attachment'],
+                    $data['attachmentPaths'],
+                    $message
+                );
+            }
+
+            if ($conversation !== null) {
+                $this->conversationRepository->updateLastMessage(
+                    $conversation->getId(),
+                    $message
+                );
+            }
 
             $result['success'] = true;
             $result['form']    = $emptyForm;
@@ -151,8 +182,6 @@ class ChatService
 
             foreach($this->validator->validate($form) as $error) {
                 array_push($result['messages'], $error->getMessage());
-                // dd($error->getMessage());
-                // $this->addFlash('warning', $error->getMessage());
             }
 
             $result['success'] = false;
@@ -236,5 +265,91 @@ class ChatService
     public function checkIfUserIsMemberOfConversation(Conversation $conversation, User $user): bool
     {
         return in_array($conversation, $user->getConversations()->toArray());
+    }
+
+    /**
+     * processAttachmentUpload
+     *
+     * @param  UploadedFile[] $files
+     * @param  int $senderId
+     * @return string[]
+     */
+    public function processAttachmentUpload(array $files, int $senderId): array
+    {
+        $filePaths = [];
+
+        foreach ($files as $file) {
+            $pathFormat = match ($file->getClientMimeType()) {
+                'image/jpeg'      => '/conversation_attachments/images/%s',
+                'image/png'       => '/conversation_attachments/images/%s',
+                'text/plain'      => '/conversation_attachments/text_files/%s',
+                'application/pdf' => '/conversation_attachments/pdfs/%s'
+            };
+            $fileName = $this->generateAttachmentName($senderId, $file->getClientOriginalExtension());
+            $path     = sprintf($pathFormat, $fileName);
+            array_push($filePaths, $path);
+
+            $this->defaultStorage->write($path, $file->getContent());
+        }
+
+        return $filePaths;
+    }
+
+    /**
+     * generateAttachmentName
+     *
+     * @param  int $senderId
+     * @param  string $extension
+     * @return string
+     */
+    public function generateAttachmentName(int $senderId, string $extension): string
+    {
+        $date            = (new DateTime())->format('dmYHisu');
+        $randomNumber    = mt_rand(0, 99999);
+        $formattedNumber = sprintf('%05d', $randomNumber);
+
+        return sprintf('%d_%s_%s.%s', $senderId, $date, $formattedNumber, $extension);
+    }
+
+    /**
+     * processAttachmentsStore
+     *
+     * @param  UploadedFile[] $files
+     * @param  string[] $paths
+     * @param  Message $message
+     * @return void
+     */
+    public function processAttachmentsDataStore(array $files, array $paths, Message $message): void
+    {
+        foreach ($files as $key => $file) {
+            $this->messageAttachmentRepository->storeAttachment($file, $paths[$key], $message);
+        }
+    }
+    
+    /**
+     * getSoloConversationsData
+     *
+     * @param  User[] $friends
+     * @param  User $currentUser
+     * @return array
+     */
+    public function getSoloConversationsData(array $friends, User $currentUser): array
+    {
+        $conversations = array_map(function ($friend) use($currentUser) {
+            return $this->conversationRepository->getFriendConversation($currentUser, $friend);
+        }, $friends);
+
+        $conversationsData = [];
+        foreach($friends as $key => $friend) {
+            array_push(
+                $conversationsData, 
+                [
+                    'friend'       => $friend, 
+                    'conversation' => $conversations[$key]
+                ]
+            );
+        }
+
+        return $conversationsData;
     }
 }

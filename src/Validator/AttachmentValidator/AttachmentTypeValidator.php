@@ -27,8 +27,6 @@ class AttachmentTypeValidator extends ConstraintValidator
             'image/png',
             'text/plain',
             'application/pdf',
-            'application/msword',
-            'application/vnd.ms-excel'
         ];
 
         foreach ($files as $file) {

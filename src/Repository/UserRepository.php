@@ -87,7 +87,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function getFriendsQuery(User $user): Query
     {
         return $this->entityManager->createQueryBuilder()
-            ->select('u')
+            ->select('partial u.{id, lastSeen, username, status}')
             ->from(User::class, 'u')
             ->leftJoin('u.friends', 'f')
             ->andWhere(':user MEMBER OF u.friends')
@@ -172,7 +172,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     {
         $qB = $this->entityManager->createQueryBuilder();
 
-        return $qB->select('u')
+        return $qB->select('partial u.{id, username}')
             ->from(User::class, 'u')
             ->andWhere(
                 $qB->expr()->orX(

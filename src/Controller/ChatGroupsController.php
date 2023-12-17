@@ -47,7 +47,10 @@ class ChatGroupsController extends AbstractController
     public function index(Request $request): Response
     {
         // collecting group conversations
-        $groupConversations = $this->conversationRepository->getGroupConversations($this->currentUser);
+        $groupConversations = $this->conversationRepository->getConversations(
+            $this->currentUser,
+            ConversationType::GROUP->toInt()
+        );
 
         if (count($groupConversations) == 0) {
             $createGroupForm = $this->formFactory->create(CreateGroupConversationType::class);
@@ -90,11 +93,18 @@ class ChatGroupsController extends AbstractController
      * @param  int $conversationId
      * @return Response
      */
-    #[Route('/chat/groups/{conversationId<[0-9]+>}', name: 'app_chat_group')]
+    #[Route(
+        '/chat/groups/{conversationId}',
+        name: 'app_chat_group',
+        requirements: ['conversationId' => '[0-9]+']
+    )]
     public function groupChat(Request $request, int $conversationId): Response
     {
-        $groupConversations = $this->conversationRepository->getGroupConversations($this->currentUser);
         $groupConversation  = $this->conversationRepository->find($conversationId);
+        $groupConversations = $this->conversationRepository->getConversations(
+            $this->currentUser,
+            ConversationType::GROUP->toInt()
+        );
 
         if (!$groupConversation) {
             $this->addFlash('warning', 'chat group does not exists');
@@ -155,7 +165,12 @@ class ChatGroupsController extends AbstractController
      * @param  int $conversationId
      * @return Response
      */
-    #[Route('/groups/handleMessage/{conversationId<[0-9]+>}', methods: ['POST'], name: 'handle_group_message_app')]
+    #[Route(
+        '/groups/handleMessage/{conversationId}',
+        methods: ['POST'],
+        name: 'handle_group_message_app',
+        requirements: ['conversationId' => '[0-9]+']
+    )]
     public function handleMessage(Request $request, int $conversationId): Response
     {
         // collecting message from ajax call
@@ -221,13 +236,14 @@ class ChatGroupsController extends AbstractController
         $searchTerm = $request->query->get('q');
 
         // collecting searched group conversations
-        $conversations = $this->conversationRepository->getConversations(
+        $conversations = $this->conversationRepository->getSearchedConversations(
             $this->currentUser,
             $searchTerm,
             ConversationType::GROUP->toInt()
         );
 
         return $this->render('chat_groups/_searchConversationResults.html.twig', [
+            'currentUserId' => $this->currentUser->getId(),
             'conversations' => $conversations
         ]);
     }
@@ -272,7 +288,11 @@ class ChatGroupsController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route('/chat/groups/leaveConversation', methods: ['POST'], name: 'app_chat_group_leave_conversation')]
+    #[Route(
+        '/chat/groups/leaveConversation',
+        methods: ['POST'],
+        name: 'app_chat_group_leave_conversation'
+    )]
     public function leaveConversation(Request $request): Response
     {
         $data           = $request->get('remove_conversation_member');
@@ -297,7 +317,11 @@ class ChatGroupsController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route('/chat/groups/addMembers', methods: ['POST'], name: 'app_chat_group_add_members')]
+    #[Route(
+        '/chat/groups/addMembers',
+        methods: ['POST'],
+        name: 'app_chat_group_add_members'
+    )]
     public function addNewConversationMembers(Request $request): Response
     {
         $data           = $request->get('add_users_to_conversation');
@@ -339,7 +363,11 @@ class ChatGroupsController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route('/chat/groups/changeConversationName', methods: ['POST'], name:'app_chat_group_change_name')]
+    #[Route(
+        '/chat/groups/changeConversationName',
+        methods: ['POST'],
+        name:'app_chat_group_change_name'
+    )]
     public function processConversationNameChangeForm(Request $request): Response
     {
         $data                = $request->get('change_conversation_name');

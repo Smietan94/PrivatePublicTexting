@@ -33,6 +33,9 @@ class Conversation
     #[ORM\Column(nullable: false)]
     private int $conversationType;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Message $lastMessage = null;
+
     public function __construct()
     {
         $this->conversationMembers = new ArrayCollection();
@@ -120,6 +123,18 @@ class Conversation
     public function setConversationType(int $conversationType): static
     {
         $this->conversationType = $conversationType;
+
+        return $this;
+    }
+
+    public function getLastMessage(): ?Message
+    {
+        return $this->lastMessage;
+    }
+
+    public function setLastMessage(?Message $lastMessage): static
+    {
+        $this->lastMessage = $lastMessage;
 
         return $this;
     }

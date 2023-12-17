@@ -54,7 +54,11 @@ class FriendRequestsController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route('/sendFriendRequest', methods: ['POST'], name: 'app_send_friend_request')]
+    #[Route(
+        '/sendFriendRequest',
+        methods: ['POST'],
+        name: 'app_send_friend_request'
+    )]
     public function sendFriendRequest(Request $request): Response
     {
         // collecting requested user
@@ -84,7 +88,11 @@ class FriendRequestsController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route('/friendRequests/accept', methods: ['POST'], name: 'app_accept_friend_request')]
+    #[Route(
+        '/friendRequests/accept',
+        methods: ['POST'],
+        name: 'app_accept_friend_request'
+    )]
     public function accept(Request $request): Response
     {
         // friend request validation
@@ -112,7 +120,11 @@ class FriendRequestsController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route('/friendRequests/decline', methods: ['POST'], name: 'app_decline_friend_request')]
+    #[Route(
+        '/friendRequests/decline',
+        methods: ['POST'],
+        name: 'app_decline_friend_request'
+    )]
     public function decline(Request $request): Response
     {
         // friend request validation
@@ -134,7 +146,11 @@ class FriendRequestsController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route('/friendRequest/cancel', methods: ['POST'], name: 'app_cancel_friend_request')]
+    #[Route(
+        '/friendRequest/cancel',
+        methods: ['POST'],
+        name: 'app_cancel_friend_request'
+    )]
     public function cancel(Request $request): Response
     {
         // friend request validation

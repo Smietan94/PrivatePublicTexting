@@ -2,6 +2,7 @@
 
 namespace App\Validator\AttachmentValidator;
 
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
@@ -23,7 +24,7 @@ class FileNameValidator extends ConstraintValidator
         }
 
         foreach ($files as $file) {
-            if (!preg_match('/^[a-zA-Z0-9\s_-]+.[a-zA-Z0-9]+$/', $file->getClientOriginalName())) {
+            if (!preg_match('/^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ0-9\s_-]+\.[a-zA-Z]+$/', $file->getClientOriginalName())) {
                 $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ value }}', $file->getClientOriginalName())
                 ->addViolation();

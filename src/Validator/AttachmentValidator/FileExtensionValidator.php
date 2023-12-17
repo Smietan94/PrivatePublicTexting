@@ -22,7 +22,13 @@ class FileExtensionValidator extends ConstraintValidator
             return;
         }
 
-        $allowedExtendsions = [];
+        $allowedExtendsions = [
+            'jpg',
+            'jpeg',
+            'png',
+            'txt',
+            'pdf'
+        ];
 
         foreach ($files as $file) {
             if (!in_array($file->getClientOriginalExtension(), $allowedExtendsions)) {

@@ -7,13 +7,11 @@ namespace App\Controller;
 use App\Entity\Conversation;
 use App\Entity\User;
 use App\Enum\ConversationType;
-use App\Form\MessageType;
 use App\Repository\ConversationRepository;
 use App\Repository\MessageRepository;
 use App\Repository\UserRepository;
 use App\Service\ChatService;
 use Doctrine\ORM\EntityManagerInterface;
-use League\Flysystem\FilesystemOperator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -49,10 +47,11 @@ class ChatController extends AbstractController
      * @return Response
      */
     #[Route(['/', '/home', '/chats'], name: 'app_home')]
-    public function index(Request $request, FilesystemOperator $defaultStorage): Response
+    public function index(Request $request): Response
     {
         // collecting all user friends
-        $friends = $this->userRepository->getFriendsArray($this->currentUser);
+        $friends  = $this->userRepository->getFriendsArray($this->currentUser);
+        $convData = $this->chatService->getSoloConversationsData($friends, $this->currentUser);
 
         // Checks if the user has friends to talk to
         if (count($friends) === 0) {
@@ -74,6 +73,7 @@ class ChatController extends AbstractController
 
         return $this->render('chat/index.html.twig', [
             'friends'       => $friends,
+            'convData'      => $convData,
             'conversation'  => $conversation,
             'conversations' => $this->currentUser->getConversations()->toArray(),
             'currentUserId' => $this->currentUser->getId(),
@@ -94,10 +94,16 @@ class ChatController extends AbstractController
      * @param  int $friendId
      * @return Response
      */
-    #[Route('/chats/{friendId<[0-9]+>}', name: 'app_chat')]
+    #[Route(
+        '/chats/{friendId}',
+        name: 'app_chat',
+        requirements: ['friendId' => '[0-9]+']
+    )]
     public function chat(Request $request, int $friendId): Response
     {
-        $friend = $this->userRepository->find($friendId);
+        $friend   = $this->userRepository->find($friendId);
+        $friends  = $this->userRepository->getFriendsArray($this->currentUser);
+        $convData = $this->chatService->getSoloConversationsData($friends, $this->currentUser);
 
         // cheks if user exists and if friends with current user
         if (!$friend) {
@@ -120,7 +126,8 @@ class ChatController extends AbstractController
         $messageForm = $this->processMessageForm($conversation, $request);
 
         return $this->render('chat/index.html.twig', [
-            'friends'       => $this->userRepository->getFriendsArray($this->currentUser),
+            'friends'       => $friends,
+            'convData'      => $convData,
             'conversation'  => $conversation,
             'conversations' => $this->currentUser->getConversations()->toArray(),
             'currentUserId' => $this->currentUser->getId(),
@@ -141,7 +148,12 @@ class ChatController extends AbstractController
      * @param  int $conversationId
      * @return Response
      */
-    #[Route('/handleMessage/{conversationId<[0-9]+>}', methods: ['POST'], name: 'handle_message_app')]
+    #[Route(
+        '/handleMessage/{conversationId}',
+        methods: ['POST'],
+        name: 'handle_message_app',
+        requirements: ['conversationId' => '[0-9]+']
+    )]
     public function handleMessage(Request $request, int $conversationId): Response
     {
         $jsonData = json_decode(
@@ -161,7 +173,11 @@ class ChatController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route('/startConversation', methods: ['POST'], name: 'app_start_private_conversation')]
+    #[Route(
+        '/startConversation',
+        methods: ['POST'],
+        name: 'app_start_private_conversation'
+    )]
     public function startConversation(Request $request): Response
     {
         // collecting id and friend from db
@@ -206,9 +222,12 @@ class ChatController extends AbstractController
             $this->currentUser,
             $searchTerm,
         );
+        $convData = $this->chatService->getSoloConversationsData($friends, $this->currentUser);
 
         return $this->render('chat/_searchConversationResults.html.twig', [
-            'friends' => $friends,
+            'currentUserId' => $this->currentUser->getId(),
+            'friends'       => $friends,
+            'convData'      => $convData,
         ]);
     }
 

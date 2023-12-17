@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Conversation;
+use App\Entity\Message;
 use App\Entity\User;
 use App\Enum\ConversationType;
-use App\Service\ChatService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -24,8 +24,7 @@ class ConversationRepository extends ServiceEntityRepository
 {
     public function __construct(
         ManagerRegistry $registry,
-        private EntityManagerInterface $entityManager,
-        private ChatService $chatService
+        private EntityManagerInterface $entityManager
     ) {
         parent::__construct($registry, Conversation::class);
     }
@@ -65,12 +64,12 @@ class ConversationRepository extends ServiceEntityRepository
      * getGroupConversations
      *
      * @param  User $currentUser
+     * @param  int $conversationType
      * @return Conversation[] array
      */
-    public function getGroupConversations(User $currentUser): array
+    public function getConversations(User $currentUser, int $conversationType): array
     {
-        $qb               = $this->entityManager->createQueryBuilder();
-        $conversationType = ConversationType::GROUP->toInt();
+        $qb = $this->entityManager->createQueryBuilder();
 
         return $qb->select('c')
             ->from(Conversation::class, 'c')
@@ -85,7 +84,7 @@ class ConversationRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-    
+
     /**
      * storeConversation
      *
@@ -139,7 +138,7 @@ class ConversationRepository extends ServiceEntityRepository
      * @param  int $conversationType
      * @return Conversation[] array
      */
-    public function getConversations(User $currentUser, string $searchTerm, int $conversationType): ?array
+    public function getSearchedConversations(User $currentUser, string $searchTerm, int $conversationType): ?array
     {
         // TODO collect conversations names like term or one of members names like but not currentuser
         $qb = $this->entityManager->createQueryBuilder();
@@ -172,13 +171,13 @@ class ConversationRepository extends ServiceEntityRepository
     public function addNewMember(int $conversationId, array $newMembers): array
     {
         $conversation = $this->find($conversationId);
-        $messages = [
+        $messages     = [
             'success' => [],
             'warnig'  => []
         ];
 
         foreach ($newMembers as $user) {
-            if (!$this->chatService->checkIfUserIsMemberOfConversation($conversation, $user)) {
+            if (!in_array($conversation, $user->getConversations()->toArray())) {
                 $conversation->addConversationMember($user);
                 array_push($messages['success'], sprintf('%s successfully added to conversation', $user->getUsername()));
             } else {
@@ -186,9 +185,19 @@ class ConversationRepository extends ServiceEntityRepository
             }
         }
 
+
         $this->entityManager->flush();
 
         return $messages;
+    }
+
+    public function updateLastMessage(int $conversationId, Message $message): void
+    {
+        $conversation = $this->find($conversationId);
+
+        $conversation->setLastMessage($message);
+
+        $this->entityManager->flush();
     }
 
 //    /**

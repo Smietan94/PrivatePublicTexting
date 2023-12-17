@@ -37,8 +37,10 @@ class MessageRepository extends ServiceEntityRepository
      * @param  int $conversationType
      * @return Query
      */
-    public function getMessageQuery(Conversation $conversation, int $conversationType): Query
-    {
+    public function getMessageQuery(
+        Conversation $conversation,
+        int $conversationType
+    ): Query {
         $qb = $this->entityManager->createQueryBuilder();
 
         $qb = $qb->select('m')
@@ -65,10 +67,14 @@ class MessageRepository extends ServiceEntityRepository
      * @param  Conversation $conversation
      * @param  int $senderId
      * @param  string $messageText
-     * @return void
+     * @return Message
      */
-    public function storeMessage(Conversation $conversation, int $senderId, string $messageText, bool $haveAttachment): void
-    {
+    public function storeMessage(
+        Conversation $conversation,
+        int $senderId,
+        string $messageText,
+        bool $haveAttachment
+    ): Message {
         $message = new Message();
 
         $message->setConversation($conversation);
@@ -78,6 +84,8 @@ class MessageRepository extends ServiceEntityRepository
 
         $this->entityManager->persist($message);
         $this->entityManager->flush();
+
+        return $message;
     }
 
 //    /**
