@@ -1,3 +1,11 @@
-{% for attachment in message.messageAttachments %}
-    <img src="{{ path('get_sent_img_app', {attachmentId: attachment.id}) }}" alt="{{ attachment.filename }}" height="200" width="200">
-{% endfor %}
+<div class="row px-3 pt-1">
+    {% for attachment in message.messageAttachments %}
+        <div class="col-6 px-0">
+            <img
+                src="{{ path('get_sent_img_app', {attachmentId: attachment.id}) }}" 
+                alt="{{ attachment.filename }}"
+                class="img-thumbnail img-fluid"
+            >
+        </div>
+    {% endfor %}
+</div>

@@ -140,6 +140,34 @@ class ChatService
                 $data['attachmentPaths'] = $this->processAttachmentUpload($data['attachment'], $data['senderId']);
             }
 
+            // saving message in db
+            $message = $this->messageRepository->storeMessage(
+                $conversation,
+                $data['senderId'],
+                $data['message'],
+                $haveAttachments
+            );
+
+            if ($haveAttachments) {
+                $attachments = $this->processAttachmentsDataStore(
+                    $data['attachment'],
+                    $data['attachmentPaths'],
+                    $message
+                );
+
+                $data['attachmentsIds'] = array_map(
+                    fn($attachment) => $attachment->getId(),
+                    $attachments
+                );
+            }
+
+            if ($conversation !== null) {
+                $this->conversationRepository->updateLastMessage(
+                    $conversation->getId(),
+                    $message
+                );
+            }
+
             $update = new Update(
                 sprintf("%s%d", $topic, $conversation->getId()),
                 json_encode([
@@ -150,29 +178,6 @@ class ChatService
 
             // publishing mercure update
             $this->hub->publish($update);
-
-            // saving message in db
-            $message = $this->messageRepository->storeMessage(
-                $conversation,
-                $data['senderId'],
-                $data['message'],
-                $haveAttachments
-            );
-
-            if ($haveAttachments) {
-                $this->processAttachmentsDataStore(
-                    $data['attachment'],
-                    $data['attachmentPaths'],
-                    $message
-                );
-            }
-
-            if ($conversation !== null) {
-                $this->conversationRepository->updateLastMessage(
-                    $conversation->getId(),
-                    $message
-                );
-            }
 
             $result['success'] = true;
             $result['form']    = $emptyForm;
@@ -317,13 +322,19 @@ class ChatService
      * @param  UploadedFile[] $files
      * @param  string[] $paths
      * @param  Message $message
-     * @return void
+     * @return MessageAttachment[]
      */
-    public function processAttachmentsDataStore(array $files, array $paths, Message $message): void
+    public function processAttachmentsDataStore(array $files, array $paths, Message $message): array
     {
+        $attachments = [];
         foreach ($files as $key => $file) {
-            $this->messageAttachmentRepository->storeAttachment($file, $paths[$key], $message);
+            array_push(
+                $attachments,
+                $this->messageAttachmentRepository->storeAttachment($file, $paths[$key], $message)
+            );
         }
+
+        return $attachments;
     }
     
     /**

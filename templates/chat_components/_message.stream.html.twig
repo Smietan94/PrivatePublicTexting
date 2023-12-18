@@ -3,6 +3,7 @@
         <div class="col-6"></div>
         <div class="col-6">
             <div class="border rounded-4 mb-2 bg-primary text-light p-3">
+                {% include 'chat_components/_attachment.stream.html.twig' %}
                 <p class="text-start mx-2">{{ message.message }}</p>
                 <small class="text-start mx-2">{{ 'now'|date('d M, Y H:i') }}</small>
             </div>
@@ -11,6 +12,7 @@
         <div class="col-6">
             <small class="text-start mx-2">{{ message.senderId | UserName }}:</small>
             <div class="border rounded-4 mb-2 bg-secondary p-3">
+                {% include 'chat_components/_attachment.stream.html.twig' %}
                 <p class="text-start mx-2">{{ message.message }}</p>
                 <small class="text-start mx-2">{{ 'now'|date('d M, Y H:i') }}</small>
             </div>

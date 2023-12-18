@@ -162,8 +162,8 @@ class ChatController extends AbstractController
         );
 
         return $this->render('chat_components/_message.stream.html.twig', [
-            'message'       => $jsonData['data'],
-            'currentUserId' => $this->currentUser->getId(),
+            'currentUserId'  => $this->currentUser->getId(),
+            'message'        => $jsonData['data']
         ]);
     }
 
