@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\MessageAttachment;
 use App\Entity\User;
 use App\Repository\MessageAttachmentRepository;
 use App\Repository\UserRepository;
+use League\Flysystem\Filesystem;
 use League\Flysystem\FilesystemOperator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -28,6 +30,12 @@ class FileController extends AbstractController
         $this->currentUser = $this->userRepository->findOneBy(['username' => $username]);
     }
 
+    /**
+     * getImage
+     *
+     * @param  int $attachmentId
+     * @return Response
+     */
     #[Route(
         '/getImg/{attachmentId}',
         name: 'get_sent_img_app',
@@ -38,6 +46,11 @@ class FileController extends AbstractController
         $messageAttachment = $this->messageAttachmentRepository->find($attachmentId);
         $filePath          = $messageAttachment->getPath();
 
+        if (!$this->checkIfUserHaveAccesToFile($messageAttachment))
+        {
+            return new Response('You dont have access to this file', 403);
+        }
+
         if ($this->storage->has($filePath)) {
             $fileContents = $this->storage->read($filePath);
 
@@ -45,5 +58,18 @@ class FileController extends AbstractController
                 'Content-Type' => 'image/png',
             ]);
         }
+    }
+
+    /**
+     * checkIfUserHaveAccesToFile
+     *
+     * @param  MessageAttachment $messageAttachment
+     * @return bool
+     */
+    private function checkIfUserHaveAccesToFile(MessageAttachment $messageAttachment): bool
+    {
+        $conversation = $messageAttachment->getMessage()->getConversation();
+
+        return $conversation->getConversationMembers()->contains($this->currentUser);
     }
 }

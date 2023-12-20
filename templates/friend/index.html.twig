@@ -26,7 +26,7 @@
                                 </form>
                             </div>
                             <div class="col">
-                                <a href="{{ path('app_chat', {friendId: friend.id}) }}" class="btn btn-dark" target="_top">Send Message</a>
+                                <a href="{{ path('app_chat', {conversationId: friend | ConversationId}) }}" class="btn btn-dark" target="_top">Send Message</a>
                             </div>
                         </div>
                     </div>

@@ -12,14 +12,14 @@
     <h2 class="fw-bold mb-2 text-light">Group Conversations</h2>
     <p class="text-white-50 mb-4">Choose a group to talk</p>
     <div class="row mx-2 mb-2" {{ stimulus_controller('conversation', {
-        url:  path('app_chat_group_search'),
+        url:  path('app_chat_search'),
         url1: path('app_chat_group_form')
     }) }}>
         <div class="col-xl-4 col-lg-5 col-sm-12 bg-light rounded card messenger-window">
             <div class="card-header py-3">
                 {% include "chat_components/_searchConversationForm.html.twig" %}
             </div>
-            <div data-conversation-target="friendsList" class="card-body list-group-scroll mt-2 ps-3 pe-4 py-2">
+            <div data-conversation-target="conversationsList" class="card-body list-group-scroll mt-2 ps-3 pe-4 py-2">
                 {% if conversations %}
                     {% include 'chat_groups/_searchConversationResults.html.twig' %}
                 {% else %}

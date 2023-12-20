@@ -11,6 +11,7 @@ use App\Repository\ConversationRepository;
 use App\Repository\MessageRepository;
 use App\Repository\UserRepository;
 use App\Service\ChatService;
+use App\Service\MessageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -34,6 +35,7 @@ class ChatController extends AbstractController
         private MessageRepository $messageRepository,
         private FormFactoryInterface $formFactory,
         private ChatService $chatService,
+        private MessageService $messageService,
         private EntityManagerInterface $entityManager
     ) {
         $username          = $this->security->getUser()->getUserIdentifier();
@@ -51,7 +53,12 @@ class ChatController extends AbstractController
     {
         // collecting all user friends
         $friends  = $this->userRepository->getFriendsArray($this->currentUser);
-        $convData = $this->chatService->getSoloConversationsData($friends, $this->currentUser);
+        $conversations = $this->conversationRepository->getConversations(
+            $this->currentUser,
+            ConversationType::SOLO->toInt()
+        );
+        // getting first conversation on list
+        $conversation = $conversations[0];
 
         // Checks if the user has friends to talk to
         if (count($friends) === 0) {
@@ -62,20 +69,19 @@ class ChatController extends AbstractController
             return $this->redirectToRoute('app_search_users');
         }
 
-        // getting conversation between user and first friend on list
-        $conversation = (count($friends) >= 1) ? $this->conversationRepository->getFriendConversation(
-            $this->currentUser,
-            $friends[0]
-        ) : null;
+        if (!$this->checkIfUsersConversation($conversation)) {
+            // if not, then flashes inforamation
+            $this->addFlash('warning', 'You are not mamber of this conversation');
+            return $this->redirectToRoute('app_chat');
+        }
 
         $searchForm  = $this->chatService->createSearchForm();
         $messageForm = $this->processMessageForm($conversation, $request);
 
         return $this->render('chat/index.html.twig', [
             'friends'       => $friends,
-            'convData'      => $convData,
             'conversation'  => $conversation,
-            'conversations' => $this->currentUser->getConversations()->toArray(),
+            'conversations' => $conversations,
             'currentUserId' => $this->currentUser->getId(),
             'messageForm'   => $messageForm->createView(),
             'searchForm'    => $searchForm->createView(),
@@ -91,45 +97,40 @@ class ChatController extends AbstractController
      * chat
      *
      * @param  Request $request
-     * @param  int $friendId
+     * @param  int     $friendId
      * @return Response
      */
     #[Route(
-        '/chats/{friendId}',
+        '/chats/{conversationId}',
         name: 'app_chat',
-        requirements: ['friendId' => '[0-9]+']
+        requirements: ['ConversationId' => '[0-9]+']
     )]
-    public function chat(Request $request, int $friendId): Response
+    public function chat(Request $request, int $conversationId): Response
     {
-        $friend   = $this->userRepository->find($friendId);
-        $friends  = $this->userRepository->getFriendsArray($this->currentUser);
-        $convData = $this->chatService->getSoloConversationsData($friends, $this->currentUser);
+        $conversation  = $this->conversationRepository->find($conversationId);
+        $conversations = $this->conversationRepository->getConversations(
+            $this->currentUser,
+            ConversationType::SOLO->toInt()
+        );
 
         // cheks if user exists and if friends with current user
-        if (!$friend) {
-            $this->addFlash('warning', 'User does not exists');
+        if (!$conversation) {
+            $this->addFlash('warning', 'Conversation does not exists');
             return $this->redirectToRoute('app_home');
         }
 
-        if (!$this->checkIfFriends($friend)) {
+        if (!$this->checkIfUsersConversation($conversation)) {
             // if not, then flashes inforamation
-            $this->addFlash('warning', 'You are not friends');
-            return $this->redirectToRoute('app_home');
+            $this->addFlash('warning', 'You are not mamber of this conversation');
+            return $this->redirectToRoute('app_chat');
         }
-
-        $conversation = $this->conversationRepository->getFriendConversation(
-            $this->currentUser,
-            $friend
-        );
 
         $searchForm  = $this->chatService->createSearchForm();
         $messageForm = $this->processMessageForm($conversation, $request);
 
         return $this->render('chat/index.html.twig', [
-            'friends'       => $friends,
-            'convData'      => $convData,
             'conversation'  => $conversation,
-            'conversations' => $this->currentUser->getConversations()->toArray(),
+            'conversations' => $conversations,
             'currentUserId' => $this->currentUser->getId(),
             'messageForm'   => $messageForm->createView(),
             'searchForm'    => $searchForm->createView(),
@@ -145,7 +146,7 @@ class ChatController extends AbstractController
      * handleMessage
      *
      * @param  Request $request
-     * @param  int $conversationId
+     * @param  int     $conversationId
      * @return Response
      */
     #[Route(
@@ -188,7 +189,6 @@ class ChatController extends AbstractController
         if (!$this->checkIfFriends($friend)) {
             // if not, then flashes inforamation
             $this->addFlash('warning', 'You are not friends');
-            return $this->redirectToRoute('app_home');
         }
 
         // checks if conversation already exists
@@ -208,30 +208,6 @@ class ChatController extends AbstractController
     }
 
     /**
-     * processConversationSearch
-     *
-     * @param  Request $request
-     * @return Response
-     */
-    #[Route('/chat/search', name: 'app_chat_search')]
-    public function processConversationSearch(Request $request): Response
-    {
-        $searchTerm = $request->query->get('q');
-
-        $friends = $this->userRepository->getFriendsConversationsData(
-            $this->currentUser,
-            $searchTerm,
-        );
-        $convData = $this->chatService->getSoloConversationsData($friends, $this->currentUser);
-
-        return $this->render('chat/_searchConversationResults.html.twig', [
-            'currentUserId' => $this->currentUser->getId(),
-            'friends'       => $friends,
-            'convData'      => $convData,
-        ]);
-    }
-
-    /**
      * checkIfFriends
      *
      * @param  User $friend
@@ -240,7 +216,7 @@ class ChatController extends AbstractController
     private function checkIfFriends(User $friend): bool
     {
         // checks if friend in friends list
-        return in_array($friend, $this->currentUser->getFriends()->toArray());
+        return $this->currentUser->getFriends()->contains($friend);
     }
 
     /**
@@ -264,12 +240,12 @@ class ChatController extends AbstractController
      * processMessage
      *
      * @param  Conversation $conversation
-     * @param  Request $request
+     * @param  Request      $request
      * @return FormInterface
      */
     private function processMessageForm(Conversation $conversation, Request $request): FormInterface
     {
-        $messageFormResult = $this->chatService->processMessage(
+        $messageFormResult = $this->messageService->processMessage(
             $conversation,
             $request,
             'conversation.priv'
@@ -285,7 +261,7 @@ class ChatController extends AbstractController
     /**
      * processFailedAttachmentUpload
      *
-     * @param  array $messages
+     * @param  string[] $messages
      * @return void
      */
     private function processFailedAttachmentUpload(array $messages): void
@@ -293,5 +269,16 @@ class ChatController extends AbstractController
         foreach ($messages as $message) {
             $this->addFlash('turboWarning', $message);
         }
+    }
+
+    /**
+     * checkIfUsersConversation
+     *
+     * @param  Conversation $conversation
+     * @return bool
+     */
+    private function checkIfUsersConversation(Conversation $conversation): bool
+    {
+        return $this->currentUser->getConversations()->contains($conversation);
     }
 }

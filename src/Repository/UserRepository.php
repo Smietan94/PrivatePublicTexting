@@ -186,23 +186,23 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ]);
     }
 
-    /**
-     * getFriendsConversationsData
-     *
-     * @param  User $currentUser
-     * @param  string $searchTerm
-     * @return User[] array
-     */
-    public function getFriendsConversationsData(User $currentUser, string $searchTerm): array
-    {
-        $qb = $this->findUsersQueryBuilder($searchTerm, $currentUser->getUsername());
+    // /**
+    //  * getFriendsConversationsData
+    //  *
+    //  * @param  User $currentUser
+    //  * @param  string $searchTerm
+    //  * @return User[] array
+    //  */
+    // public function getFriendsConversationsData(User $currentUser, string $searchTerm): array
+    // {
+    //     $qb = $this->findUsersQueryBuilder($searchTerm, $currentUser->getUsername());
 
-        return $qb
-            ->andWhere($qb->expr()->isMemberOf(':user', 'u.friends'))
-            ->setParameter('user', $currentUser)
-            ->getQuery()
-            ->getResult();
-    }
+    //     return $qb
+    //         ->andWhere($qb->expr()->isMemberOf(':user', 'u.friends'))
+    //         ->setParameter('user', $currentUser)
+    //         ->getQuery()
+    //         ->getResult();
+    // }
 
     /**
      * changeStatus

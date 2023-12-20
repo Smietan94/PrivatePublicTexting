@@ -1,13 +1,14 @@
-{% if convData %}
-    {% for conversation in convData %}
-        <a type="button" href="{{ path('app_chat', {friendId: conversation.friend.id}) }}"
+{% if conversations %}
+    {% for conversation in conversations %}
+    {% set receiver = conversation | GetReceiver %}
+        <a type="button" href="{{ path('app_chat', {conversationId: conversation.id}) }}"
             class="list-group-item text-start w-100 rounded btn-friend-msg-list ps-3 py-2"
-            value="{{ conversation.friend.id }}">
+            value="{{ receiver.id }}">
             <div class="d-flex w-100">
-                <h5 class="mb-1">{{ conversation.friend.username }}</h5>
+                <h5 class="mb-1">{{ receiver.id | UserName }}</h5>
             </div>
             <p class="mb-1">
-                {% set lastMessage = conversation.conversation.lastMessage %}
+                {% set lastMessage = conversation.lastMessage %}
                 {% if lastMessage %}
                     {% if lastMessage.senderId == currentUserId%}
                         You:
@@ -19,10 +20,10 @@
                     No messages yet
                 {% endif %}
             </p>
-            {% if conversation.friend.status == 0 %}
+            {% if receiver.status == 0 %}
                 <small>active now</small>
             {% else %}
-                <small>last seen: {{ conversation.friend.lastSeen | ago }}</small>
+                <small>last seen: {{ receiver.lastSeen | ago }}</small>
             {% endif %}
         </a>
         {% if loop.index != loop.last %}

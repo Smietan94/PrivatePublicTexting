@@ -12,6 +12,7 @@ use App\Repository\ConversationRepository;
 use App\Repository\MessageRepository;
 use App\Repository\UserRepository;
 use App\Service\ChatService;
+use App\Service\MessageService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -30,7 +31,8 @@ class ChatGroupsController extends AbstractController
         private UserRepository $userRepository,
         private ConversationRepository $conversationRepository,
         private MessageRepository $messageRepository,
-        private ChatService $chatService
+        private ChatService $chatService,
+        private MessageService $messageService
     ) {
         // collecting logged user
         $userName          = $this->security->getUser()->getUserIdentifier();
@@ -90,7 +92,7 @@ class ChatGroupsController extends AbstractController
      * groupChat
      *
      * @param  Request $request
-     * @param  int $conversationId
+     * @param  int     $conversationId
      * @return Response
      */
     #[Route(
@@ -113,8 +115,7 @@ class ChatGroupsController extends AbstractController
 
         // checks if user part of conversation group
         if (!$this->chatService->checkIfUserIsMemberOfConversation($groupConversation, $this->currentUser)) {
-            $this->addFlash('warning
-            ', 'Invalid conversation');
+            $this->addFlash('warning', 'Invalid conversation');
             return $this->redirectToRoute('app_chat_groups');
         }
 
@@ -162,7 +163,7 @@ class ChatGroupsController extends AbstractController
      * handleMessage
      *
      * @param  Request $request
-     * @param  int $conversationId
+     * @param  int     $conversationId
      * @return Response
      */
     #[Route(
@@ -224,140 +225,6 @@ class ChatGroupsController extends AbstractController
     }
 
     /**
-     * processConversationSearch
-     *
-     * @param  Request $request
-     * @return Response
-     */
-    #[Route('/chat/groups/search', name: 'app_chat_group_search')]
-    public function processConversationSearch(Request $request): Response
-    {
-        // processing search call
-        $searchTerm = $request->query->get('q');
-
-        // collecting searched group conversations
-        $conversations = $this->conversationRepository->getSearchedConversations(
-            $this->currentUser,
-            $searchTerm,
-            ConversationType::GROUP->toInt()
-        );
-
-        return $this->render('chat_groups/_searchConversationResults.html.twig', [
-            'currentUserId' => $this->currentUser->getId(),
-            'conversations' => $conversations
-        ]);
-    }
-
-    /**
-     * removeUserFromConversation
-     *
-     * @param  Request $request
-     * @return Response
-     */
-    #[Route('/chat/groups/removeFromConversation', methods: ['POST'], name: 'app_chat_group_remove_from_conversation')]
-    public function removeUserFromConversation(Request $request): Response
-    {
-        $data           = $request->get('remove_conversation_member');
-        $conversationId = (int) $data['conversationId'];
-        $memberId       = (int) $data['memberId'];
-        $conversation   = $this->conversationRepository->find($conversationId);
-        $memberToRm     = $this->userRepository->find($memberId);
-        $removedName    = $memberToRm->getUsername();
-
-        // in chat service occurs conversation member check then removes member
-        if ($this->chatService->removeMember($conversation, $memberToRm)) {
-            $this->addFlash(
-                'success',
-                sprintf('%s successfully removed from conversation', $removedName)
-            );
-        } else {
-            $this->addFlash(
-                'warning',
-                sprintf('%s is not part of conversation', $removedName)
-            );
-        }
-
-        return $this->redirectToRoute('app_chat_group', [
-            'conversationId' => $conversationId,
-        ]);
-    }
-
-    /**
-     * leaveConversation
-     *
-     * @param  Request $request
-     * @return Response
-     */
-    #[Route(
-        '/chat/groups/leaveConversation',
-        methods: ['POST'],
-        name: 'app_chat_group_leave_conversation'
-    )]
-    public function leaveConversation(Request $request): Response
-    {
-        $data           = $request->get('remove_conversation_member');
-        $conversationId = (int) $data['conversationId'];
-        $memberId       = (int) $data['memberId'];
-        $conversation   = $this->conversationRepository->find($conversationId);
-        $memberToRm     = $this->userRepository->find($memberId);
-
-        // in chat service occurs conversation member check then removes current user from chat
-        if ($this->chatService->removeMember($conversation, $memberToRm)) {
-            $this->addFlash('success', 'You left the conversation');
-        } else {
-            $this->addFlash('warning', 'You are not part of this conversation');
-        }
-
-        return $this->redirectToRoute('app_chat_groups');
-    }
-
-    /**
-     * addNewConversationMembers
-     *
-     * @param  Request $request
-     * @return Response
-     */
-    #[Route(
-        '/chat/groups/addMembers',
-        methods: ['POST'],
-        name: 'app_chat_group_add_members'
-    )]
-    public function addNewConversationMembers(Request $request): Response
-    {
-        $data           = $request->get('add_users_to_conversation');
-        $conversationId = (int) $data['conversationId'];
-        $newMembersIds  = $data['users'];
-        $newMembers     = array_map(
-            fn ($id) => $this->userRepository->find($id),
-            $newMembersIds
-        );
-
-        // after adding new members, it returns array of messages 
-        $messages = $this->conversationRepository->addNewMember(
-            $conversationId,
-            $newMembers
-        );
-
-        // checks if successfully added users
-        if (array_key_exists('success', $messages)) {
-            foreach ($messages['success'] as $msg) {
-                $this->addFlash('success', $msg);
-            }
-        }
-
-        // check if any addition failed
-        if (array_key_exists('warning', $messages)) {
-            foreach ($messages['warning'] as $msg) {
-                $this->addFlash('warning', $msg);
-            }
-        }
-
-        return $this->redirectToRoute('app_chat_group', [
-            'conversationId' => $conversationId,
-        ]);
-    }
-
-    /**
      * processConversationNameChangeForm
      *
      * @param  Request $request
@@ -390,9 +257,9 @@ class ChatGroupsController extends AbstractController
     /**
      * createChatForms
      *
-     * @param  Request $request
+     * @param  Request      $request
      * @param  Conversation $conversation
-     * @return FormInterface[] array
+     * @return FormInterface[]
      */
     private function createChatForms(Request $request, Conversation $conversation): array
     {
@@ -416,12 +283,12 @@ class ChatGroupsController extends AbstractController
      * processMessage
      *
      * @param  Conversation $conversation
-     * @param  Request $request
+     * @param  Request      $request
      * @return FormInterface
      */
     private function processMessageForm(Conversation $conversation, Request $request): FormInterface
     {
-        $messageFormResult = $this->chatService->processMessage(
+        $messageFormResult = $this->messageService->processMessage(
             $conversation,
             $request,
             'conversation.group'
@@ -434,10 +301,10 @@ class ChatGroupsController extends AbstractController
         return $messageFormResult['form'];
     }
 
-        /**
+    /**
      * processFailedAttachmentUpload
      *
-     * @param  array $messages
+     * @param  string[] $messages
      * @return void
      */
     private function processFailedAttachmentUpload(array $messages): void

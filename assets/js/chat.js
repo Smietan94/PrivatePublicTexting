@@ -69,7 +69,7 @@ function checkLastEventSource(topic, activeEventSource) {
 
 async function processMessage(data, msgUrl) {
     const resultTarget = document.getElementById('messages');
-    console.log(data);
+
     try {
         const response = await fetch(msgUrl, {
             method: 'POST',

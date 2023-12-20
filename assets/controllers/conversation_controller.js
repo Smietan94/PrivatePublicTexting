@@ -6,17 +6,19 @@ export default class extends Controller {
         url1: String
     };
 
-    static targets = ['result', 'friendsList'];
+    static targets = ['result', 'groupConversationsList', 'conversationsList'];
 
     async searchConversation(event) {
-        const params = new URLSearchParams({
+        const conversationType = document.getElementById('search_form_conversationType');
+        const params           = new URLSearchParams({
             q:       event.currentTarget.value,
-            preview: 1
+            preview: 1,
+            type:    conversationType.value
         });
 
         const respone = await fetch(`${this.urlValue}?${params.toString()}`);
         console.log(`${this.urlValue}?${params.toString()}`);
-        this.friendsListTarget.innerHTML = await respone.text();
+        this.conversationsListTarget.innerHTML = await respone.text();
     }
 
     async createGroup(event) {

@@ -6,9 +6,12 @@ namespace App\Tests\Unit\Service;
 
 use App\Entity\Conversation;
 use App\Entity\User;
+use App\Repository\ConversationRepository;
+use App\Repository\MessageAttachmentRepository;
 use App\Repository\MessageRepository;
 use App\Service\ChatService;
 use Doctrine\ORM\EntityManagerInterface;
+use League\Flysystem\Filesystem;
 use Pagerfanta\Pagerfanta;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -16,6 +19,7 @@ use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mercure\HubInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use TypeError;
 
 class ChatServiceTest extends TestCase
@@ -23,13 +27,26 @@ class ChatServiceTest extends TestCase
     public function chatServiceProvider(): array
     {
         // Mock MessageRepository, FormFactoryInterface, HubInterface, EntityManagerInterface
-        $messageRepositoryMock = $this->createMock(MessageRepository::class);
-        $formFactoryMock       = $this->createMock(FormFactoryInterface::class);
-        $hubMock               = $this->createMock(HubInterface::class);
-        $entityManagerMock     = $this->createMock(EntityManagerInterface::class);
+        $messageRepositoryMock           = $this->createMock(MessageRepository::class);
+        $messageAttachmentRepositoryMock = $this->createMock(MessageAttachmentRepository::class);
+        $conversationRepositoryMock      = $this->createMock(ConversationRepository::class);
+        $formFactoryMock                 = $this->createMock(FormFactoryInterface::class);
+        $hubMock                         = $this->createMock(HubInterface::class);
+        $entityManagerMock               = $this->createMock(EntityManagerInterface::class);
+        $validatorMock                   = $this->createMock(ValidatorInterface::class);
+        $defaultStorageMock              = $this->createMock(Filesystem::class);
 
         // Create an instance of ChatService with the mocks
-        $chatService = new ChatService($messageRepositoryMock, $formFactoryMock, $hubMock, $entityManagerMock);
+        $chatService = new ChatService(
+            $messageRepositoryMock,
+            $messageAttachmentRepositoryMock,
+            $conversationRepositoryMock,
+            $formFactoryMock,
+            $hubMock,
+            $entityManagerMock,
+            $validatorMock,
+            $defaultStorageMock
+        );
 
         return [[
             'chatService' => $chatService
@@ -40,11 +57,15 @@ class ChatServiceTest extends TestCase
     {
         // Mock MessageRepository, FormFactoryInterface, HubInterface, EntityManagerInterface
         return [[
-            'messageRepositoryMock' => $this->createMock(MessageRepository::class),
-            'formFactoryMock'       => $this->createMock(FormFactoryInterface::class),
-            'hubMock'               => $this->createMock(HubInterface::class),
-            'entityManagerMock'     => $this->createMock(EntityManagerInterface::class),
-            'formMock'              => $this->createMock(FormInterface::class)
+            'messageRepositoryMock'           => $this->createMock(MessageRepository::class),
+            'messageAttachmentRepositoryMock' => $this->createMock(MessageAttachmentRepository::class),
+            'conversationRepositoryMock'      => $this->createMock(ConversationRepository::class),
+            'formFactoryMock'                 => $this->createMock(FormFactoryInterface::class),
+            'hubMock'                         => $this->createMock(HubInterface::class),
+            'entityManagerMock'               => $this->createMock(EntityManagerInterface::class),
+            'validatorMock'                   => $this->createMock(ValidatorInterface::class),
+            'defaultStorageMock'              => $this->createMock(Filesystem::class),
+            'formMock'                        => $this->createMock(FormInterface::class)
         ]];
     }
 
@@ -60,7 +81,7 @@ class ChatServiceTest extends TestCase
         $conversation->addMessage($message);
 
         // Call the method to be tested
-        $result = $chatService->getMsgPager($request, $conversation, 1);
+        $result = $chatService->getMsgPager($request->get('page'), $conversation, 1);
 
         // Assert that the result is an instance of Pagerfanta
         $this->assertInstanceOf(Pagerfanta::class, $result);
@@ -105,20 +126,33 @@ class ChatServiceTest extends TestCase
      */
     public function testProcessMessageWithValidData(
         MessageRepository $messageRepositoryMock,
+        MessageAttachmentRepository $messageAttachmentRepositoryMock,
+        ConversationRepository $conversationRepositoryMock,
         FormFactoryInterface|MockObject $formFactoryMock,
         HubInterface|MockObject $hubMock,
         EntityManagerInterface $entityManagerMock,
+        ValidatorInterface $validatorMock,
+        Filesystem $defaultStorageMock,
         FormInterface|MockObject $formMock
     ): void {
         $topic        = 'conversation';
-        $conversation = new Conversation();
+        $conversation = $this->createMock(Conversation::class);
         $request      = new Request();
         $chatService  = new ChatService(
             $messageRepositoryMock,
+            $messageAttachmentRepositoryMock,
+            $conversationRepositoryMock,
             $formFactoryMock,
             $hubMock,
-            $entityManagerMock
+            $entityManagerMock,
+            $validatorMock,
+            $defaultStorageMock
         );
+
+        $conversation
+            ->expects($this->exactly(2))
+            ->method('getId')
+            ->willReturn(1);
 
         $formFactoryMock
             ->expects($this->exactly(2))
@@ -154,7 +188,7 @@ class ChatServiceTest extends TestCase
 
         $result = $chatService->processMessage($conversation, $request, $topic);
 
-        $this->assertInstanceOf(FormInterface::class, $result);
+        $this->assertIsArray($result);
     }
 
     /**
@@ -162,12 +196,25 @@ class ChatServiceTest extends TestCase
      */
     public function testProcessMessageWithNotValidData(
         MessageRepository $messageRepositoryMock,
+        MessageAttachmentRepository $messageAttachmentRepositoryMock,
+        ConversationRepository $conversationRepositoryMock,
         FormFactoryInterface|MockObject $formFactoryMock,
         HubInterface|MockObject $hubMock,
         EntityManagerInterface $entityManagerMock,
+        ValidatorInterface $validatorMock,
+        Filesystem $defaultStorageMock,
         FormInterface|MockObject $formMock
     ): void {
-        $chatService  = new ChatService($messageRepositoryMock, $formFactoryMock, $hubMock, $entityManagerMock );
+        $chatService  = new ChatService(
+            $messageRepositoryMock,
+            $messageAttachmentRepositoryMock,
+            $conversationRepositoryMock,
+            $formFactoryMock,
+            $hubMock,
+            $entityManagerMock,
+            $validatorMock,
+            $defaultStorageMock
+        );
         $conversation = new Conversation();
         $request      = new Request();
         $topic        = 'conversation';
@@ -215,12 +262,25 @@ class ChatServiceTest extends TestCase
      */
     public function testProcessMessageWithNullData(
         MessageRepository $messageRepositoryMock,
+        MessageAttachmentRepository $messageAttachmentRepositoryMock,
+        ConversationRepository $conversationRepositoryMock,
         FormFactoryInterface|MockObject $formFactoryMock,
         HubInterface|MockObject $hubMock,
         EntityManagerInterface $entityManagerMock,
+        ValidatorInterface $validatorMock,
+        Filesystem $defaultStorageMock,
         FormInterface|MockObject $formMock
     ): void {
-        $chatService  = new ChatService($messageRepositoryMock, $formFactoryMock, $hubMock, $entityManagerMock );
+        $chatService  = new ChatService(
+            $messageRepositoryMock,
+            $messageAttachmentRepositoryMock,
+            $conversationRepositoryMock,
+            $formFactoryMock,
+            $hubMock,
+            $entityManagerMock,
+            $validatorMock,
+            $defaultStorageMock
+        );
         $conversation = new Conversation();
         $request      = new Request();
         $topic        = 'conversation';

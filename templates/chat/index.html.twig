@@ -18,8 +18,8 @@
             <div class="card-header py-3">
                 {% include "chat_components/_searchConversationForm.html.twig" %}
             </div>
-            <div data-conversation-target="friendsList" class="card-body list-group-scroll mt-2 ps-3 pe-4 py-2">
-                {% if friends %}
+            <div data-conversation-target="conversationsList" class="card-body list-group-scroll mt-2 ps-3 pe-4 py-2">
+                {% if conversations %}
                     {% include 'chat/_searchConversationResults.html.twig' %}
                 {% else %}
                     You have no friends... :---/////
@@ -27,7 +27,7 @@
             </div>
         </div>
         <div class="card col-xl-8 col-lg-7 col-sm-12 bg-light rounded messenger-window">
-            {% if friends %}
+            {% if conversations %}
                 {{ include('chat/_conversation.html.twig') }}
             {% endif %}
         </div>
