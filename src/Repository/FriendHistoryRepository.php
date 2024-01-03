@@ -23,11 +23,11 @@ use Doctrine\Persistence\ManagerRegistry;
 class FriendHistoryRepository extends ServiceEntityRepository
 {
     public function __construct(
-        ManagerRegistry $registry,
-        private UserRepository $userRepository,
+        ManagerRegistry                $registry,
+        private UserRepository         $userRepository,
         private EntityManagerInterface $entityManager,
     ) {
-        parent::__construct($registry, FriendRequestHistory::class);
+        parent::__construct($registry, FriendHistory::class);
     }
 
     /**

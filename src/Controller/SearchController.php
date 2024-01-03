@@ -23,9 +23,9 @@ class SearchController extends AbstractController
     private User $currentUser;
 
     public function __construct(
-        private Security $security,
-        private UserRepository $userRepository,
-        private FormFactoryInterface $formFactory,
+        private Security                $security,
+        private UserRepository          $userRepository,
+        private FormFactoryInterface    $formFactory,
         private FriendRequestRepository $friendRequestRepository,
     ) {
         // collecting logged in user

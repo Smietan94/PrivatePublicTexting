@@ -23,7 +23,7 @@ use Doctrine\Persistence\ManagerRegistry;
 class ConversationRepository extends ServiceEntityRepository
 {
     public function __construct(
-        ManagerRegistry $registry,
+        ManagerRegistry                $registry,
         private EntityManagerInterface $entityManager
     ) {
         parent::__construct($registry, Conversation::class);
@@ -64,7 +64,7 @@ class ConversationRepository extends ServiceEntityRepository
      * getGroupConversations
      *
      * @param  User $currentUser
-     * @param  int $conversationType
+     * @param  int  $conversationType
      * @return Conversation[] array
      */
     public function getConversations(User $currentUser, int $conversationType): array
@@ -88,10 +88,10 @@ class ConversationRepository extends ServiceEntityRepository
     /**
      * storeConversation
      *
-     * @param  User $user
-     * @param  User[] $conversationMembers
-     * @param  int $conversationType
-     * @param  mixed $conversationName
+     * @param  User     $user
+     * @param  User[]   $conversationMembers
+     * @param  int      $conversationType
+     * @param  ?string  $conversationName
      * @return Conversation
      */
     public function storeConversation(User $user, array $conversationMembers, int $conversationType, ?string $conversationName = null): Conversation
@@ -133,9 +133,9 @@ class ConversationRepository extends ServiceEntityRepository
     /**
      * getConversations
      *
-     * @param  User $currentUser
+     * @param  User   $currentUser
      * @param  string $searchTerm
-     * @param  int $conversationType
+     * @param  int    $conversationType
      * @return Conversation[] array
      */
     public function getSearchedConversations(User $currentUser, string $searchTerm, int $conversationType): ?array
@@ -164,7 +164,7 @@ class ConversationRepository extends ServiceEntityRepository
     /**
      * addNewMember
      *
-     * @param  int $conversationId
+     * @param  int    $conversationId
      * @param  User[] $newMembers
      * @return array
      */

@@ -29,13 +29,13 @@ class ChatController extends AbstractController
     private User $currentUser;
 
     public function __construct(
-        private Security $security,
-        private UserRepository $userRepository,
+        private Security               $security,
+        private UserRepository         $userRepository,
         private ConversationRepository $conversationRepository,
-        private MessageRepository $messageRepository,
-        private FormFactoryInterface $formFactory,
-        private ChatService $chatService,
-        private MessageService $messageService,
+        private MessageRepository      $messageRepository,
+        private FormFactoryInterface   $formFactory,
+        private ChatService            $chatService,
+        private MessageService         $messageService,
         private EntityManagerInterface $entityManager
     ) {
         $username          = $this->security->getUser()->getUserIdentifier();
@@ -51,8 +51,6 @@ class ChatController extends AbstractController
     #[Route(['/', '/home', '/chats'], name: 'app_home')]
     public function index(Request $request): Response
     {
-        // collecting all user friends
-        $friends  = $this->userRepository->getFriendsArray($this->currentUser);
         $conversations = $this->conversationRepository->getConversations(
             $this->currentUser,
             ConversationType::SOLO->toInt()
@@ -61,7 +59,7 @@ class ChatController extends AbstractController
         $conversation = $conversations[0];
 
         // Checks if the user has friends to talk to
-        if (count($friends) === 0) {
+        if (count($this->currentUser->getFriends()) === 0) {
             $this->addFlash(
                 'warning',
                 'You have no friends to talk'
@@ -69,28 +67,11 @@ class ChatController extends AbstractController
             return $this->redirectToRoute('app_search_users');
         }
 
-        if (!$this->checkIfUsersConversation($conversation)) {
-            // if not, then flashes inforamation
-            $this->addFlash('warning', 'You are not mamber of this conversation');
-            return $this->redirectToRoute('app_chat');
-        }
-
-        $searchForm  = $this->chatService->createSearchForm();
-        $messageForm = $this->processMessageForm($conversation, $request);
-
-        return $this->render('chat/index.html.twig', [
-            'friends'       => $friends,
-            'conversation'  => $conversation,
-            'conversations' => $conversations,
-            'currentUserId' => $this->currentUser->getId(),
-            'messageForm'   => $messageForm->createView(),
-            'searchForm'    => $searchForm->createView(),
-            'pager'         => isset($conversation) ? $this->chatService->getMsgPager(
-                (int) $request->query->get('page', 1),
-                $conversation,
-                ConversationType::SOLO->toInt()
-            ) : null
-        ]);
+        return $this->processResponse(
+            $request,
+            $conversation,
+            $conversations
+        );
     }
 
     /**
@@ -107,11 +88,11 @@ class ChatController extends AbstractController
     )]
     public function chat(Request $request, int $conversationId): Response
     {
-        $conversation  = $this->conversationRepository->find($conversationId);
         $conversations = $this->conversationRepository->getConversations(
             $this->currentUser,
             ConversationType::SOLO->toInt()
         );
+        $conversation  = $this->conversationRepository->find($conversationId);
 
         // cheks if user exists and if friends with current user
         if (!$conversation) {
@@ -119,27 +100,11 @@ class ChatController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
-        if (!$this->checkIfUsersConversation($conversation)) {
-            // if not, then flashes inforamation
-            $this->addFlash('warning', 'You are not mamber of this conversation');
-            return $this->redirectToRoute('app_chat');
-        }
-
-        $searchForm  = $this->chatService->createSearchForm();
-        $messageForm = $this->processMessageForm($conversation, $request);
-
-        return $this->render('chat/index.html.twig', [
-            'conversation'  => $conversation,
-            'conversations' => $conversations,
-            'currentUserId' => $this->currentUser->getId(),
-            'messageForm'   => $messageForm->createView(),
-            'searchForm'    => $searchForm->createView(),
-            'pager'         => isset($conversation) ? $this->chatService->getMsgPager(
-                (int) $request->query->get('page', 1),
-                $conversation,
-                ConversationType::SOLO->toInt()
-            ) : null
-        ]);
+        return $this->processResponse(
+            $request,
+            $conversation,
+            $conversations
+        );
     }
 
     /**
@@ -205,6 +170,40 @@ class ChatController extends AbstractController
         );
 
         return $this->redirectToRoute('app_home');
+    }
+
+    /**
+     * processResponse
+     *
+     * @param  Request        $request
+     * @param  ?Conversation  $conversation
+     * @param  Conversation[] $conversations
+     * @return Response
+     */
+    private function processResponse(Request $request, ?Conversation $conversation = null, array $conversations): Response
+    {
+        if (!$this->checkIfUsersConversation($conversation)) {
+            // if not, then flashes inforamation
+            $this->addFlash('warning', 'You are not mamber of this conversation');
+            return $this->redirectToRoute('app_chat');
+        }
+
+        $searchForm  = $this->chatService->createSearchForm();
+        $messageForm = $this->processMessageForm($conversation, $request);
+
+        return $this->render('chat/index.html.twig', [
+            'conversationType' => ConversationType::SOLO->toInt(),
+            'conversation'     => $conversation,
+            'conversations'    => $conversations,
+            'currentUserId'    => $this->currentUser->getId(),
+            'messageForm'      => $messageForm->createView(),
+            'searchForm'       => $searchForm->createView(),
+            'pager'            => isset($conversation) ? $this->chatService->getMsgPager(
+                (int) $request->query->get('page', 1),
+                $conversation,
+                ConversationType::SOLO->toInt()
+            ) : null
+        ]);
     }
 
     /**

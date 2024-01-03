@@ -20,10 +20,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class AddUsersToConversationType extends AbstractType
 {
     public function __construct(
-        private Security $security,
+        private Security               $security,
         private ConversationRepository $conversationRepository,
-        private ChatService $chatService,
-        private UserRepository $userRepository
+        private ChatService            $chatService,
+        private UserRepository         $userRepository
     ) {
     }
 
@@ -31,7 +31,7 @@ class AddUsersToConversationType extends AbstractType
      * buildForm
      *
      * @param  FormBuilderInterface $builder
-     * @param  array $options
+     * @param  array                $options
      * @return void
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -45,10 +45,10 @@ class AddUsersToConversationType extends AbstractType
                 'data' => $options['data']['conversationId']
             ])
             ->add('users', ChoiceType::class, [
-                'multiple' => true,
+                'multiple'     => true,
                 'choice_label' => 'username',
                 'choice_value' => 'id',
-                'choices' => $this->userRepository->getNotConversationMemberFriends($userId, $conversationId),
+                'choices'      => $this->userRepository->getNotConversationMemberFriends($userId, $conversationId),
                 'autocomplete' => true,
             ])
             ->add('addUsers', SubmitType::class)

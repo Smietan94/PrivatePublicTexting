@@ -21,8 +21,8 @@ use Doctrine\Persistence\ManagerRegistry;
 class FriendRequestRepository extends ServiceEntityRepository
 {
     public function __construct(
-        ManagerRegistry $registry,
-        private UserRepository $userRepository,
+        ManagerRegistry                $registry,
+        private UserRepository         $userRepository,
         private EntityManagerInterface $entityManager,
     ) {
         parent::__construct($registry, FriendRequest::class);
@@ -54,7 +54,7 @@ class FriendRequestRepository extends ServiceEntityRepository
      *
      * @param  User $currentUser
      * @param  User $requestedUser
-     * @param  int $status
+     * @param  int  $status
      * @return FriendRequest
      */
     public function getFriendRequest(User $currentUser, User $requestedUser, int $status): ?FriendRequest
@@ -64,7 +64,7 @@ class FriendRequestRepository extends ServiceEntityRepository
         return $qb->select('fh')
             ->from(FriendRequest::class, 'fh')
             ->andWhere('fh.requestingUser = :currentUser')
-            ->andWhere('fh.requestedUser   = :requestedUser')
+            ->andWhere('fh.requestedUser  = :requestedUser')
             ->andWhere('fh.status         = :status')
             ->setParameters([
                 'currentUser'   => $currentUser,

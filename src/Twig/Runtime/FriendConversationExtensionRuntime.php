@@ -13,8 +13,8 @@ use Twig\Extension\RuntimeExtensionInterface;
 class FriendConversationExtensionRuntime implements RuntimeExtensionInterface
 {
     public function __construct(
-        private Security $security,
-        private UserRepository $userRepository,
+        private Security               $security,
+        private UserRepository         $userRepository,
         private ConversationRepository $conversationRepository
     ) {
         // Inject dependencies if needed

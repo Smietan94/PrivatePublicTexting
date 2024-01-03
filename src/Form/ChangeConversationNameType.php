@@ -20,7 +20,7 @@ class ChangeConversationNameType extends AbstractType
      * buildForm
      *
      * @param  FormBuilderInterface $builder
-     * @param  array $options
+     * @param  array                $options
      * @return void
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void

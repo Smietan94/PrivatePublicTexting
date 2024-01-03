@@ -22,20 +22,25 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class MessageAttachmentRepository extends ServiceEntityRepository
 {
     public function __construct(
-        ManagerRegistry $registry,
+        ManagerRegistry                $registry,
         private EntityManagerInterface $entityManager
     ) {
         parent::__construct($registry, MessageAttachment::class);
     }
 
-    public function storeAttachment(
-        UploadedFile $file,
-        string $path,
-        Message $message
-    ): MessageAttachment {
+    /**
+     * storeAttachment
+     *
+     * @param  UploadedFile $file
+     * @param  string       $path
+     * @param  Message      $message
+     * @return MessageAttachment
+     */
+    public function storeAttachment(UploadedFile $file, string $path, Message $message): MessageAttachment
+    {
         $attachment  = new MessageAttachment();
         $pathExplode = explode('/', $path);
-        $filename   = end($pathExplode);
+        $filename    = end($pathExplode);
 
         $attachment->setExtension($file->getClientOriginalExtension());
         $attachment->setFileName($filename);

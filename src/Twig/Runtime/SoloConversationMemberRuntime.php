@@ -13,7 +13,7 @@ use Twig\Extension\RuntimeExtensionInterface;
 class SoloConversationMemberRuntime implements RuntimeExtensionInterface
 {
     public function __construct(
-        private Security $security,
+        private Security       $security,
         private UserRepository $userRepository
     ) {
     }

@@ -16,19 +16,19 @@ use Doctrine\ORM\EntityManagerInterface;
 class FriendRequestService
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
+        private EntityManagerInterface  $entityManager,
         private FriendRequestRepository $friendRequestRepository,
         private FriendHistoryRepository $friendHistoryRepository,
-        private ConversationRepository $conversationRepository
+        private ConversationRepository  $conversationRepository
     ) {
     }
 
     /**
      * acceptRequest
      *
-     * @param  User $currentUser
+     * @param  User          $currentUser
      * @param  FriendRequest $request
-     * @param  int $status
+     * @param  int           $status
      * @return FriendHistory
      */
     public function acceptRequest(User $currentUser, FriendRequest $request, int $status): FriendHistory
@@ -56,7 +56,7 @@ class FriendRequestService
      * deleteRequestAndSetHistory
      *
      * @param  FriendRequest $request
-     * @param  int $status
+     * @param  int           $status
      * @return FriendHistory
      */
     public function deleteRequestAndSetHistory(FriendRequest $request, int $status): FriendHistory

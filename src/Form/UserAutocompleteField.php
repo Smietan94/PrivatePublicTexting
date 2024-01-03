@@ -20,7 +20,7 @@ use Symfony\UX\Autocomplete\Form\BaseEntityAutocompleteType;
 class UserAutocompleteField extends AbstractType
 {
     public function __construct(
-        private Security $security,
+        private Security       $security,
         private UserRepository $userRepository
     ) {
     }

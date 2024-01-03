@@ -14,7 +14,7 @@ class LoginSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private UrlGeneratorInterface $urlGenerator,
-        private UserRepository $userRepository
+        private UserRepository        $userRepository
     ) {
     }
 

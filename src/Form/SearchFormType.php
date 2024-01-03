@@ -19,17 +19,15 @@ class SearchFormType extends AbstractType
      * buildForm
      *
      * @param  FormBuilderInterface $builder
-     * @param  array $options
+     * @param  array                $options
      * @return void
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('query', TextType::class, [
-                'attr' => [
-                    'class' => 'form-control form-control-lg bg-light'
-                ]
-            ])
+            ->add('query', TextType::class, ['attr' => [
+                'class' => 'form-control form-control-lg bg-light'
+            ]])
             ->add('conversationType', HiddenType::class, [
                 'required' => false
             ])

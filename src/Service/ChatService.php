@@ -8,6 +8,7 @@ use App\Entity\Conversation;
 use App\Entity\User;
 use App\Form\AddUsersToConversationType;
 use App\Form\ChangeConversationNameType;
+use App\Form\CreateGroupConversationType;
 use App\Form\RemoveConversationMemberType;
 use App\Form\SearchFormType;
 use App\Repository\MessageRepository;
@@ -20,8 +21,8 @@ use Symfony\Component\Form\FormInterface;
 class ChatService
 {
     public function __construct(
-        private MessageRepository $messageRepository,
-        private FormFactoryInterface $formFactory,
+        private MessageRepository      $messageRepository,
+        private FormFactoryInterface   $formFactory,
         private EntityManagerInterface $entityManager,
     ) {
     }
@@ -145,6 +146,16 @@ class ChatService
     public function createSearchForm(): FormInterface
     {
         return $this->formFactory->create(SearchFormType::class);
+    }
+
+    /**
+     * createGroupCreationForm
+     *
+     * @return FormInterface
+     */
+    public function createGroupCreationForm(): FormInterface
+    {
+        return $this->formFactory->create(CreateGroupConversationType::class);
     }
 
     /**

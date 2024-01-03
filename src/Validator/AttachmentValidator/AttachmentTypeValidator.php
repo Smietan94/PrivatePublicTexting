@@ -13,7 +13,7 @@ class AttachmentTypeValidator extends ConstraintValidator
      * validate
      *
      * @param  UploadedFile[] $files
-     * @param  Constraint $constraint
+     * @param  Constraint     $constraint
      * @return void
      */
     public function validate($files, Constraint $constraint)
@@ -32,17 +32,11 @@ class AttachmentTypeValidator extends ConstraintValidator
         ];
 
         foreach ($files as $file) {
-            // dd($file);
             if (!in_array($file->getClientMimeType(), $fileTypes)) {
                 $this->context->buildViolation($constraint->message)
                     ->setParameter('{{ value }}', $file->getClientOriginalName())
                     ->addViolation();
             }
         }
-
-        // TODO: implement the validation here
-        // $this->context->buildViolation($constraint->message)
-        //     ->setParameter('{{ value }}', $files)
-        //     ->addViolation();
     }
 }

@@ -13,9 +13,9 @@ use Doctrine\ORM\EntityManagerInterface;
 class FriendsService
 {
     public function __construct(
-        private UserRepository $userRepository,
+        private UserRepository          $userRepository,
         private FriendHistoryRepository $friendHistoryRepository,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface  $entityManager
     ) {
     }
 

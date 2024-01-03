@@ -6,9 +6,13 @@ namespace App\Service;
 
 use App\Entity\Conversation;
 use App\Entity\Message;
+use App\Entity\User;
+use App\Enum\ConversationType;
+use App\Form\CreateGroupConversationType;
 use App\Form\MessageType;
 use App\Repository\ConversationRepository;
 use App\Repository\MessageRepository;
+use App\Repository\UserRepository;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,12 +23,13 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class MessageService
 {
     public function __construct(
-        private FormFactoryInterface $formFactory,
+        private FormFactoryInterface     $formFactory,
         private MessageAttachmentService $messageAttachmentService,
-        private MessageRepository $messageRepository,
-        private ConversationRepository $conversationRepository,
-        private HubInterface $hub,
-        private ValidatorInterface $validator
+        private MessageRepository        $messageRepository,
+        private ConversationRepository   $conversationRepository,
+        private UserRepository           $userRepository,
+        private HubInterface             $hub,
+        private ValidatorInterface       $validator
     ) {
     }
 
@@ -57,36 +62,79 @@ class MessageService
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $data = $this->processSuccedData($form, $conversation);
+            $data = $this->processSuccedData($form->getData(), $conversation);
 
             $this->mercureUpdater($topic, $conversation->getId(), $data);
 
             $result['success'] = true;
             $result['form']    = $emptyForm;
-        }
-        else if ($form->isSubmitted() && !$form->isValid()) {
+
+        } else if ($form->isSubmitted() && !$form->isValid()) {
             $result = $this->messageFailure($form, $result);
         }
 
         return $result;
     }
-    
+
+    /**
+     * processGroupCreation
+     *
+     * @param  Request $request
+     * @param  User    $currentUser
+     * @return array
+     */
+    public function processGroupCreation(Request $request, User $currentUser): array
+    {
+        $createGroupForm = $this->formFactory->create(CreateGroupConversationType::class);
+
+        $result             = [];
+        $result['form']     = $createGroupForm;
+        $result['success']  = null;
+        $result['messages'] = [];
+
+        $createGroupForm->handleRequest($request);
+
+        if ($createGroupForm->isSubmitted() && $createGroupForm->isValid()) {
+            $data = $createGroupForm->getData();
+
+            // creating new conversation group
+            $conversation = $this->conversationRepository->storeConversation(
+                $currentUser, 
+                $data['friends'],
+                ConversationType::GROUP->toInt(),
+                $data['conversationName'],
+            );
+
+            $this->processSuccedData($data, $conversation);
+
+            $result['conversationId'] = $conversation->getId();
+            $result['success']        = true;
+
+        } else if ($createGroupForm->isSubmitted() && !$createGroupForm->isValid()) {
+            $result = $this->messageFailure($createGroupForm, $result);
+        }
+
+        return $result;
+    }
+
     /**
      * processSuccedData
      *
-     * @param  FormInterface $form
-     * @param  Conversation  $conversation
+     * @param  array        $data
+     * @param  Conversation $conversation
      * @return array
      */
-    public function processSuccedData(FormInterface $form, Conversation $conversation): array
+    public function processSuccedData(array $data, Conversation $conversation): array
     {
-        $data            = $form->getData();
         $haveAttachments = false;
-        // creating mercure update
-        // TODO make topic env var
+
         if (!empty($data['attachment'])) {
-            $haveAttachments = true;
-            $data['attachmentPaths'] = $this->messageAttachmentService->processAttachmentUpload($data['attachment'], $data['senderId'], $conversation->getId());
+            $haveAttachments         = true;
+            $data['attachmentPaths'] = $this->messageAttachmentService->processAttachmentUpload(
+                $data['attachment'],
+                $data['senderId'],
+                $conversation->getId()
+            );
         }
 
         // saving message in db

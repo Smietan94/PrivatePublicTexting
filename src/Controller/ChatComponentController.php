@@ -19,9 +19,9 @@ class ChatComponentController extends AbstractController
     private User $currentUser;
 
     public function __construct(
-        private Security $security,
+        private Security               $security,
         private ConversationRepository $conversationRepository,
-        private UserRepository $userRepository
+        private UserRepository         $userRepository
     ) {
         // collecting logged user
         $userName          = $this->security->getUser()->getUserIdentifier();

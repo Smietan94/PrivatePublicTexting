@@ -7,11 +7,13 @@ namespace App\Controller;
 use App\Entity\Conversation;
 use App\Entity\User;
 use App\Enum\ConversationType;
+use App\Enum\FlashPrefix;
 use App\Form\CreateGroupConversationType;
 use App\Repository\ConversationRepository;
 use App\Repository\MessageRepository;
 use App\Repository\UserRepository;
 use App\Service\ChatService;
+use App\Service\MessageAttachmentService;
 use App\Service\MessageService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -26,13 +28,14 @@ class ChatGroupsController extends AbstractController
     private User $currentUser;
 
     public function __construct(
-        private Security $security,
-        private FormFactoryInterface $formFactory,
-        private UserRepository $userRepository,
-        private ConversationRepository $conversationRepository,
-        private MessageRepository $messageRepository,
-        private ChatService $chatService,
-        private MessageService $messageService
+        private Security                 $security,
+        private FormFactoryInterface     $formFactory,
+        private UserRepository           $userRepository,
+        private ConversationRepository   $conversationRepository,
+        private MessageRepository        $messageRepository,
+        private ChatService              $chatService,
+        private MessageService           $messageService,
+        private MessageAttachmentService $messageAttachmentService
     ) {
         // collecting logged user
         $userName          = $this->security->getUser()->getUserIdentifier();
@@ -53,6 +56,7 @@ class ChatGroupsController extends AbstractController
             $this->currentUser,
             ConversationType::GROUP->toInt()
         );
+        $groupConversation  = $groupConversations[0] ?? null;
 
         if (count($groupConversations) == 0) {
             $createGroupForm = $this->formFactory->create(CreateGroupConversationType::class);
@@ -63,29 +67,11 @@ class ChatGroupsController extends AbstractController
             ]);
         }
 
-        $groupConversation  = $groupConversations[0] ?? null;
-
-        // creating forms
-        [$messageForm, $searchForm, $addUsersForm] = $this->createChatForms($request, $groupConversation);
-
-        return $this->render('chat_groups/index.html.twig', [
-            'currentUserId' => $this->currentUser->getId(),
-            'conversations' => $groupConversations,
-            'conversation'  => $groupConversation,
-            'pager'         => $this->chatService->getMsgPager(
-                (int) $request->query->get('page', 1),
-                $groupConversation,
-                ConversationType::GROUP->toInt()
-            ) ?? null,
-            'messageForm'  => $messageForm->createView(),
-            'searchForm'   => $searchForm->createView(),
-            'addUsersForm' => $addUsersForm->createView(),
-            'changeConversationNameForm' => $this->chatService->getChangeConversationNameForm(),
-            'removeMemberForms'          => $this->chatService->getRemoveConversationMemberForms(
-                $groupConversation->getConversationMembers()->toArray(),
-                $this->currentUser
-            ),
-        ]);
+        return $this->processResponse(
+            $request,
+            $groupConversation,
+            $groupConversations
+        );
     }
 
     /**
@@ -102,11 +88,11 @@ class ChatGroupsController extends AbstractController
     )]
     public function groupChat(Request $request, int $conversationId): Response
     {
-        $groupConversation  = $this->conversationRepository->find($conversationId);
         $groupConversations = $this->conversationRepository->getConversations(
             $this->currentUser,
             ConversationType::GROUP->toInt()
         );
+        $groupConversation  = $this->conversationRepository->find($conversationId);
 
         if (!$groupConversation) {
             $this->addFlash('warning', 'chat group does not exists');
@@ -119,43 +105,45 @@ class ChatGroupsController extends AbstractController
             return $this->redirectToRoute('app_chat_groups');
         }
 
-        // creating forms
-        [$messageForm, $searchForm, $addUsersForm] = $this->createChatForms($request, $groupConversation);
-
-        return $this->render('chat_groups/index.html.twig', [
-            'currentUserId' => $this->currentUser->getId(),
-            'conversations' => $groupConversations,
-            'conversation'  => $groupConversation ?? null,
-            'pager'         => $this->chatService->getMsgPager(
-                (int) $request->query->get('page', 1),
-                $groupConversation,
-                ConversationType::GROUP->toInt()
-            ) ?? null,
-            'messageForm'  => $messageForm->createView(),
-            'searchForm'   => $searchForm->createView(),
-            'addUsersForm' => $addUsersForm->createView(),
-            'changeConversationNameForm' => $this->chatService->getChangeConversationNameForm(),
-            'removeMemberForms'          => $this->chatService->getRemoveConversationMemberForms(
-                $groupConversation->getConversationMembers()->toArray(),
-                $this->currentUser
-            ),
-        ]);
+        return $this->processResponse(
+            $request,
+            $groupConversation,
+            $groupConversations
+        );
     }
 
     /**
-     * chatGroupForm
+     * createChatGroup
      *
+     * @param  Request $request
      * @return Response
      */
-    #[Route('/chat/groups/createForm', name: 'app_chat_group_form')]
-    public function chatGroupForm(): Response
+    #[Route('/chat/groups/startGroupConversation', name: 'app_chat_group_create')]
+    public function createChatGroup(Request $request): Response
     {
+        $groupConversations = $this->conversationRepository->getConversations(
+            $this->currentUser,
+            ConversationType::GROUP->toInt()
+        );
         // creating form
-        $createGroupForm = $this->formFactory->create(CreateGroupConversationType::class);
+        $createGroupResult = $this->processGroupCreationForm($request);
+        $createGroupForm   = $createGroupResult['form'];
+        $searchForm        = $this->chatService->createSearchForm();
 
-        return $this->render('chat_groups/_createGroupConversationForm.html.twig', [
-            'currentUserId'   => $this->currentUser->getId(),
-            'createGroupForm' => $createGroupForm->createView(),
+        if ($createGroupResult['success'] === true) {
+            return $this->redirectToRoute('app_chat_group', [
+                'conversationId' => $createGroupResult['conversationId'],
+            ]);
+        } else if ($createGroupResult['success'] === false) {
+            return $this->redirectToRoute('app_chat_group_create');
+        }
+
+        return $this->render('chat_groups/index.html.twig', [
+            'conversationType' => ConversationType::GROUP->toInt(),
+            'currentUserId'    => $this->currentUser->getId(),
+            'conversations'    => $groupConversations,
+            'createGroupForm'  => $createGroupForm->createView(),
+            'searchForm'       => $searchForm->createView()
         ]);
     }
 
@@ -184,43 +172,6 @@ class ChatGroupsController extends AbstractController
         return $this->render('chat_components/_message.stream.html.twig', [
             'message'       => $jsonData['data'],
             'currentUserId' => $this->currentUser->getId(),
-        ]);
-    }
-
-    /**
-     * processGroupCreation
-     *
-     * @param  Request $request
-     * @return Response
-     */
-    #[Route('/chat/groups/startGroupConversation', name: 'app_chat_group_create')]
-    public function processGroupCreation(Request $request): Response
-    {
-        $data = $request->get('create_group_conversation');
-
-        // creating new conversation group
-        $conversation = $this->conversationRepository->storeConversation(
-            $this->currentUser, 
-            // collecting array of conversation members
-            array_map(
-                fn ($friendId) => $this->userRepository->find((int) $friendId), 
-                $data['friends']
-            ),
-            ConversationType::GROUP->toInt(),
-            $data['conversationName'],
-        );
-
-        // storing first message in db
-        $this->messageRepository->storeMessage(
-            $conversation, 
-            (int) $data['senderId'], 
-            $data['message'],
-            false // TODO chek if aatachment added 
-        );
-
-        // redirecting to new conversation route
-        return $this->redirectToRoute('app_chat_group', [
-            'conversationId' => $conversation->getId()
         ]);
     }
 
@@ -255,6 +206,40 @@ class ChatGroupsController extends AbstractController
     }
 
     /**
+     * processResponse
+     *
+     * @param  Request        $request
+     * @param  ?Conversation  $groupConversation
+     * @param  Conversation[] $groupConversations
+     * @return Response
+     */
+    private function processResponse(Request $request, ?Conversation $groupConversation = null, array $groupConversations): Response
+    {
+        // creating forms
+        [$messageForm, $searchForm, $addUsersForm] = $this->createChatForms($request, $groupConversation);
+
+        return $this->render('chat_groups/index.html.twig', [
+            'conversationType' => ConversationType::GROUP->toInt(),
+            'currentUserId'    => $this->currentUser->getId(),
+            'conversations'    => $groupConversations,
+            'conversation'     => $groupConversation ?? null,
+            'pager'            => $this->chatService->getMsgPager(
+                (int) $request->query->get('page', 1),
+                $groupConversation,
+                ConversationType::GROUP->toInt()
+            ) ?? null,
+            'messageForm'  => $messageForm->createView(),
+            'searchForm'   => $searchForm->createView(),
+            'addUsersForm' => $addUsersForm->createView(),
+            'changeConversationNameForm' => $this->chatService->getChangeConversationNameForm(),
+            'removeMemberForms'          => $this->chatService->getRemoveConversationMemberForms(
+                $groupConversation->getConversationMembers()->toArray(),
+                $this->currentUser
+            ),
+        ]);
+    }
+
+    /**
      * createChatForms
      *
      * @param  Request      $request
@@ -264,8 +249,7 @@ class ChatGroupsController extends AbstractController
     private function createChatForms(Request $request, Conversation $conversation): array
     {
         // creating basic forms to avoid repeating
-        $messageForm = $this->processMessageForm($conversation, $request);
-
+        $messageForm  = $this->processMessageForm($conversation, $request);
         $searchForm   = $this->chatService->createSearchForm();
         $addUsersForm = $this->chatService->createAddUsersForm(
             $conversation->getId(),
@@ -277,6 +261,21 @@ class ChatGroupsController extends AbstractController
             $searchForm,
             $addUsersForm
         ];
+    }
+
+    /**
+     * processGroupCreationForm
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function processGroupCreationForm(Request $request): array
+    {
+        $creationGroupResult = $this->messageService->processGroupCreation($request, $this->currentUser);
+
+        $this->processFailedAttachmentUpload($creationGroupResult['messages'], 'warning');
+
+        return $creationGroupResult;
     }
 
     /**
@@ -294,9 +293,7 @@ class ChatGroupsController extends AbstractController
             'conversation.group'
         );
 
-        if (isset($messageFormResult['messages'])) {
-            $this->processFailedAttachmentUpload($messageFormResult['messages']);
-        }
+        $this->processFailedAttachmentUpload($messageFormResult['messages'], 'turboWarning');
 
         return $messageFormResult['form'];
     }
@@ -305,12 +302,13 @@ class ChatGroupsController extends AbstractController
      * processFailedAttachmentUpload
      *
      * @param  string[] $messages
+     * @param  string   $prefix
      * @return void
      */
-    private function processFailedAttachmentUpload(array $messages): void
+    private function processFailedAttachmentUpload(array $messages, string $prefix): void
     {
         foreach ($messages as $message) {
-            $this->addFlash('turboWarning', $message);
+            $this->addFlash($prefix, $message);
         }
     }
 }

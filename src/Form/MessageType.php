@@ -25,7 +25,7 @@ class MessageType extends AbstractType
      * buildForm
      *
      * @param  FormBuilderInterface $builder
-     * @param  array $options
+     * @param  array                $options
      * @return void
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -44,9 +44,9 @@ class MessageType extends AbstractType
                     'style' => 'display:none'
                 ],
                 'error_bubbling' => true,
-                'required' => false,
-                'multiple' => true,
-                'constraints' => [
+                'required'       => false,
+                'multiple'       => true,
+                'constraints'    => [
                     new FileName(),
                     new FileExtension(),
                     new AttachmentType(),

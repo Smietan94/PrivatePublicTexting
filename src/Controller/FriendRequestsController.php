@@ -22,11 +22,11 @@ class FriendRequestsController extends AbstractController
     private User $currentUser;
 
     public function __construct(
-        private Security $security,
-        private UserRepository $userRepository,
+        private Security                $security,
+        private UserRepository          $userRepository,
         private FriendRequestRepository $friendRequestRepository,
-        private EntityManagerInterface $entityManager,
-        private FriendRequestService $friendRequestService,
+        private EntityManagerInterface  $entityManager,
+        private FriendRequestService    $friendRequestService,
     ) {
         // collecting logged user
         $username          = $this->security->getUser()->getUserIdentifier();
@@ -170,7 +170,7 @@ class FriendRequestsController extends AbstractController
      * preprocessFriendRequest
      *
      * @param  Request $request
-     * @param  string $status
+     * @param  string  $status
      * @return FriendRequest
      */
     private function preprocessFriendRequest(Request $request, string $status): ?FriendRequest

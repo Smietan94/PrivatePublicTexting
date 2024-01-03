@@ -24,7 +24,7 @@ use Doctrine\Persistence\ManagerRegistry;
 class MessageRepository extends ServiceEntityRepository
 {
     public function __construct(
-        ManagerRegistry $registry,
+        ManagerRegistry                $registry,
         private EntityManagerInterface $entityManager
     ) {
         parent::__construct($registry, Message::class);
@@ -34,13 +34,11 @@ class MessageRepository extends ServiceEntityRepository
      * getMessageQuery
      *
      * @param  Conversation $conversation
-     * @param  int $conversationType
+     * @param  int          $conversationType
      * @return Query
      */
-    public function getMessageQuery(
-        Conversation $conversation,
-        int $conversationType
-    ): Query {
+    public function getMessageQuery(Conversation $conversation, int $conversationType): Query
+    {
         $qb = $this->entityManager->createQueryBuilder();
 
         $qb = $qb->select('m')
@@ -65,16 +63,12 @@ class MessageRepository extends ServiceEntityRepository
      * storeMessage
      *
      * @param  Conversation $conversation
-     * @param  int $senderId
-     * @param  string $messageText
+     * @param  int          $senderId
+     * @param  string       $messageText
      * @return Message
      */
-    public function storeMessage(
-        Conversation $conversation,
-        int $senderId,
-        string $messageText,
-        bool $haveAttachment
-    ): Message {
+    public function storeMessage(Conversation $conversation, int $senderId, string $messageText, bool $haveAttachment): Message 
+    {
         $message = new Message();
 
         $message->setConversation($conversation);

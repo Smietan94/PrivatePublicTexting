@@ -19,10 +19,10 @@ class FileController extends AbstractController
     private FilesystemOperator $storage;
 
     public function __construct(
-        FilesystemOperator $defaultStorage,
+        FilesystemOperator                  $defaultStorage,
         private MessageAttachmentRepository $messageAttachmentRepository,
-        private Security $security,
-        private UserRepository $userRepository
+        private Security                    $security,
+        private UserRepository              $userRepository
     ) {
         $this->storage = $defaultStorage;
         // collecting current user

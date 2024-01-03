@@ -12,8 +12,7 @@
     <h2 class="fw-bold mb-2 text-light">Group Conversations</h2>
     <p class="text-white-50 mb-4">Choose a group to talk</p>
     <div class="row mx-2 mb-2" {{ stimulus_controller('conversation', {
-        url:  path('app_chat_search'),
-        url1: path('app_chat_group_form')
+        url:  path('app_chat_search')
     }) }}>
         <div class="col-xl-4 col-lg-5 col-sm-12 bg-light rounded card messenger-window">
             <div class="card-header py-3">
@@ -27,14 +26,21 @@
                 {% endif %}
             </div>
             <div class="card-footer py-3">
-                <button type="button" class="btn btn-lg btn-dark w-100" data-action="conversation#createGroup">Create Chat Group</button>
+                <a type="button" class="btn btn-lg btn-dark w-100" href="{{ path('app_chat_group_create') }}">
+                    Create Chat Group
+                </a>
             </div>
         </div>
-        <div data-conversation-target="result" class="card col-xl-8 col-lg-7 col-sm-12 bg-light rounded messenger-window">
+        <div class="card col-xl-8 col-lg-7 col-sm-12 bg-light rounded messenger-window">
             {% if conversations | length == 0 %}
                 <h5 class="mb-1">No Groups</h5>
+            {% elseif createGroupForm is defined %}
+                {% include 'chat_groups/_createGroupConversationForm.html.twig' %}
             {% else %}
-                {{ include('chat_groups/_conversation.html.twig') }}
+                {% include 'chat_groups/_conversation.html.twig'  %}
+                {% include 'chat_groups/_participantsListModal.html.twig' %}
+                {% include 'chat_groups/_conversationNameFormModal.html.twig' %}
+                {% include 'chat_groups/_conversationNewMembersModal.html.twig' %}
             {% endif %}
         </div>
     </div>
@@ -47,7 +53,4 @@
         {{ mercure('conversation.group' ~ conversation.id, { subscribe: 'conversation.group' ~ conversation.id })|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_HEX_TAG'))|raw  }}
     </script>
 {% endif %}
-    {% include 'chat_groups/_participantsListModal.html.twig' %}
-    {% include 'chat_groups/_conversationNameFormModal.html.twig' %}
-    {% include 'chat_groups/_conversationNewMembersModal.html.twig' %}
 {% endblock %}

@@ -21,9 +21,9 @@ class FriendController extends AbstractController
     private User $currentUser;
 
     public function __construct(
-        private Security $security,
-        private UserRepository $userRepository,
-        private FriendsService $friendsService,
+        private Security               $security,
+        private UserRepository         $userRepository,
+        private FriendsService         $friendsService,
         private EntityManagerInterface $entityManager
     ) {
         // collecting logged user

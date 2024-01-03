@@ -32,11 +32,11 @@ class AuthController extends AbstractController
     private User $currentUser;
 
     public function __construct(
-        private UserRepository $userRepository,
+        private UserRepository       $userRepository,
         private FormFactoryInterface $formFactory,
-        private ValidatorInterface $validator,
-        private Security $security,
-        private LoggerInterface $logger,
+        private ValidatorInterface   $validator,
+        private Security             $security,
+        private LoggerInterface      $logger,
     ) {
         // collecting logged user if logged in
         if ($this->security->isGranted('ROLE_USER')) {

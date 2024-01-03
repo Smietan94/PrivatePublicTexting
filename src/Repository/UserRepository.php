@@ -28,10 +28,10 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface, UserLoaderInterface
 {
     public function __construct(
-        ManagerRegistry $registry,
-        private ConversationRepository $conversationRepository,
+        ManagerRegistry                     $registry,
+        private ConversationRepository      $conversationRepository,
         private UserPasswordHasherInterface $passwordHasher,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface      $entityManager
     ) {
         parent::__construct($registry, User::class);
     }
@@ -104,11 +104,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
      */
     public function checkPassword(array $data): bool
     {
-        $user = $this->findOneBy(['username' => $data['username']]);
+        $user           = $this->findOneBy(['username' => $data['username']]);
         $hashedPassword = $this->passwordHasher->hashPassword(
             $user,
             $data['password']
         );
+
         return $hashedPassword === $user->getPassword();
     }
 
@@ -207,7 +208,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     /**
      * changeStatus
      *
-     * @param  int $status
+     * @param  int  $status
      * @param  User $user
      * @return void
      */

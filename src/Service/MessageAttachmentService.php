@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class MessageAttachmentService
 {
     public function __construct(
-        private FilesystemOperator $defaultStorage,
+        private FilesystemOperator          $defaultStorage,
         private MessageAttachmentRepository $messageAttachmentRepository,
     ) {
     }

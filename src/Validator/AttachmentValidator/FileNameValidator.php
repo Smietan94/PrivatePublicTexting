@@ -14,7 +14,7 @@ class FileNameValidator extends ConstraintValidator
      * validate
      *
      * @param  UploadedFile[] $files
-     * @param  Constraint $constraint
+     * @param  Constraint     $constraint
      * @return void
      */
     public function validate($files, Constraint $constraint)
