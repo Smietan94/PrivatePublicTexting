@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service;
 
 use App\Entity\Conversation;
+use App\Entity\Message;
+use App\Entity\MessageAttachment;
 use App\Entity\User;
 use App\Repository\ConversationRepository;
 use App\Repository\MessageRepository;
@@ -397,5 +399,109 @@ class MessageServiceTest extends TestCase
         $this->assertIsArray($result);
         $this->assertArrayHasKey('attachmentPaths', $result);
         $this->assertArrayHasKey('attachmentsIds', $result);
+    }
+
+    /**
+     * @dataProvider messageServiceMockedDependencyProvider
+     */
+    public function testMessageFailure(
+        FormFactoryInterface|MockObject   $formFactoryMock,
+        MessageAttachmentService          $messageAttachmentServiceMock,
+        MessageRepository                 $messageRepositoryMock,
+        ConversationRepository|MockObject $conversationRepositoryMock,
+        UserRepository           $userRepositoryMock,
+        HubInterface             $hubMock,
+        ValidatorInterface       $validatorMock,
+        FormInterface|MockObject $formMock,
+    ): void {
+        $result = [];
+        $messageService   = new MessageService(
+            $formFactoryMock,
+            $messageAttachmentServiceMock,
+            $messageRepositoryMock,
+            $conversationRepositoryMock,
+            $userRepositoryMock,
+            $hubMock,
+            $validatorMock
+        );
+
+        $formFactoryMock
+            ->expects($this->once())
+            ->method('create')
+            ->willReturn($formMock);
+
+        $result = $messageService->messageFailure($formMock, $result);
+
+        $this->assertSame($result['success'], false);
+        $this->assertSame($result['form'], $formMock);
+    }
+
+    /** 
+     * @dataProvider messageServiceMockedDependencyProvider
+     */
+    public function testProcessAttachments(
+        FormFactoryInterface|MockObject     $formFactoryMock,
+        MessageAttachmentService|MockObject $messageAttachmentServiceMock,
+        MessageRepository      $messageRepositoryMock,
+        ConversationRepository $conversationRepositoryMock,
+        UserRepository         $userRepositoryMock,
+        HubInterface           $hubMock,
+        ValidatorInterface     $validatorMock,
+    ): void {
+        $message        = new Message();
+        $messageService = new MessageService(
+            $formFactoryMock,
+            $messageAttachmentServiceMock,
+            $messageRepositoryMock,
+            $conversationRepositoryMock,
+            $userRepositoryMock,
+            $hubMock,
+            $validatorMock
+        );
+
+        $uploadedFile1 = $this->createMock(UploadedFile::class);
+        $uploadedFile2 = $this->createMock(UploadedFile::class);
+
+        $attachment1 = $this->createMock(MessageAttachment::class);
+        $attachment2 = $this->createMock(MessageAttachment::class);
+
+        $attachment1
+            ->expects($this->once())
+            ->method('getId')
+            ->willReturn(2137);
+
+        $attachment2
+            ->expects($this->once())
+            ->method('getId')
+            ->willReturn(2138);
+
+        $uploadedFilesArray = [
+            $uploadedFile1,
+            $uploadedFile2
+        ];
+
+        $attachmentsArray = [
+            $attachment1,
+            $attachment2
+        ];
+
+        $attachmentsPaths = [
+            'attachmentPath1',
+            'attachmentPath2'
+        ];
+
+        $messageAttachmentServiceMock
+            ->expects($this->once())
+            ->method('processAttachmentsDataStore')
+            ->willReturn($attachmentsArray);
+
+        $result = $messageService->processAttachments(
+            $uploadedFilesArray,
+            $attachmentsPaths,
+            $message
+        );
+
+        $this->assertIsArray($result);
+        $this->assertContainsOnly('int', $result);
     }
 }
