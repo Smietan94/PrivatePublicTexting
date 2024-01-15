@@ -1,5 +1,5 @@
 <div class="row">
-    {% if message.senderId == currentUserId %}
+    {% if message.senderId == app.user.id %}
         <div class="col-6"></div>
         <div class="col-6">
             <div class="border rounded-4 mb-2 bg-primary text-light p-3">

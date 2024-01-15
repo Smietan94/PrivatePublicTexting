@@ -6,7 +6,6 @@ use App\Entity\MessageAttachment;
 use App\Entity\User;
 use App\Repository\MessageAttachmentRepository;
 use App\Repository\UserRepository;
-use League\Flysystem\Filesystem;
 use League\Flysystem\FilesystemOperator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;

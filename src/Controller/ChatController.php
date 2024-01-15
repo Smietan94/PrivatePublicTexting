@@ -12,6 +12,7 @@ use App\Repository\MessageRepository;
 use App\Repository\UserRepository;
 use App\Service\ChatService;
 use App\Service\MessageService;
+use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -36,7 +37,7 @@ class ChatController extends AbstractController
         private FormFactoryInterface   $formFactory,
         private ChatService            $chatService,
         private MessageService         $messageService,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
     ) {
         $username          = $this->security->getUser()->getUserIdentifier();
         $this->currentUser = $this->userRepository->findOneBy(['username' => $username]);
@@ -48,7 +49,7 @@ class ChatController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route(['/', '/home', '/chats'], name: 'app_home')]
+    #[Route(['/', '/home', '/chats/solo'], name: 'app_home')]
     public function index(Request $request): Response
     {
         $conversations = $this->conversationRepository->getConversations(
@@ -82,9 +83,9 @@ class ChatController extends AbstractController
      * @return Response
      */
     #[Route(
-        '/chats/{conversationId}',
+        '/chats/solo/{conversationId}',
         name: 'app_chat',
-        requirements: ['ConversationId' => '[0-9]+']
+        requirements: ['conversationId' => '[0-9]+']
     )]
     public function chat(Request $request, int $conversationId): Response
     {
@@ -111,16 +112,14 @@ class ChatController extends AbstractController
      * handleMessage
      *
      * @param  Request $request
-     * @param  int     $conversationId
      * @return Response
      */
     #[Route(
-        '/handleMessage/{conversationId}',
+        '/chats/solo/handleMessage',
         methods: ['POST'],
-        name: 'handle_message_app',
-        requirements: ['conversationId' => '[0-9]+']
+        name: 'handle_message_app'
     )]
-    public function handleMessage(Request $request, int $conversationId): Response
+    public function handleMessage(Request $request): Response
     {
         $jsonData = json_decode(
             $request->getContent(),
@@ -128,8 +127,7 @@ class ChatController extends AbstractController
         );
 
         return $this->render('chat_components/_message.stream.html.twig', [
-            'currentUserId'  => $this->currentUser->getId(),
-            'message'        => $jsonData['data']
+            'message' => $jsonData['data']
         ]);
     }
 
@@ -140,7 +138,7 @@ class ChatController extends AbstractController
      * @return Response
      */
     #[Route(
-        '/startConversation',
+        '/chats/solo/startConversation',
         methods: ['POST'],
         name: 'app_start_private_conversation'
     )]
@@ -195,7 +193,6 @@ class ChatController extends AbstractController
             'conversationType' => ConversationType::SOLO->toInt(),
             'conversation'     => $conversation,
             'conversations'    => $conversations,
-            'currentUserId'    => $this->currentUser->getId(),
             'messageForm'      => $messageForm->createView(),
             'searchForm'       => $searchForm->createView(),
             'pager'            => isset($conversation) ? $this->chatService->getMsgPager(

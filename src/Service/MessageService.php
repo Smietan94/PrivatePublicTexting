@@ -25,6 +25,7 @@ class MessageService
     public function __construct(
         private FormFactoryInterface     $formFactory,
         private MessageAttachmentService $messageAttachmentService,
+        private NotificationService      $notificationService,
         private MessageRepository        $messageRepository,
         private ConversationRepository   $conversationRepository,
         private UserRepository           $userRepository,
@@ -38,10 +39,10 @@ class MessageService
      *
      * @param  ?Conversation $conversation
      * @param  Request       $request
-     * @param  string        $topic
+     * @param  string        $messengerTopic
      * @return array
      */
-    public function processMessage(?Conversation $conversation = null, Request $request, string $topic): array
+    public function processMessage(?Conversation $conversation = null, Request $request, string $messengerTopic): array
     {
         $form      = $this->formFactory->create(MessageType::class);
         $emptyForm = clone $form;
@@ -64,7 +65,18 @@ class MessageService
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $this->processSuccedData($form->getData(), $conversation);
 
-            $this->mercureUpdater($topic, $conversation->getId(), $data);
+            $this->messageMercureUpdater(
+                $messengerTopic,
+                $conversation->getId(),
+                $data
+            );
+
+            //TODO send message preview through notifications channel
+            $this->notificationService->messagePreviewMercureUpdater(
+                $conversation,
+                $data['message'],
+                $data['senderId']
+            );
 
             $result['success'] = true;
             $result['form']    = $emptyForm;
@@ -192,7 +204,7 @@ class MessageService
      * @param  array  $data
      * @return void
      */
-    public function mercureUpdater(string $topic, int $conversationId, array $data): void
+    public function messageMercureUpdater(string $topic, int $conversationId, array $data): void
     {
         $update = new Update(
             sprintf("%s%d", $topic, $conversationId),

@@ -1,23 +1,24 @@
 {% if conversations %}
     {% for conversation in conversations %}
+        {% set message = conversation.lastMessage.message %}
         <a type="button" href="{{ path('app_chat_group', {conversationId: conversation.id}) }}"
             class="list-group-item text-start w-100 rounded btn-friend-msg-list ps-3 py-2"
             value="{{ conversation.id }}">
             <div class="d-flex w-100">
                 <h5 class="mb-1">{{ conversation.name }}</h5>
             </div>
-            {% if conversation.lastMessage %}
-                <p class="mb-1">
-                {% if conversation.lastMessage.senderId == currentUserId %}
-                    You:
+            <p class="mb-1" id="conversation-{{ conversation.id }}-last-message">
+                {% if conversation.lastMessage %}
+                        {% if conversation.lastMessage.senderId == currentUserId %}
+                            You:
+                        {% else %}
+                            {{ conversation.lastMessage.senderId | UserName }}:
+                        {% endif %}
+                        {{ message[:20] }}{% if message | length > 20 %}(...){% endif %}
                 {% else %}
-                    {{ conversation.lastMessage.senderId | UserName }}:
+                    No messages yet
                 {% endif %}
-                {{ conversation.lastMessage.message }}
-                </p>
-            {% else %}
-                <p class="mb-1">No messages yet</p>
-            {% endif %}
+            </p>
         </a>
         {% if loop.index != loop.last %}
             <hr class="hr w-100"/>

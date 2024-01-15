@@ -7,7 +7,6 @@ namespace App\Controller;
 use App\Entity\Conversation;
 use App\Entity\User;
 use App\Enum\ConversationType;
-use App\Enum\FlashPrefix;
 use App\Form\CreateGroupConversationType;
 use App\Repository\ConversationRepository;
 use App\Repository\MessageRepository;
@@ -48,7 +47,7 @@ class ChatGroupsController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route('/chat/groups/', name: 'app_chat_groups')]
+    #[Route('/chats/groups/', name: 'app_chat_groups')]
     public function index(Request $request): Response
     {
         // collecting group conversations
@@ -62,7 +61,6 @@ class ChatGroupsController extends AbstractController
             $createGroupForm = $this->formFactory->create(CreateGroupConversationType::class);
             $this->addFlash('warning', 'You have no chat groups yet');
             return $this->render('chat_groups/noConversations.html.twig', [
-                'currentUserId'   => $this->currentUser->getId(),
                 'createGroupForm' => $createGroupForm->createView(),
             ]);
         }
@@ -82,7 +80,7 @@ class ChatGroupsController extends AbstractController
      * @return Response
      */
     #[Route(
-        '/chat/groups/{conversationId}',
+        '/chats/groups/{conversationId}',
         name: 'app_chat_group',
         requirements: ['conversationId' => '[0-9]+']
     )]
@@ -118,7 +116,7 @@ class ChatGroupsController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route('/chat/groups/startGroupConversation', name: 'app_chat_group_create')]
+    #[Route('/chats/groups/startGroupConversation', name: 'app_chat_group_create')]
     public function createChatGroup(Request $request): Response
     {
         $groupConversations = $this->conversationRepository->getConversations(
@@ -140,7 +138,6 @@ class ChatGroupsController extends AbstractController
 
         return $this->render('chat_groups/index.html.twig', [
             'conversationType' => ConversationType::GROUP->toInt(),
-            'currentUserId'    => $this->currentUser->getId(),
             'conversations'    => $groupConversations,
             'createGroupForm'  => $createGroupForm->createView(),
             'searchForm'       => $searchForm->createView()
@@ -151,16 +148,14 @@ class ChatGroupsController extends AbstractController
      * handleMessage
      *
      * @param  Request $request
-     * @param  int     $conversationId
      * @return Response
      */
     #[Route(
-        '/groups/handleMessage/{conversationId}',
+        '/chats/groups/handleMessage',
         methods: ['POST'],
-        name: 'handle_group_message_app',
-        requirements: ['conversationId' => '[0-9]+']
+        name: 'handle_group_message_app'
     )]
-    public function handleMessage(Request $request, int $conversationId): Response
+    public function handleMessage(Request $request): Response
     {
         // collecting message from ajax call
         $jsonData = json_decode(
@@ -171,7 +166,7 @@ class ChatGroupsController extends AbstractController
         // returning data to current user view
         return $this->render('chat_components/_message.stream.html.twig', [
             'message'       => $jsonData['data'],
-            'currentUserId' => $this->currentUser->getId(),
+            // 'currentUserId' => $this->currentUser->getId(),
         ]);
     }
 
@@ -182,7 +177,7 @@ class ChatGroupsController extends AbstractController
      * @return Response
      */
     #[Route(
-        '/chat/groups/changeConversationName',
+        '/chats/groups/changeConversationName',
         methods: ['POST'],
         name:'app_chat_group_change_name'
     )]
@@ -220,7 +215,6 @@ class ChatGroupsController extends AbstractController
 
         return $this->render('chat_groups/index.html.twig', [
             'conversationType' => ConversationType::GROUP->toInt(),
-            'currentUserId'    => $this->currentUser->getId(),
             'conversations'    => $groupConversations,
             'conversation'     => $groupConversation ?? null,
             'pager'            => $this->chatService->getMsgPager(

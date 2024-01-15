@@ -52,7 +52,6 @@ class ChatComponentController extends AbstractController
         };
 
         return $this->render(sprintf('%s/_searchConversationResults.html.twig', $templatePrefix), [
-            'currentUserId' => $this->currentUser->getId(),
             'conversations' => $conversations,
         ]);
     }

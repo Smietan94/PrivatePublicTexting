@@ -42,7 +42,6 @@ class FriendController extends AbstractController
     {
         // collecting paginated query
         $queryBuilder = $this->userRepository->getFriendsQuery($this->currentUser);
-        // dd($queryBuilder);
         $adapter      = new QueryAdapter($queryBuilder);
         $pagerfanta   = Pagerfanta::createForCurrentPageWithMaxPerPage(
             $adapter,

@@ -46,11 +46,22 @@
     </div>
 </div>
 {% if conversation is defined %}
+    {% set conversationTopic = 'conversation.group' ~ conversation.id %}
+    {% set previewTopics     = (conversation | GetConversationTopics) %}
+    {% set topics            = topics|Push(conversationTopic) %}
+    {% set topics            = topics|Push(previewTopics) %}
+
     <script type="application/json" id="message-url">
-        {{ path('handle_group_message_app', {conversationId: conversation.id}) }}
+        {{ path('handle_group_message_app') }}
+    </script>
+    <script type="application/json" id="message-preview-url">
+        {{ path('app_chat_message_preview') }}
     </script>
     <script type="application/json" id="mercure-url">
-        {{ mercure('conversation.group' ~ conversation.id, { subscribe: 'conversation.group' ~ conversation.id })|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_HEX_TAG'))|raw  }}
+        {{ mercure(conversationTopic)|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_HEX_TAG'))|raw  }}
+    </script>
+    <script type="application/json" id="mercure-message-preview-url">
+        {{ mercure(previewTopics, { subscribe: topics })|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_HEX_TAG'))|raw  }}
     </script>
 {% endif %}
 {% endblock %}

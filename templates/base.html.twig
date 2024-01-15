@@ -18,6 +18,13 @@
         {% endblock %}
     </head>
     <body>
+    {% set currentUserId = app.user.id %}
+    {% set notificationsTopic = 'notifications' ~ currentUserId %}
+    {% set topics = [] %} {# setting array of topics to subscibe within authorization cookie #}
+    {% set topics = topics|Push(notificationsTopic) %}
+    <script type="application/json" id="mercure-notifications-url">
+        {{ mercure(notificationsTopic)|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_HEX_TAG'))|raw  }}
+    </script>
     <div class="container-shadow bg-dark">
         <div class="container">
             <nav class="navbar navbar-expand-lg navbar-dark">
