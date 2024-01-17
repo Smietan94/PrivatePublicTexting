@@ -30,11 +30,12 @@ function startMessagePreviewEventSource(url, msgPreviewUrl) {
 
     eventSource.onmessage = event => {
         const data = JSON.parse(event.data);
-        console.log(data['messagePreview']);
+
         processMessagePreview(
             data['messagePreview'],
             msgPreviewUrl
         );
+
     }
 
     return eventSource;
@@ -43,23 +44,48 @@ function startMessagePreviewEventSource(url, msgPreviewUrl) {
 async function processMessagePreview(data, msgPreviewUrl) {
     let messagePreviewElement = document.getElementById(`conversation-${data['conversationId']}-last-message`);
 
-    try {
-        const response = await fetch(msgPreviewUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({data: data})
-        });
+    if (messagePreviewElement) {
+        try {
+            const response = await fetch(msgPreviewUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({data: data})
+            });
 
-        if (!response.ok) {
-            throw new Error('Failed to process message preview');
+            if (!response.ok) {
+                throw new Error('Failed to process message preview');
+            }
+
+            messagePreviewElement.innerHTML = await response.text();
+
+            sortConversationLabels(data['conversationId']);
+
+        } catch(error) {
+            console.log('Error during processing message preview', error);
         }
+    }
+}
 
-        messagePreviewElement.innerHTML = await response.text();
+function sortConversationLabels(conversationId) {
+    let conversationsListDiv    = document.getElementById('conversations-list');
+    let conversationLabelToMove = document.getElementById(`conversation-${ conversationId }`);
+    let conversationLabelsArray = conversationsListDiv.querySelectorAll('a');
 
-    } catch(error) {
-        console.log('Error during processing message preview', error);
+    if (conversationLabelToMove != conversationLabelsArray[0]) {
+        conversationsListDiv.innerHTML = "";
+        conversationsListDiv.append(conversationLabelToMove);
+        conversationsListDiv.innerHTML += '<hr class="hr w-100"/>';
+
+        conversationLabelsArray.forEach(element => {
+            if (element != conversationLabelToMove) {
+                conversationsListDiv.append(element);
+                if (element != conversationLabelsArray[conversationLabelsArray.length - 1]) {
+                    conversationsListDiv.innerHTML += '<hr class="hr w-100"/>'
+                }
+            }
+        });
     }
 }
 

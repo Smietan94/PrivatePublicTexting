@@ -15,13 +15,19 @@ class NotificationService
         private ConversationMemberRuntime $conversationProcesor,
         private HubInterface              $hub,
     ) {
-        
     }
 
+    /**
+     * messagePreviewMercureUpdater
+     *
+     * @param  Conversation $conversation
+     * @param  string       $message
+     * @param  int          $senderId
+     * @return void
+     */
     public function messagePreviewMercureUpdater(Conversation $conversation, string $message, int $senderId): void
     {
-        $receiversIds = $this->conversationProcesor->getReceiversIds($conversation);
-        $topics       = array_map(fn($id) => sprintf('notifications%d', $id), $receiversIds);
+        $topics = $this->conversationProcesor->getConversationTopics($conversation);
 
         $data = [
             'message'        => substr($message, 0, 20),

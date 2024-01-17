@@ -3,4 +3,4 @@
 {% else %}
     {{ data.senderId | UserName }}:
 {% endif %}
-{{ data.message }}{% if data.message | length > 20 %}(...){% endif %}
+{{ data.message }}{% if data.message | length >= 20 %}(...){% endif %}

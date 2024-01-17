@@ -9,6 +9,11 @@
                 'value': conversationType
             })
         }}
+        {{
+            form_widget(searchForm.activeConversation, {
+                'value': activeConversationId
+            })
+        }}
         {{ form_widget(searchForm.query, {'attr': {
                 'aria-describedby': 'queryLabel',
                 'data-action':      'conversation#searchConversation',

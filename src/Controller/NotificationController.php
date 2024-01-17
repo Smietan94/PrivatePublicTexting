@@ -25,7 +25,13 @@ class NotificationController extends AbstractController
         $this->currentUser = $this->userRepository->findOneBy(['username' => $username]);
     }
 
-    #[Route('/chats/messagePreview', name: 'app_chat_message_preview')]
+    /**
+     * processMessagePreview
+     *
+     * @param  Request $request
+     * @return Response
+     */
+    #[Route('/chats/messagePreview', name: 'app_chat_message_preview')]   
     public function processMessagePreview(Request $request): Response
     {
         $jsonData = json_decode(

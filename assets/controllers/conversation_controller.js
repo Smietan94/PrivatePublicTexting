@@ -10,10 +10,12 @@ export default class extends Controller {
 
     async searchConversation(event) {
         const conversationType = document.getElementById('search_form_conversationType');
+        const activeConversation = document.getElementById('search_form_activeConversation');
         const params           = new URLSearchParams({
             q:       event.currentTarget.value,
             preview: 1,
-            type:    conversationType.value
+            type:    conversationType.value,
+            convId:  activeConversation.value
         });
 
         const respone = await fetch(`${this.urlValue}?${params.toString()}`);

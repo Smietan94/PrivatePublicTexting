@@ -31,6 +31,9 @@ class SearchFormType extends AbstractType
             ->add('conversationType', HiddenType::class, [
                 'required' => false
             ])
+            ->add('activeConversation', HiddenType::class, [
+                'required' => false
+            ])
         ;
     }
 

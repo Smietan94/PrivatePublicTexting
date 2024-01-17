@@ -74,9 +74,12 @@ class ConversationRepository extends ServiceEntityRepository
         return $qb->select('c')
             ->from(Conversation::class, 'c')
             ->join('c.conversationMembers', 'user')
+            ->leftJoin('c.lastMessage', 'lm')
             ->andWhere($qb->expr()->eq('user', ':user'))
             ->andWhere($qb->expr()->isMemberOf('c', 'user.conversations'))
             ->andWhere($qb->expr()->eq('c.conversationType', ':conversationType'))
+            ->orderBy('CASE WHEN lm.createdAt IS NULL THEN 1 ELSE 0 END', 'ASC')
+            ->addOrderBy('lm.createdAt', 'DESC')
             ->setParameters([
                 'user' => $currentUser,
                 'conversationType' => $conversationType
@@ -84,6 +87,7 @@ class ConversationRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
 
     /**
      * storeConversation

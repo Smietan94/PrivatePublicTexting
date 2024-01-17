@@ -12,7 +12,6 @@ use App\Repository\MessageRepository;
 use App\Repository\UserRepository;
 use App\Service\ChatService;
 use App\Service\MessageService;
-use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;

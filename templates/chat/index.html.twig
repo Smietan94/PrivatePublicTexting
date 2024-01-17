@@ -7,7 +7,6 @@
 {% endblock %}
 
 {% block body %}
-
 <div class="container container-body container-shadow m-auto mt-5 p-5 bg-dark ">
     <h2 class="fw-bold mb-2 text-light">Conversations</h2>
     <p class="text-white-50 mb-4">Choose a friend to talk</p>
@@ -15,10 +14,11 @@
         url: path('app_chat_search')
     }) }}>
         <div class="col-xl-4 col-lg-5 col-sm-12 bg-light rounded card messenger-window">
+            {% set activeConversationId = conversation.id %}
             <div class="card-header py-3">
                 {% include "chat_components/_searchConversationForm.html.twig" %}
             </div>
-            <div data-conversation-target="conversationsList" class="card-body list-group-scroll mt-2 ps-3 pe-4 py-2">
+            <div id="conversations-list" data-conversation-target="conversationsList" class="card-body list-group-scroll mt-2 ps-3 pe-4 py-2">
                 {% if conversations %}
                     {% include 'chat/_searchConversationResults.html.twig' %}
                 {% else %}
