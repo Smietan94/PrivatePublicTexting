@@ -65,6 +65,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTime $lastSeen = null;
 
+    #[ORM\OneToMany(mappedBy: 'sender', targetEntity: Notification::class, orphanRemoval: true)]
+    private Collection $sentNotifications;
+
+    #[ORM\ManyToMany(targetEntity: Notification::class, mappedBy: 'receivers')]
+    private Collection $receivedNotifications;
+
     public function __construct()
     {
         $this->friends                = new ArrayCollection();
@@ -73,6 +79,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->sentFriendHistory      = new ArrayCollection();
         $this->receivedFriendHistory  = new ArrayCollection();
         $this->conversations          = new ArrayCollection();
+        $this->sentNotifications = new ArrayCollection();
+        $this->receivedNotifications = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -351,5 +359,62 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __toString()
     {
         return $this->getUsername();
+    }
+
+    /**
+     * @return Collection<int, Notification>
+     */
+    public function getSentNotifications(): Collection
+    {
+        return $this->sentNotifications;
+    }
+
+    public function addSentNotification(Notification $sentNotification): static
+    {
+        if (!$this->sentNotifications->contains($sentNotification)) {
+            $this->sentNotifications->add($sentNotification);
+            $sentNotification->setSender($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSentNotification(Notification $sentNotification): static
+    {
+        if ($this->sentNotifications->removeElement($sentNotification)) {
+            // set the owning side to null (unless already changed)
+            if ($sentNotification->getSender() === $this) {
+                $sentNotification->setSender(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Notification>
+     */
+    public function getReceivedNotifications(): Collection
+    {
+        return $this->receivedNotifications;
+    }
+
+    public function addReceivedNotification(Notification $receivedNotification): static
+    {
+        if (!$this->receivedNotifications->contains($receivedNotification)) {
+            $this->receivedNotifications->add($receivedNotification);
+            $receivedNotification->addReceiver($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReceivedNotification(Notification $receivedNotification): static
+    {
+        if ($this->receivedNotifications->removeElement($receivedNotification)) {
+            $receivedNotification->removeReceiver($this);
+        }
+
+        return $this;
     }
 }

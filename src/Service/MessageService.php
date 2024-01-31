@@ -112,12 +112,14 @@ class MessageService
             // creating new conversation group
             $conversation = $this->conversationRepository->storeConversation(
                 $currentUser, 
-                $data['friends'],
+                $data['friends']->toArray(),
                 ConversationType::GROUP->toInt(),
                 $data['conversationName'],
             );
 
             $this->processSuccedData($data, $conversation);
+
+            $this->notificationService->processFirstGroupMessagePreview($conversation);
 
             $result['conversationId'] = $conversation->getId();
             $result['success']        = true;

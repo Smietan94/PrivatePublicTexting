@@ -13,6 +13,7 @@ use App\Repository\MessageRepository;
 use App\Repository\UserRepository;
 use App\Service\MessageAttachmentService;
 use App\Service\MessageService;
+use App\Service\NotificationService;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -29,6 +30,7 @@ class MessageServiceTest extends TestCase
         $messageService = new MessageService(
             $this->createMock(FormFactoryInterface::class),
             $this->createMock(MessageAttachmentService::class),
+            $this->createMock(NotificationService::class),
             $this->createMock(MessageRepository::class),
             $this->createMock(ConversationRepository::class),
             $this->createMock(UserRepository::class),
@@ -44,6 +46,7 @@ class MessageServiceTest extends TestCase
         return [[
             'formFactoryMock'              => $this->createMock(FormFactoryInterface::class),
             'messageAttachmentServiceMock' => $this->createMock(MessageAttachmentService::class),
+            'notificationServiceMock'      => $this->createMock(NotificationService::class),
             'messageRepositoryMock'        => $this->createMock(MessageRepository::class),
             'conversationRepositoryMock'   => $this->createMock(ConversationRepository::class),
             'userRepositoryMock'           => $this->createMock(UserRepository::class),
@@ -81,6 +84,7 @@ class MessageServiceTest extends TestCase
     public function testProcessMessageWhenFormIsSubmittedAndValid(
         FormFactoryInterface|MockObject   $formFactoryMock,
         MessageAttachmentService          $messageAttachmentServiceMock,
+        NotificationService               $notificationServiceMock,
         MessageRepository                 $messageRepositoryMock,
         ConversationRepository|MockObject $conversationRepositoryMock,
         UserRepository           $userRepositoryMock,
@@ -92,6 +96,7 @@ class MessageServiceTest extends TestCase
         $messageService = new MessageService(
             $formFactoryMock,
             $messageAttachmentServiceMock,
+            $notificationServiceMock,
             $messageRepositoryMock,
             $conversationRepositoryMock,
             $userRepositoryMock,
@@ -151,6 +156,7 @@ class MessageServiceTest extends TestCase
     public function testProcessMessageWhenFormIsSubmittedAndNotValid(
         FormFactoryInterface|MockObject   $formFactoryMock,
         MessageAttachmentService          $messageAttachmentServiceMock,
+        NotificationService               $notificationServiceMock,
         MessageRepository                 $messageRepositoryMock,
         ConversationRepository|MockObject $conversationRepositoryMock,
         UserRepository           $userRepositoryMock,
@@ -163,6 +169,7 @@ class MessageServiceTest extends TestCase
         $messageService = new MessageService(
             $formFactoryMock,
             $messageAttachmentServiceMock,
+            $notificationServiceMock,
             $messageRepositoryMock,
             $conversationRepositoryMock,
             $userRepositoryMock,
@@ -226,6 +233,7 @@ class MessageServiceTest extends TestCase
     public function testProcessGroupCreationWhenFormIsSubmittedAndValid(
         FormFactoryInterface|MockObject   $formFactoryMock,
         MessageAttachmentService          $messageAttachmentServiceMock,
+        NotificationService               $notificationServiceMock,
         MessageRepository                 $messageRepositoryMock,
         ConversationRepository|MockObject $conversationRepositoryMock,
         UserRepository           $userRepositoryMock,
@@ -238,6 +246,7 @@ class MessageServiceTest extends TestCase
         $messageService = new MessageService(
             $formFactoryMock,
             $messageAttachmentServiceMock,
+            $notificationServiceMock,
             $messageRepositoryMock,
             $conversationRepositoryMock,
             $userRepositoryMock,
@@ -309,6 +318,7 @@ class MessageServiceTest extends TestCase
     public function testProcessGroupCreationWhenFormIsSubmittedAndNotValid(
         FormFactoryInterface|MockObject   $formFactoryMock,
         MessageAttachmentService          $messageAttachmentServiceMock,
+        NotificationService               $notificationServiceMock,
         MessageRepository                 $messageRepositoryMock,
         ConversationRepository|MockObject $conversationRepositoryMock,
         UserRepository           $userRepositoryMock,
@@ -321,6 +331,7 @@ class MessageServiceTest extends TestCase
         $messageService = new MessageService(
             $formFactoryMock,
             $messageAttachmentServiceMock,
+            $notificationServiceMock,
             $messageRepositoryMock,
             $conversationRepositoryMock,
             $userRepositoryMock,
@@ -362,6 +373,7 @@ class MessageServiceTest extends TestCase
     public function testProcessSuccedData(
         FormFactoryInterface|MockObject   $formFactoryMock,
         MessageAttachmentService          $messageAttachmentServiceMock,
+        NotificationService               $notificationServiceMock,
         MessageRepository                 $messageRepositoryMock,
         ConversationRepository|MockObject $conversationRepositoryMock,
         UserRepository           $userRepositoryMock,
@@ -379,6 +391,7 @@ class MessageServiceTest extends TestCase
         $messageService   = new MessageService(
             $formFactoryMock,
             $messageAttachmentServiceMock,
+            $notificationServiceMock,
             $messageRepositoryMock,
             $conversationRepositoryMock,
             $userRepositoryMock,
@@ -407,6 +420,7 @@ class MessageServiceTest extends TestCase
     public function testMessageFailure(
         FormFactoryInterface|MockObject   $formFactoryMock,
         MessageAttachmentService          $messageAttachmentServiceMock,
+        NotificationService               $notificationServiceMock,
         MessageRepository                 $messageRepositoryMock,
         ConversationRepository|MockObject $conversationRepositoryMock,
         UserRepository           $userRepositoryMock,
@@ -418,6 +432,7 @@ class MessageServiceTest extends TestCase
         $messageService   = new MessageService(
             $formFactoryMock,
             $messageAttachmentServiceMock,
+            $notificationServiceMock,
             $messageRepositoryMock,
             $conversationRepositoryMock,
             $userRepositoryMock,
@@ -442,6 +457,7 @@ class MessageServiceTest extends TestCase
     public function testProcessAttachments(
         FormFactoryInterface|MockObject     $formFactoryMock,
         MessageAttachmentService|MockObject $messageAttachmentServiceMock,
+        NotificationService               $notificationServiceMock,
         MessageRepository      $messageRepositoryMock,
         ConversationRepository $conversationRepositoryMock,
         UserRepository         $userRepositoryMock,
@@ -452,6 +468,7 @@ class MessageServiceTest extends TestCase
         $messageService = new MessageService(
             $formFactoryMock,
             $messageAttachmentServiceMock,
+            $notificationServiceMock,
             $messageRepositoryMock,
             $conversationRepositoryMock,
             $userRepositoryMock,

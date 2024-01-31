@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Entity\Conversation;
 use App\Entity\User;
 use App\Enum\UserStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -29,7 +30,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 {
     public function __construct(
         ManagerRegistry                     $registry,
-        private ConversationRepository      $conversationRepository,
         private UserPasswordHasherInterface $passwordHasher,
         private EntityManagerInterface      $entityManager
     ) {
@@ -233,14 +233,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     /**
      * getNotConversationMemberFriends
      *
-     * @param  int $userId
-     * @param  int $conversationId
+     * @param  int          $userId
+     * @param  Conversation $conversation
      * @return User[] array
      */
-    public function getNotConversationMemberFriends(int $userId, int $conversationId): array
+    public function getNotConversationMemberFriends(int $userId, Conversation $conversation): array
     {
         $currentUser  = $this->find($userId);
-        $conversation = $this->conversationRepository->find($conversationId);
 
         $qb = $this->entityManager->createQueryBuilder();
 

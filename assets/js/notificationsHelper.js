@@ -3,6 +3,8 @@ function startActiveNotificationChannelEventSource(url) {
         withCredentials: true
     });
 
+    console.log('Active notification channel event source started');
+
     eventSource.onmessage = event => {
         const data = JSON.parse(event.data);
 
@@ -13,40 +15,129 @@ function startActiveNotificationChannelEventSource(url) {
             );
         }
 
-        if (data['anotherDataSet']) {
-            console.log('anotherDataSet');
+        if (data['conversationId']) {
+            processGroupConversationLabel(
+                data['conversationId']
+            );
+        }
+
+        if (data['conversationNameChangeData']) {
+            processConversationNameChange(data['conversationNameChangeData']);
+        }
+
+        if (data['removedUserData']) {
+            processConversationMemberRemoval(data['removedUserData']);
+        }
+
+        if (data['newConversationData']) {
+            processGroupConversationLabel(data['newConversationData']);
         }
     };
-
-    // todo receiving message preview
 
     return eventSource;
 }
 
-function startMessagePreviewEventSource(url, msgPreviewUrl) {
+function startMessagePreviewEventSource(url) {
     let eventSource = new EventSource(url, {
         withCredentials: true
     });
 
+    console.log('Message preview event source started');
+
     eventSource.onmessage = event => {
         const data = JSON.parse(event.data);
 
-        processMessagePreview(
-            data['messagePreview'],
-            msgPreviewUrl
-        );
-
+        if (data['messagePreview']) {
+            processMessagePreview(
+                data['messagePreview']
+            );
+        }
     }
 
     return eventSource;
 }
 
-async function processMessagePreview(data, msgPreviewUrl) {
+function startConversationHelperEventSource(url) {
+    let eventSource = new EventSource(url, {
+        withCredentials: true
+    });
+
+    return eventSource;
+}
+
+async function processConversationMemberRemoval(data) {
+    let response = await fetch('/chats/redirectRemovedUser', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({data: data})
+    });
+
+    let responseData = await response.json();
+
+    if (document.getElementById(`conversation-${ data['conversationId'] }-name`)) {
+        if (responseData['currentUserId'] == responseData['removedUserId']) {
+            window.location.href = '/chats/groups/';
+        } else {
+            removeUserRemoveButton(responseData['removedUserId']);
+        }
+    } else if (responseData['currentUserId'] == responseData['removedUserId']) {
+        removeConversationLabel(responseData['conversationId']);
+    }
+}
+
+async function processGroupConversationLabel(conversationId) {
+    let groupConversationsList = document.getElementsByName('group-conversations-list')[0];
+
+    if (groupConversationsList) {
+        try {
+            const response = await fetch('/chats/processConversationLabel', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({data: conversationId})
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to process message preview');
+            }
+
+            let element = await response.text();
+
+            groupConversationsList.innerHTML += element;
+
+            sortConversationLabels(conversationId);
+
+        } catch(error) {
+            console.log('Error during processing message preview', error);
+        }
+    }
+}
+
+function processConversationNameChange(data) {
+    let conversationId   = data['conversationId'];
+    let conversationName = data['conversationName'];
+
+    let conversationNameHeader = document.getElementById(`conversation-${ conversationId }-name`);
+    let conversationNameLabel  = document.getElementById(`conversation-${ conversationId }-name-label`);
+
+    if (conversationNameHeader) {
+        conversationNameHeader.innerHTML = conversationName;
+    }
+
+    if (conversationNameLabel) {
+        conversationNameLabel.innerHTML  = conversationName.slice(0, 20);
+    }
+}
+
+async function processMessagePreview(data) {
     let messagePreviewElement = document.getElementById(`conversation-${data['conversationId']}-last-message`);
 
     if (messagePreviewElement) {
         try {
-            const response = await fetch(msgPreviewUrl, {
+            const response = await fetch('/chats/messagePreview', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -76,7 +167,7 @@ function sortConversationLabels(conversationId) {
     if (conversationLabelToMove != conversationLabelsArray[0]) {
         conversationsListDiv.innerHTML = "";
         conversationsListDiv.append(conversationLabelToMove);
-        conversationsListDiv.innerHTML += '<hr class="hr w-100"/>';
+        conversationsListDiv.innerHTML += `<hr class="hr w-100"/>`;
 
         conversationLabelsArray.forEach(element => {
             if (element != conversationLabelToMove) {
@@ -89,7 +180,24 @@ function sortConversationLabels(conversationId) {
     }
 }
 
+function removeConversationLabel(conversationId) {
+    let converastionLabel = document.getElementById(`conversation-${ conversationId }`);
+    let hrLineToDelete    = converastionLabel.nextElementSibling;
+
+    converastionLabel.remove();
+    if (hrLineToDelete) {
+        hrLineToDelete.remove();
+    }
+}
+
+function removeUserRemoveButton(removedUserId) {
+    let userRemoveLiElement = document.getElementById(`member-${ removedUserId }`);
+
+    userRemoveLiElement.remove();
+}
+
 export {
     startMessagePreviewEventSource,
     startActiveNotificationChannelEventSource,
+    startConversationHelperEventSource
 };

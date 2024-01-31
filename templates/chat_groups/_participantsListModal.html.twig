@@ -8,7 +8,7 @@
             <div class="modal-body">
                 <ul class="list-group bg-light">
                     {% for member in conversation.conversationMembers %}
-                        <li class="list-group-item">
+                        <li id="member-{{ member.id }}" class="list-group-item">
                             <div class="row">
                                 <div class="col-6 my-auto">
                                     <span class="username_{{member.id}}">{{ member.username }}</span>

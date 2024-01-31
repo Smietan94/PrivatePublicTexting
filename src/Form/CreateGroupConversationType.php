@@ -11,6 +11,7 @@ use App\Validator\AttachmentValidator\UploadSize;
 use App\Validator\FileExtension;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -64,6 +65,9 @@ class CreateGroupConversationType extends AbstractType
             ])
             ->add('senderId', IntegerType::class, ['attr' => [
                 'hidden' => true
+            ]])
+            ->add('mercureScriptTagId', HiddenType::class, ['attr' => [
+                'value' => 'mercure-new-conversation-message-preview-url'
             ]])
         ;
     }

@@ -12,7 +12,7 @@ use Symfony\Component\Mercure\Update;
 class NotificationService
 {
     public function __construct(
-        private ConversationMemberRuntime $conversationProcesor,
+        private ConversationMemberRuntime $conversationProcessor,
         private HubInterface              $hub,
     ) {
     }
@@ -27,7 +27,7 @@ class NotificationService
      */
     public function messagePreviewMercureUpdater(Conversation $conversation, string $message, int $senderId): void
     {
-        $topics = $this->conversationProcesor->getConversationTopics($conversation);
+        $topics = $this->conversationProcessor->getConversationTopics($conversation);
 
         $data = [
             'message'        => substr($message, 0, 20),
@@ -36,11 +36,97 @@ class NotificationService
         ];
 
         $update = new Update(
-            $topics[0],
+            $topics,
             json_encode([
                 'messagePreview' => $data
             ]),
             true
+        );
+
+        $this->hub->publish($update);
+    }
+
+    /**
+     * processFirstGroupMessagePreview
+     *
+     * @param  Conversation $conversation
+     * @return void
+     */
+    public function processFirstGroupMessagePreview(Conversation $conversation): void
+    {
+        $topics  = $this->conversationProcessor->getConversationTopics($conversation);
+
+        $update = new Update(
+            $topics,
+            json_encode([
+                'conversationId' => $conversation->getId(),
+            ]),
+            true
+        );
+
+        $this->hub->publish($update);
+    }
+
+    /**
+     * processConversationMemberRemove
+     *
+     * @param  Conversation $conversation
+     * @param  int          $removedUserId
+     * @return void
+     */
+    public function processConversationMemberRemove(Conversation $conversation, int $removedUserId): void
+    {
+        $topics = $this->conversationProcessor->getConversationTopics($conversation);
+        $data   = [
+            'conversationId' => $conversation->getId(),
+            'removedUserId'  => $removedUserId,
+        ];
+
+        $update = new Update(
+            $topics,
+            json_encode([
+                'removedUserData' => $data
+            ]),
+            true
+        );
+
+        $this->hub->publish($update);
+    }
+
+    /**
+     * processNameChange
+     *
+     * @param  Conversation $conversation
+     * @return void
+     */
+    public function processNameChange(Conversation $conversation): void
+    {
+        $topics = $this->conversationProcessor->getConversationTopics($conversation);
+        $data   = [
+            'conversationName' => $conversation->getName(),
+            'conversationId'   => $conversation->getId()
+        ];
+
+        $update = new Update(
+            $topics,
+            json_encode([
+                'conversationNameChangeData' => $data
+            ]),
+            true
+        );
+
+        $this->hub->publish($update);
+    }
+
+    public function processNewConversationMemberAddition(int $conversationId, array $newMembersIds): void
+    {
+        $topics = array_map(fn ($id) => sprintf('notifications%d', $id), $newMembersIds);
+
+        $update = new Update(
+            $topics,
+            json_encode([
+                'newConversationData' => $conversationId
+            ])
         );
 
         $this->hub->publish($update);

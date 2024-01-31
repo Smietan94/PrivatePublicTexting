@@ -39,6 +39,8 @@ class AddUsersToConversationType extends AbstractType
         $conversationId = $options['data']['conversationId'];
         $userId         = $options['data']['currentUserId'];
 
+        $conversation = $this->conversationRepository->find($conversationId);
+
         // TODO submit
         $builder
             ->add('conversationId', HiddenType::class, [
@@ -48,10 +50,13 @@ class AddUsersToConversationType extends AbstractType
                 'multiple'     => true,
                 'choice_label' => 'username',
                 'choice_value' => 'id',
-                'choices'      => $this->userRepository->getNotConversationMemberFriends($userId, $conversationId),
+                'choices'      => $this->userRepository->getNotConversationMemberFriends($userId, $conversation),
                 'autocomplete' => true,
             ])
             ->add('addUsers', SubmitType::class)
+            ->add('mercureScriptTagId', HiddenType::class, ['attr' => [
+                'value' => 'mercure-add-users-to-conversation-url'
+            ]])
         ;
     }
     

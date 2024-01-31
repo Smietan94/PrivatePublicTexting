@@ -8,6 +8,7 @@ use App\Entity\Conversation;
 use App\Entity\Message;
 use App\Entity\User;
 use App\Enum\ConversationType;
+use App\Service\NotificationService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -24,7 +25,8 @@ class ConversationRepository extends ServiceEntityRepository
 {
     public function __construct(
         ManagerRegistry                $registry,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        private NotificationService    $notificationService
     ) {
         parent::__construct($registry, Conversation::class);
     }
@@ -150,12 +152,15 @@ class ConversationRepository extends ServiceEntityRepository
         return $qb->select('c')->from(Conversation::class, 'c')
             ->join('c.conversationMembers', 'user')
             ->join('c.conversationMembers', 'cm')
+            ->leftJoin('c.lastMessage', 'lm')
             ->andWhere($qb->expr()->eq('c.conversationType', ':conversationType'))
             ->andWhere($qb->expr()->eq('user', ':user'))
             ->andWhere($qb->expr()->orX(
                 $qb->expr()->like('LOWER(cm.username)', ':searchTerm'),
                 $qb->expr()->like('LOWER(c.name)', ':searchTerm')
             ))
+            ->orderBy('CASE WHEN lm.createdAt IS NULL THEN 1 ELSE 0 END', 'ASC')
+            ->addOrderBy('lm.createdAt', 'DESC')
             ->setParameters([
                 'conversationType' => $conversationType,
                 'user'             => $currentUser,
@@ -174,8 +179,9 @@ class ConversationRepository extends ServiceEntityRepository
      */
     public function addNewMember(int $conversationId, array $newMembers): array
     {
-        $conversation = $this->find($conversationId);
-        $messages     = [
+        $conversation  = $this->find($conversationId);
+        $newMembersIds = [];
+        $messages      = [
             'success' => [],
             'warnig'  => []
         ];
@@ -183,12 +189,19 @@ class ConversationRepository extends ServiceEntityRepository
         foreach ($newMembers as $user) {
             if (!in_array($conversation, $user->getConversations()->toArray())) {
                 $conversation->addConversationMember($user);
+                array_push($newMembersIds, $user->getId());
                 array_push($messages['success'], sprintf('%s successfully added to conversation', $user->getUsername()));
             } else {
                 array_push($messages['warning'], sprintf('%s is not Your friend, cannot be added to conversation', $user->getUsername()));
             }
         }
 
+        if (!empty($newMembersIds)) { 
+            $this->notificationService->processNewConversationMemberAddition(
+                $conversation->getId(),
+                $newMembersIds
+            );
+        }
 
         $this->entityManager->flush();
 

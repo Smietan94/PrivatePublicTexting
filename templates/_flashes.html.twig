@@ -1,4 +1,4 @@
-<div class="container flash-container">
+<div id="flash-container" class="container flash-container">
     {% for message in app.flashes('success') %}
         <div class="alert alert-success alert-dismissible fade show container-shadow" role="alert">
             {{ message | upper }}

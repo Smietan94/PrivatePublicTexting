@@ -1,12 +1,11 @@
 require('./app.js');
 
-import { startEventSource, checkLastEventSource, confirmMemberRemove } from './chatHelper';
+import { startEventSource, manageEventSource, confirmMemberRemove } from './chatHelper';
 
 let activeChatEventSource = null;
 
 document.addEventListener('turbo:load', function  () {
     const scriptTag              = document.getElementById('mercure-url');
-    const msgScriptTag           = document.getElementById('message-url');
     const rmConversationUserBtns = document.querySelectorAll('.rm-user-btn');
     const leaveGroupBtn          = document.querySelector('.leave-group-btn');
 
@@ -32,17 +31,12 @@ document.addEventListener('turbo:load', function  () {
         const url   = JSON.parse(scriptTag.textContent);
         const topic = url.split("?")[1];
 
-        if (!activeChatEventSource) {
-            activeChatEventSource = startEventSource(url, msgScriptTag);
-            console.log('connection established');
-        } else if (!checkLastEventSource(topic, activeChatEventSource) && activeChatEventSource) {
-            activeChatEventSource.close();
-            console.log('last event source closed')
-            activeChatEventSource = startEventSource(url, msgScriptTag);
-            console.log('new connection established')
-        } else {
-            console.log('connection remains unchanged');
-        }
+        activeChatEventSource = manageEventSource(
+            startEventSource,
+            activeChatEventSource,
+            topic,
+            url
+        );
     }
 });
 

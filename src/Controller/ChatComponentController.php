@@ -56,4 +56,30 @@ class ChatComponentController extends AbstractController
             'activeConversationId' => $request->query->get('convId')
         ]);
     }
+
+        /**
+     * handleMessage
+     *
+     * @param  Request $request
+     * @return Response
+     */
+    #[Route(
+        '/chats/handleMessage',
+        methods: ['POST'],
+        name: 'handle_message_app'
+    )]
+    public function handleMessage(Request $request): Response
+    {
+        // collecting message from ajax call
+        $jsonData = json_decode(
+            $request->getContent(),
+            true
+        );
+
+        // returning data to current user view
+        return $this->render('chat_components/_message.stream.html.twig', [
+            'message' => $jsonData['data'],
+            // 'currentUserId' => $this->currentUser->getId(),
+        ]);
+    }
 }

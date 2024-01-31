@@ -108,29 +108,6 @@ class ChatController extends AbstractController
     }
 
     /**
-     * handleMessage
-     *
-     * @param  Request $request
-     * @return Response
-     */
-    #[Route(
-        '/chats/solo/handleMessage',
-        methods: ['POST'],
-        name: 'handle_message_app'
-    )]
-    public function handleMessage(Request $request): Response
-    {
-        $jsonData = json_decode(
-            $request->getContent(),
-            true
-        );
-
-        return $this->render('chat_components/_message.stream.html.twig', [
-            'message' => $jsonData['data']
-        ]);
-    }
-
-    /**
      * startConversation
      *
      * @param  Request $request

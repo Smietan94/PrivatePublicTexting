@@ -18,13 +18,8 @@
         {% endblock %}
     </head>
     <body>
-        {% set currentUserId = app.user.id %}
+        {% set currentUserId      = app.user.id %}
         {% set notificationsTopic = 'notifications' ~ currentUserId %}
-        {% set topics = [] %} {# setting array of topics to subscibe within authorization cookie #}
-        {% set topics = topics|Push(notificationsTopic) %}
-        <script type="application/json" id="mercure-notifications-url">
-            {{ mercure(notificationsTopic)|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_HEX_TAG'))|raw  }}
-        </script>
         <div class="container-shadow bg-dark">
             <div class="container">
                 <nav class="navbar navbar-expand-lg navbar-dark">
@@ -60,10 +55,27 @@
                                     </a>
                                     <ul class="dropdown-menu dropdown-menu-end dropstart bg-light" aria-labelledby="userDropDownMenu">
                                         <li>
-                                            <a class="dropdown-item" href="#">notifications</a>
+                                            <a class="dropdown-item" href="#">
+                                                notifications
+                                                <span class="badge rounded-pill bg-primary px-3 py-2 ms-3">
+                                                    {{ app.user.receivedNotifications | length }}
+                                                </span>
+                                            </a>
                                         </li>
                                         <li>
-                                            <a class="dropdown-item" href="{{ path('app_friends_requests') }}">friend requests</a>
+                                            <a class="dropdown-item" href="{{ path('app_friends_requests') }}">
+                                                friend requests
+                                                <span class="badge rounded-pill bg-primary px-3">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill-down" viewBox="0 0 16 16">
+                                                        <path d="M12.5 9a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7m.354 5.854 1.5-1.5a.5.5 0 0 0-.708-.708l-.646.647V10.5a.5.5 0 0 0-1 0v2.793l-.646-.647a.5.5 0 0 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                                                        <path d="M2 13c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4"/>
+                                                    </svg> {{ app.user.receivedFriendRequests | length }}
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill-up" viewBox="0 0 16 16">
+                                                        <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.354-5.854 1.5 1.5a.5.5 0 0 1-.708.708L13 11.707V14.5a.5.5 0 0 1-1 0v-2.793l-.646.647a.5.5 0 0 1-.708-.708l1.5-1.5a.5.5 0 0 1 .708 0M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                                                        <path d="M2 13c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4"/>
+                                                    </svg> {{ app.user.sentFriendRequests | length }}
+                                                </span>
+                                            </a>
                                         </li>
                                         <li>
                                             <a class="dropdown-item" href="#">settings</a>
@@ -85,6 +97,15 @@
         </div>
         {% include '_flashes.html.twig' %}
         {% block body %}{% endblock %}
+
+        {% if topics is not defined %}
+            {% set topics = [] %} {# setting array of topics to subscibe within authorization cookie #}
+        {% endif %}
+        {% set topics = topics|Push(notificationsTopic) %}
+
+        <script type="application/json" id="mercure-notifications-url">
+            {{ mercure(notificationsTopic, { subscribe: topics })|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_HEX_TAG'))|raw  }}
+        </script>
     </body>
     <footer class="mt-5 container-shadow">
     </footer>

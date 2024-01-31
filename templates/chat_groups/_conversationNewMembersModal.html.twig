@@ -6,11 +6,11 @@
             'methods': 'POST'
         }}) }}
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Change Conversation Name</h1>
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Add new conversation member</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                {{ form_widget(addUsersForm.users) }}
+                {{ form_widget(addUsersForm.users, {'attr': {'data-action': 'conversation#mercureEventSource'}}) }}
                 {{ form_widget(addUsersForm.conversationId) }}
             </div>
             <div class="modal-body">
@@ -27,6 +27,7 @@
                         </button>
                     </div>
                 </div>
+                {{ form_widget(addUsersForm.mercureScriptTagId, {'id': 'mercureScriptTagId'}) }}
             </div>
         {{ form_end(addUsersForm) }}
         </div>

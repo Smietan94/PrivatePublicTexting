@@ -14,6 +14,7 @@ use App\Repository\UserRepository;
 use App\Service\ChatService;
 use App\Service\MessageAttachmentService;
 use App\Service\MessageService;
+use App\Service\NotificationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -34,7 +35,7 @@ class ChatGroupsController extends AbstractController
         private MessageRepository        $messageRepository,
         private ChatService              $chatService,
         private MessageService           $messageService,
-        private MessageAttachmentService $messageAttachmentService
+        private MessageAttachmentService $messageAttachmentService,
     ) {
         // collecting logged user
         $userName          = $this->security->getUser()->getUserIdentifier();
@@ -141,32 +142,6 @@ class ChatGroupsController extends AbstractController
             'conversations'    => $groupConversations,
             'createGroupForm'  => $createGroupForm->createView(),
             'searchForm'       => $searchForm->createView()
-        ]);
-    }
-
-    /**
-     * handleMessage
-     *
-     * @param  Request $request
-     * @return Response
-     */
-    #[Route(
-        '/chats/groups/handleMessage',
-        methods: ['POST'],
-        name: 'handle_group_message_app'
-    )]
-    public function handleMessage(Request $request): Response
-    {
-        // collecting message from ajax call
-        $jsonData = json_decode(
-            $request->getContent(),
-            true
-        );
-
-        // returning data to current user view
-        return $this->render('chat_components/_message.stream.html.twig', [
-            'message'       => $jsonData['data'],
-            // 'currentUserId' => $this->currentUser->getId(),
         ]);
     }
 

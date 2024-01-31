@@ -24,6 +24,7 @@ class ChatService
         private MessageRepository      $messageRepository,
         private FormFactoryInterface   $formFactory,
         private EntityManagerInterface $entityManager,
+        private NotificationService    $notificationService
     ) {
     }
 
@@ -94,6 +95,8 @@ class ChatService
     public function removeMember(Conversation $conversation, User $memberToRm): bool
     {
         if ($this->checkIfUserIsMemberOfConversation($conversation, $memberToRm)) {
+            $this->notificationService->processConversationMemberRemove($conversation, $memberToRm->getId());
+
             $conversation->removeConversationMember($memberToRm);
             $this->entityManager->flush();
 
@@ -116,6 +119,8 @@ class ChatService
         if ($this->checkIfUserIsMemberOfConversation($conversation, $user)) {
             $conversation->setName($conversationName);
             $this->entityManager->flush();
+
+            $this->notificationService->processNameChange($conversation);
 
             return true;
         }

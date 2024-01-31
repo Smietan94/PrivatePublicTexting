@@ -1,12 +1,12 @@
 {% if conversation %}
     <div class="card-header messenger-card">
         <div class="row p-3">
-            <div class="col-6">
-                <small class="fs-4 fw-light">
+            <div class="col-10">
+                <small id="conversation-{{ conversation.id }}-name" class="fs-4 fw-light">
                     {{ conversation.name }}
                 </small class="fs-3">
             </div>
-            <div class="col-6 text-end">
+            <div class="col-2 text-end">
                 {% include 'chat_groups/_conversationDropdownMenu.html.twig' %}
             </div>
         </div>
