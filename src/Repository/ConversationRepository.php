@@ -198,8 +198,7 @@ class ConversationRepository extends ServiceEntityRepository
 
         if (!empty($newMembersIds)) { 
             $this->notificationService->processNewConversationMemberAddition(
-                $conversation->getId(),
-                $newMembersIds
+                $conversation
             );
         }
 

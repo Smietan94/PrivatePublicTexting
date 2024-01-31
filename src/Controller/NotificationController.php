@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Repository\ConversationRepository;
 use App\Repository\UserRepository;
+use App\Service\ChatService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,7 +22,8 @@ class NotificationController extends AbstractController
     public function __construct(
         private Security               $security,
         private UserRepository         $userRepository,
-        private ConversationRepository $conversationRepository
+        private ConversationRepository $conversationRepository,
+        private ChatService            $chatService
     ) {
         // collecting current user
         $username          = $this->security->getUser()->getUserIdentifier();
@@ -95,11 +97,6 @@ class NotificationController extends AbstractController
         ]);
     }
 
-    // public function createMercureEventSourceScriptTagForMemberAddition(): Response
-    // {
-
-    // }
-
     /**
      * redirectRemovedUser
      *
@@ -128,6 +125,32 @@ class NotificationController extends AbstractController
             'currentUserId'  => $this->currentUser->getId(),
             'removedUserId'  => $removedUserId,
             'conversationId' => $conversationId
+        ]);
+    }
+
+    /**
+     * processConversationMembersList
+     *
+     * @param  Request $request
+     * @return Response
+     */
+    #[Route('/chats/group/updateMembersList', name: 'app_chat_update_members_list')]
+    public function processConversationMembersList(Request $request): Response
+    {
+        $jsonData = json_decode(
+            $request->getContent(),
+            true
+        );
+
+        $conversation      = $this->conversationRepository->find($jsonData['data']);
+        $removeMemberForms = $this->chatService->getRemoveConversationMemberForms(
+            $conversation->getConversationMembers()->toArray()
+        );
+
+        return $this->render('chat_groups/_conversationMembersList.html.twig', [
+            'conversation'      => $conversation,
+            'removeMemberForms' => $removeMemberForms,
+            'currentUserId'     => $this->currentUser->getId()
         ]);
     }
 }

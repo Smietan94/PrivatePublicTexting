@@ -1,0 +1,36 @@
+{% for member in conversation.conversationMembers %}
+    <li id="member-{{ member.id }}" class="list-group-item">
+        <div class="row">
+            <div class="col-6 my-auto">
+                <span class="username_{{member.id}}">{{ member.username }}</span>
+            </div>
+            <div class="col-6 text-end">
+                {% if member.id != currentUserId %}
+                    {{ form_start(removeMemberForms[member.id], {
+                        'name':   'remove_conversation_member_' ~ member.id,
+                        'action': path('app_chat_group_remove_from_conversation'),
+                        'method': 'POST'
+                    }) }}
+                        {{ form_widget(removeMemberForms[member.id].memberId, {'attr': {
+                            'value': member.id
+                        }}) }}
+                        {{ form_widget(removeMemberForms[member.id].conversationId, {
+                            'name': 'conversation' ~ conversation.id,
+                            'attr': {
+                                'value': conversation.id
+                        }}) }}
+                        {{ form_widget(removeMemberForms[member.id].remove, {'attr': {
+                            'data-member-id': member.id,
+                        }}) }}
+                    {{ form_end(removeMemberForms[member.id]) }}
+                {% else %}
+                    <button class="btn btn-primary rm-user-btn" disabled>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-person-x-fill" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m6.146-2.854a.5.5 0 0 1 .708 0L14 6.293l1.146-1.147a.5.5 0 0 1 .708.708L14.707 7l1.147 1.146a.5.5 0 0 1-.708.708L14 7.707l-1.146 1.147a.5.5 0 0 1-.708-.708L13.293 7l-1.147-1.146a.5.5 0 0 1 0-.708z"/>
+                        </svg>
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    </li>
+{% endfor %}

@@ -13,7 +13,7 @@ class NotificationService
 {
     public function __construct(
         private ConversationMemberRuntime $conversationProcessor,
-        private HubInterface              $hub,
+        private HubInterface              $hub
     ) {
     }
 
@@ -118,14 +118,18 @@ class NotificationService
         $this->hub->publish($update);
     }
 
-    public function processNewConversationMemberAddition(int $conversationId, array $newMembersIds): void
+    public function processNewConversationMemberAddition(Conversation $conversation): void
     {
-        $topics = array_map(fn ($id) => sprintf('notifications%d', $id), $newMembersIds);
+        $topics = $this->conversationProcessor->getConversationTopics($conversation);
+        $data   = [
+            'conversationId'       => $conversation->getId(),
+            'isConversationUpdate' => true
+        ];
 
         $update = new Update(
             $topics,
             json_encode([
-                'newConversationData' => $conversationId
+                'newConversationData' => $data
             ])
         );
 

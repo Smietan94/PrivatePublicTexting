@@ -30,7 +30,10 @@ function startActiveNotificationChannelEventSource(url) {
         }
 
         if (data['newConversationData']) {
-            processGroupConversationLabel(data['newConversationData']);
+            processGroupConversationLabel(
+                data['newConversationData']['conversationId'],
+                data['newConversationData']['isConversationUpdate']
+            );
         }
     };
 
@@ -87,7 +90,7 @@ async function processConversationMemberRemoval(data) {
     }
 }
 
-async function processGroupConversationLabel(conversationId) {
+async function processGroupConversationLabel(conversationId, isConversationUpdate = false) {
     let groupConversationsList = document.getElementsByName('group-conversations-list')[0];
 
     if (groupConversationsList) {
@@ -109,6 +112,10 @@ async function processGroupConversationLabel(conversationId) {
             groupConversationsList.innerHTML += element;
 
             sortConversationLabels(conversationId);
+
+            if (isConversationUpdate == true) {
+                updateConversationMembersList(conversationId);
+            }
 
         } catch(error) {
             console.log('Error during processing message preview', error);
@@ -159,6 +166,30 @@ async function processMessagePreview(data) {
     }
 }
 
+async function updateConversationMembersList(conversationId) {
+    let conversationMembersList = document.getElementById('conversation-members-list');
+
+    if (conversationMembersList) {
+        try {
+            let response = await fetch('/chats/group/updateMembersList', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({data: conversationId})
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update conversation members list');
+            }
+
+            conversationMembersList.innerHTML = await response.text();
+        } catch (error) {
+            console.log('Error during updating conversation members list', error);
+        }
+    }
+}
+
 function sortConversationLabels(conversationId) {
     let conversationsListDiv    = document.getElementById('conversations-list');
     let conversationLabelToMove = document.getElementById(`conversation-${ conversationId }`);
@@ -193,7 +224,9 @@ function removeConversationLabel(conversationId) {
 function removeUserRemoveButton(removedUserId) {
     let userRemoveLiElement = document.getElementById(`member-${ removedUserId }`);
 
-    userRemoveLiElement.remove();
+    if (userRemoveLiElement) {
+        userRemoveLiElement.remove();
+    }
 }
 
 export {

@@ -202,8 +202,7 @@ class ChatGroupsController extends AbstractController
             'addUsersForm' => $addUsersForm->createView(),
             'changeConversationNameForm' => $this->chatService->getChangeConversationNameForm(),
             'removeMemberForms'          => $this->chatService->getRemoveConversationMemberForms(
-                $groupConversation->getConversationMembers()->toArray(),
-                $this->currentUser
+                $groupConversation->getConversationMembers()->toArray()
             ),
         ]);
     }
