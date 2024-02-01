@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Enum\ConversationType;
 use App\Repository\ConversationRepository;
+use App\Repository\MessageRepository;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -21,7 +22,8 @@ class ChatComponentController extends AbstractController
     public function __construct(
         private Security               $security,
         private ConversationRepository $conversationRepository,
-        private UserRepository         $userRepository
+        private UserRepository         $userRepository,
+        private MessageRepository      $messageRepository
     ) {
         // collecting logged user
         $userName          = $this->security->getUser()->getUserIdentifier();
@@ -76,9 +78,11 @@ class ChatComponentController extends AbstractController
             true
         );
 
+        $message = $this->messageRepository->find($jsonData['data']);
+
         // returning data to current user view
         return $this->render('chat_components/_message.stream.html.twig', [
-            'message' => $jsonData['data'],
+            'message' => $message,
             // 'currentUserId' => $this->currentUser->getId(),
         ]);
     }

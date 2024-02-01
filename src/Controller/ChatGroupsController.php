@@ -176,6 +176,19 @@ class ChatGroupsController extends AbstractController
     }
 
     /**
+     * removeConversation
+     * 
+     * @param  Request $request
+     * @return Response
+     */
+    #[Route('group/chats/removeConversation', name: 'app_chat_remove_conversation')]
+    public function removeConversation(Request $request): Response
+    {
+        
+        return $this->redirectToRoute('app_chat_groups');
+    }
+
+    /**
      * processResponse
      *
      * @param  Request        $request

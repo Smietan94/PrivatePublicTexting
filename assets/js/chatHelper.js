@@ -6,9 +6,11 @@ function startEventSource(url) {
     eventSource.onmessage = event => {
         const data = JSON.parse(event.data);
 
-        processMessage(
-            data['message']
-        );
+        if (data['messageId']) {
+            processMessage(
+                data['messageId']
+            );
+        }
     }
 
     return eventSource;
@@ -20,7 +22,7 @@ function checkLastEventSource(topic, activeEventSource) {
     return activeTopic == topic;
 }
 
-async function processMessage(data) {
+async function processMessage(messageId) {
     const resultTarget = document.getElementById('messages');
 
     try {
@@ -29,7 +31,7 @@ async function processMessage(data) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({data: data})
+            body: JSON.stringify({data: messageId})
         });
 
         if (!response.ok) {

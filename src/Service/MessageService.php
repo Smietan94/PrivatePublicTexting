@@ -67,8 +67,7 @@ class MessageService
 
             $this->messageMercureUpdater(
                 $messengerTopic,
-                $conversation->getId(),
-                $data
+                $conversation
             );
 
             //TODO send message preview through notifications channel
@@ -201,17 +200,16 @@ class MessageService
     /**
      * mercureUpdater
      *
-     * @param  string $topic
-     * @param  int    $conversationId
-     * @param  array  $data
+     * @param  string       $topic
+     * @param  Conversation $conversationId
      * @return void
      */
-    public function messageMercureUpdater(string $topic, int $conversationId, array $data): void
+    public function messageMercureUpdater(string $topic, Conversation $conversation): void
     {
         $update = new Update(
-            sprintf("%s%d", $topic, $conversationId),
+            sprintf("%s%d", $topic, $conversation->getId()),
             json_encode([
-                'message' => $data,
+                'messageId' => $conversation->getLastMessage()->getId(),
             ]),
             true
         );
