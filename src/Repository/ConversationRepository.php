@@ -7,6 +7,7 @@ namespace App\Repository;
 use App\Entity\Conversation;
 use App\Entity\Message;
 use App\Entity\User;
+use App\Enum\ConversationStatus;
 use App\Enum\ConversationType;
 use App\Service\NotificationService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -48,15 +49,17 @@ class ConversationRepository extends ServiceEntityRepository
             ->join('c.conversationMembers', 'user')
             ->join('c.conversationMembers', 'friend')
             ->andWhere($qb->expr()->andX(
+                $qb->expr()->neq('user', 'friend'),
                 $qb->expr()->eq('user', ':user'),
                 $qb->expr()->eq('friend', ':friend'),
-                $qb->expr()->neq('user', 'friend'),
-                $qb->expr()->eq('c.conversationType', ':conversationType')
+                $qb->expr()->eq('c.conversationType', ':conversationType'),
+                $qb->expr()->eq('c.status', ':status')
             ))
             ->setParameters([
                 'user'             => $user,
                 'friend'           => $friend,
-                'conversationType' => $conversationType
+                'conversationType' => $conversationType,
+                'status'           => ConversationStatus::ACTIVE->toInt()
             ])
             ->getQuery()
             ->getOneOrNullResult();
@@ -77,14 +80,18 @@ class ConversationRepository extends ServiceEntityRepository
             ->from(Conversation::class, 'c')
             ->join('c.conversationMembers', 'user')
             ->leftJoin('c.lastMessage', 'lm')
-            ->andWhere($qb->expr()->eq('user', ':user'))
-            ->andWhere($qb->expr()->isMemberOf('c', 'user.conversations'))
-            ->andWhere($qb->expr()->eq('c.conversationType', ':conversationType'))
+            ->andWhere($qb->expr()->andX(
+                $qb->expr()->isMemberOf('c', 'user.conversations'),
+                $qb->expr()->eq('user', ':user'),
+                $qb->expr()->eq('c.conversationType', ':conversationType'),
+                $qb->expr()->eq('c.status', ':status')
+            ))
             ->orderBy('CASE WHEN lm.createdAt IS NULL THEN 1 ELSE 0 END', 'ASC')
             ->addOrderBy('lm.createdAt', 'DESC')
             ->setParameters([
-                'user' => $currentUser,
-                'conversationType' => $conversationType
+                'user'             => $currentUser,
+                'conversationType' => $conversationType,
+                'status'           => ConversationStatus::ACTIVE->toInt()
             ])
             ->getQuery()
             ->getResult();
@@ -104,6 +111,7 @@ class ConversationRepository extends ServiceEntityRepository
     {
         $conversation = new Conversation();
         $conversation->setConversationType($conversationType);
+        $conversation->setStatus(ConversationStatus::ACTIVE->toInt());
 
         array_push($conversationMembers, $user);
         foreach($conversationMembers as $member) {
@@ -153,8 +161,11 @@ class ConversationRepository extends ServiceEntityRepository
             ->join('c.conversationMembers', 'user')
             ->join('c.conversationMembers', 'cm')
             ->leftJoin('c.lastMessage', 'lm')
-            ->andWhere($qb->expr()->eq('c.conversationType', ':conversationType'))
-            ->andWhere($qb->expr()->eq('user', ':user'))
+            ->andWhere($qb->expr()->andX(
+                $qb->expr()->eq('user', ':user'),
+                $qb->expr()->eq('c.conversationType', ':conversationType'),
+                $qb->expr()->eq('c.status', ':status')
+            ))
             ->andWhere($qb->expr()->orX(
                 $qb->expr()->like('LOWER(cm.username)', ':searchTerm'),
                 $qb->expr()->like('LOWER(c.name)', ':searchTerm')
@@ -164,7 +175,8 @@ class ConversationRepository extends ServiceEntityRepository
             ->setParameters([
                 'conversationType' => $conversationType,
                 'user'             => $currentUser,
-                'searchTerm'       => '%' . strtolower($searchTerm) . '%'
+                'searchTerm'       => '%' . strtolower($searchTerm) . '%',
+                'status'           => ConversationStatus::ACTIVE->toInt()
             ])
             ->getQuery()
             ->getResult();
@@ -207,6 +219,29 @@ class ConversationRepository extends ServiceEntityRepository
         return $messages;
     }
 
+    /**
+     * conversationSoftDelete
+     *
+     * @param  Conversation $conversation
+     * @return void
+     */
+    public function conversationSoftDelete(Conversation $conversation): void 
+    {
+        $conversation->setStatus(ConversationStatus::DELETED->toInt());
+        $conversation->setDeletedAt(new \DateTime());
+
+        $this->notificationService->processConversationRemove($conversation);
+
+        $this->entityManager->flush();
+    }
+
+    /**
+     * updateLastMessage
+     *
+     * @param  int     $conversationId
+     * @param  Message $message
+     * @return void
+     */
     public function updateLastMessage(int $conversationId, Message $message): void
     {
         $conversation = $this->find($conversationId);

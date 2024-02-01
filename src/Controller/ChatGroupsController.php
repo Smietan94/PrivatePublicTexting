@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Entity\Conversation;
 use App\Entity\User;
+use App\Enum\ConversationStatus;
 use App\Enum\ConversationType;
 use App\Form\CreateGroupConversationType;
 use App\Repository\ConversationRepository;
@@ -177,6 +178,7 @@ class ChatGroupsController extends AbstractController
 
     /**
      * removeConversation
+     * performs soft delete of conversation by setting the 
      * 
      * @param  Request $request
      * @return Response
@@ -184,7 +186,17 @@ class ChatGroupsController extends AbstractController
     #[Route('group/chats/removeConversation', name: 'app_chat_remove_conversation')]
     public function removeConversation(Request $request): Response
     {
-        
+        $conversationId = $request->get('remove_conversation')['conversationId'];
+        $conversation   = $this->conversationRepository->find($conversationId);
+
+        if (in_array($conversation, $this->currentUser->getConversations()->toArray())) {
+            $this->conversationRepository->conversationSoftDelete($conversation);
+
+            $this->addFlash('success', 'Conversation successfully deleted');
+        } else {
+            $this->addFlash('danger', 'You are not member of this conversation');
+        }
+
         return $this->redirectToRoute('app_chat_groups');
     }
 
@@ -198,6 +210,12 @@ class ChatGroupsController extends AbstractController
      */
     private function processResponse(Request $request, ?Conversation $groupConversation = null, array $groupConversations): Response
     {
+        if ($groupConversation->getStatus() === ConversationStatus::DELETED->toInt()) {
+            $this->addFlash('warning', 'Invalid conversation');
+
+            return $this->redirectToRoute('app_chat_groups');
+        }
+
         // creating forms
         [$messageForm, $searchForm, $addUsersForm] = $this->createChatForms($request, $groupConversation);
 
@@ -213,10 +231,11 @@ class ChatGroupsController extends AbstractController
             'messageForm'  => $messageForm->createView(),
             'searchForm'   => $searchForm->createView(),
             'addUsersForm' => $addUsersForm->createView(),
+            'removeConversationForm'     => $this->chatService->createRemoveConversationForm()->createView(),
             'changeConversationNameForm' => $this->chatService->getChangeConversationNameForm(),
             'removeMemberForms'          => $this->chatService->getRemoveConversationMemberForms(
                 $groupConversation->getConversationMembers()->toArray()
-            ),
+            )
         ]);
     }
 

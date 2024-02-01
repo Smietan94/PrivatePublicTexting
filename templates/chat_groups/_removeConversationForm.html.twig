@@ -1,0 +1,11 @@
+{{ form_start(removeConversationForm, {
+    'action': path('app_chat_remove_conversation'),
+    'method': 'GET'
+}) }}
+    {{ form_widget(removeConversationForm.conversationId, {'attr': {
+        'value': conversation.id
+    }}) }}
+    {{ form_widget(removeConversationForm.remove, {'attr': {
+        'class': 'dropdown-item remove-conversation-btn'
+    }}) }}
+{{ form_end(removeConversationForm) }}

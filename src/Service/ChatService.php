@@ -10,6 +10,7 @@ use App\Form\AddUsersToConversationType;
 use App\Form\ChangeConversationNameType;
 use App\Form\CreateGroupConversationType;
 use App\Form\RemoveConversationMemberType;
+use App\Form\RemoveConversationType;
 use App\Form\SearchFormType;
 use App\Repository\MessageRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -151,6 +152,11 @@ class ChatService
     public function createSearchForm(): FormInterface
     {
         return $this->formFactory->create(SearchFormType::class);
+    }
+
+    public function createRemoveConversationForm(): FormInterface
+    {
+        return $this->formFactory->create(RemoveConversationType::class);
     }
 
     /**

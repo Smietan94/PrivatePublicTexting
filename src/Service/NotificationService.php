@@ -135,4 +135,19 @@ class NotificationService
 
         $this->hub->publish($update);
     }
+
+    public function processConversationRemove(Conversation $conversation): void
+    {
+        $topics = $this->conversationProcessor->getConversationTopics($conversation);
+
+        $update = new Update(
+            $topics,
+            json_encode([
+                'removedConversationId' => $conversation->getId()
+            ]),
+            true
+        );
+
+        $this->hub->publish($update);
+    }
 }

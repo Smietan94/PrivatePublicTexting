@@ -129,6 +129,27 @@ class NotificationController extends AbstractController
     }
 
     /**
+     * processConversationRemove
+     *
+     * @param  Request $request
+     * @return Response
+     */
+    #[Route('/chats/processConversationRemove', name: 'app_chat_peocess_conversation_remove')]
+    public function processConversationRemove(Request $request): Response
+    {
+        $jsonData = json_decode(
+            $request->getContent(),
+            true
+        );
+
+        $conversation = $this->conversationRepository->find($jsonData['data']);
+
+        $this->addFlash('warning', sprintf('Conversation %s has been deleted', $conversation->getName()));
+
+        return new JsonResponse();
+    }
+
+    /**
      * processConversationMembersList
      *
      * @param  Request $request

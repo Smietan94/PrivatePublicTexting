@@ -8,12 +8,23 @@ document.addEventListener('turbo:load', function  () {
     const scriptTag              = document.getElementById('mercure-url');
     const rmConversationUserBtns = document.querySelectorAll('.rm-user-btn');
     const leaveGroupBtn          = document.querySelector('.leave-group-btn');
+    const removeConversationBtn  = document.querySelector('.remove-conversation-btn');
 
     if (rmConversationUserBtns) {
         rmConversationUserBtns.forEach(button => {
             button.addEventListener('click', function(event) {
                 confirmMemberRemove(button, event);
             }) 
+        });
+    }
+
+    if (removeConversationBtn) {
+        removeConversationBtn.addEventListener('click', function(event) {
+            var confirmation = confirm('Do you want to remove this conversation?');
+
+            if (!confirmation) {
+                event.preventDefault();
+            }
         });
     }
 

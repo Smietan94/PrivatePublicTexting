@@ -35,6 +35,10 @@ function startActiveNotificationChannelEventSource(url) {
                 data['newConversationData']['isConversationUpdate']
             );
         }
+
+        if (data['removedConversationId']) {
+            processConversationRemove(data['removedConversationId']);
+        }
     };
 
     return eventSource;
@@ -87,6 +91,22 @@ async function processConversationMemberRemoval(data) {
         }
     } else if (responseData['currentUserId'] == responseData['removedUserId']) {
         removeConversationLabel(responseData['conversationId']);
+    }
+}
+
+async function processConversationRemove(removedConversationId) {
+    let response = await fetch('/chats/processConversationRemove', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({data: removedConversationId})
+    });
+
+    if (document.getElementById(`conversation-${ removedConversationId }-name`)) {
+        window.location.href = '/chats/groups/';
+    } else if (document.getElementsByName('group-conversations-list')) {
+        removeConversationLabel(removedConversationId);
     }
 }
 
@@ -198,7 +218,7 @@ function sortConversationLabels(conversationId) {
     if (conversationLabelToMove != conversationLabelsArray[0]) {
         conversationsListDiv.innerHTML = "";
         conversationsListDiv.append(conversationLabelToMove);
-        conversationsListDiv.innerHTML += `<hr class="hr w-100"/>`;
+        conversationsListDiv.innerHTML += '<hr class="hr w-100"/>'
 
         conversationLabelsArray.forEach(element => {
             if (element != conversationLabelToMove) {

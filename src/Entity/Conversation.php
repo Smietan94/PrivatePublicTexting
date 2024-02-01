@@ -7,6 +7,7 @@ namespace App\Entity;
 use App\Repository\ConversationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
@@ -35,6 +36,12 @@ class Conversation
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Message $lastMessage = null;
+
+    #[ORM\Column(nullable: false)]
+    private ?int $status = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTime $deleted_at = null;
 
     public function __construct()
     {
@@ -135,6 +142,30 @@ class Conversation
     public function setLastMessage(?Message $lastMessage): static
     {
         $this->lastMessage = $lastMessage;
+
+        return $this;
+    }
+
+    public function getStatus(): ?int
+    {
+        return $this->status;
+    }
+
+    public function setStatus(int $status): static
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getDeletedAt(): ?\DateTime
+    {
+        return $this->deleted_at;
+    }
+
+    public function setDeletedAt(\DateTime $deleted_at): static
+    {
+        $this->deleted_at = $deleted_at;
 
         return $this;
     }
