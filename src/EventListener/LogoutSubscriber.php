@@ -39,7 +39,6 @@ class LogoutSubscriber implements EventSubscriberInterface
     public function onLogout(LogoutEvent $event): void
     {
         $user = $event->getToken()->getUser();
-        $this->userRepository->changeStatus(UserStatus::LOGGEDOUT->toInt(), $user);
-        $this->userRepository->updateLastSeen($user);
+        $this->userRepository->changeActivityStatus($user, UserStatus::LOGGEDOUT->toInt());
     }
 }

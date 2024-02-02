@@ -118,7 +118,7 @@ class ConversationRepository extends ServiceEntityRepository
             $conversation->addConversationMember($member);
         }
 
-        if (count($conversationMembers) > 2) {
+        if ($conversationType === ConversationType::GROUP->toInt()) {
             if ($conversationName != null) {
                 $conversation->setName($conversationName);
             } else {

@@ -7,6 +7,7 @@ namespace App\Repository;
 use App\Entity\Conversation;
 use App\Entity\User;
 use App\Enum\UserStatus;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
@@ -34,6 +35,24 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         private EntityManagerInterface      $entityManager
     ) {
         parent::__construct($registry, User::class);
+    }
+
+    /**
+     * changeActivityStatus
+     *
+     * @param  User $currentUser
+     * @param  int  $status
+     * @return void
+     */
+    public function changeActivityStatus(User $currentUser, int $status): void
+    {
+        $currentUser->setStatus($status);
+
+        if (in_array($status, [UserStatus::INACTIVE->toInt(), UserStatus::LOGGEDOUT->toInt()])) {
+            $currentUser->setLastSeen(new \DateTime());
+        }
+
+        $this->entityManager->flush();
     }
 
     /**
@@ -205,30 +224,30 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     //         ->getResult();
     // }
 
-    /**
-     * changeStatus
-     *
-     * @param  int  $status
-     * @param  User $user
-     * @return void
-     */
-    public function changeStatus(int $status, User $user): void
-    {
-        $user->setStatus($status);
-        $this->entityManager->flush();
-    }
+    // /**
+    //  * changeStatus
+    //  *
+    //  * @param  int  $status
+    //  * @param  User $user
+    //  * @return void
+    //  */
+    // public function changeStatus(int $status, User $user): void
+    // {
+    //     $user->setStatus($status);
+    //     $this->entityManager->flush();
+    // }
 
-    /**
-     * updateLastSeen
-     *
-     * @param  User $user
-     * @return void
-     */
-    public function updateLastSeen(User $user): void
-    {
-        $user->setLastSeen(new \DateTime());
-        $this->entityManager->flush();
-    }
+    // /**
+    //  * updateLastSeen
+    //  *
+    //  * @param  User $user
+    //  * @return void
+    //  */
+    // public function updateLastSeen(User $user): void
+    // {
+    //     $user->setLastSeen(new \DateTime());
+    //     $this->entityManager->flush();
+    // }
 
     /**
      * getNotConversationMemberFriends

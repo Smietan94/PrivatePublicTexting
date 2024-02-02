@@ -37,6 +37,6 @@ class LoginSubscriber implements EventSubscriberInterface
     public function onSuccessLogin(LoginSuccessEvent $event): void
     {
         $user = $event->getPassport()->getUser();
-        $this->userRepository->changeStatus(UserStatus::ACTIVE->toInt(), $user);
+        $this->userRepository->changeActivityStatus($user, UserStatus::ACTIVE->toInt());
     }
 }

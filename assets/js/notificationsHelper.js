@@ -1,9 +1,16 @@
+import { Modal } from "bootstrap";
+
 function startActiveNotificationChannelEventSource(url) {
+    let reloadWindowModal = new Modal(document.getElementById('reload-window-modal'));
     let eventSource = new EventSource(url, {
         withCredentials: true
     });
 
     console.log('Active notification channel event source started');
+
+    eventSource.onopen = event => {
+        setActivityStatus(0);
+    }
 
     eventSource.onmessage = event => {
         const data = JSON.parse(event.data);
@@ -39,7 +46,12 @@ function startActiveNotificationChannelEventSource(url) {
         if (data['removedConversationId']) {
             processConversationRemove(data['removedConversationId']);
         }
-    };
+    }
+
+    eventSource.onerror = event => {
+        setActivityStatus(2);
+        reloadWindowModal.show();
+    }
 
     return eventSource;
 }
@@ -92,6 +104,16 @@ async function processConversationMemberRemoval(data) {
     } else if (responseData['currentUserId'] == responseData['removedUserId']) {
         removeConversationLabel(responseData['conversationId']);
     }
+}
+
+async function setActivityStatus(activityStatusCode) {
+    fetch('/setActivityStatus', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({data: activityStatusCode})
+    });
 }
 
 async function processConversationRemove(removedConversationId) {

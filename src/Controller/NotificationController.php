@@ -174,4 +174,23 @@ class NotificationController extends AbstractController
             'currentUserId'     => $this->currentUser->getId()
         ]);
     }
+
+    /**
+     * setActivityStatus
+     *
+     * @param  Request $request
+     * @return Response
+     */
+    #[Route('/setActivityStatus', name: 'app_set_activity_status')]
+    public function setActivityStatus(Request $request): Response
+    {
+        $jsonData = json_decode(
+            $request->getContent(),
+            true
+        );
+
+        $this->userRepository->changeActivityStatus($this->currentUser, $jsonData['data']);
+
+        return new JsonResponse();
+    }
 }
