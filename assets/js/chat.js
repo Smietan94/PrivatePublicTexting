@@ -1,10 +1,10 @@
 require('./app.js');
 
-import { startEventSource, manageEventSource, confirmMemberRemove } from './chatHelper';
+import { startEventSource, manageEventSource, confirmMemberRemove, processEnterSendMessage } from './chatHelper';
 
 let activeChatEventSource = null;
 
-document.addEventListener('turbo:load', function  () {
+document.addEventListener('turbo:load', function () {
     const scriptTag              = document.getElementById('mercure-url');
     const rmConversationUserBtns = document.querySelectorAll('.rm-user-btn');
     const leaveGroupBtn          = document.querySelector('.leave-group-btn');
@@ -49,6 +49,12 @@ document.addEventListener('turbo:load', function  () {
             url
         );
     }
+
+    processEnterSendMessage();
+});
+
+document.addEventListener('turbo:frame-render', function () {
+    processEnterSendMessage();
 });
 
 

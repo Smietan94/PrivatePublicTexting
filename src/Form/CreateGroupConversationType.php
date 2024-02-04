@@ -44,7 +44,7 @@ class CreateGroupConversationType extends AbstractType
             ->add('message', TextareaType::class, ['attr' => [
                 'rows'             => '2',
                 'class'            => 'form-control messenger-input',
-                'aria-describedby' => 'button-addon2',
+                'aria-describedby' => 'send-msg-button',
                 'placeholder'      => 'To start conversation send the message',
             ]])
             ->add('attachment', FileType::class, [

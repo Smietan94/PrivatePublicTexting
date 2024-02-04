@@ -2,7 +2,7 @@ import { Modal } from "bootstrap";
 
 function startActiveNotificationChannelEventSource(url) {
     let reloadWindowModal = new Modal(document.getElementById('reload-window-modal'));
-    let eventSource = new EventSource(url, {
+    let eventSource       = new EventSource(url, {
         withCredentials: true
     });
 

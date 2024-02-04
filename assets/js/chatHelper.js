@@ -1,4 +1,5 @@
 function startEventSource(url) {
+
     let eventSource = new EventSource(url, {
         withCredentials: true
     });
@@ -67,10 +68,42 @@ function manageEventSource(eventSourceFunction, eventSource, topic, url) {
     return eventSource;
 }
 
+function processEnterSendMessage() {
+    let messageFormTextarea = document.querySelector('textarea[name="message[message]"]');
+
+    if (messageFormTextarea) {
+        messageFormTextarea.addEventListener(
+            'keypress',
+            msgFormTextareaEventListenerFunction
+        );
+    }
+}
+
+function msgFormTextareaEventListenerFunction(event) {
+    let messageFormTextarea = document.querySelector('textarea[name="message[message]"]');
+    messageFormTextarea.setCustomValidity('');
+    if (event.keyCode == 13 && !event.shiftKey) {
+        event.preventDefault();
+        let messageForm = document.querySelector('form[name="message"]');
+        if (messageFormTextarea.value == '') {
+            messageFormTextarea.setCustomValidity('fill in this field.');
+        } else {
+            messageFormTextarea.setCustomValidity('');
+            messageForm.requestSubmit();
+            messageFormTextarea.removeEventListener(
+                'keypress',
+                msgFormTextareaEventListenerFunction
+            );
+        }
+        messageFormTextarea.reportValidity();
+    }
+}
+
 export {
     startEventSource,
     checkLastEventSource,
     processMessage,
     confirmMemberRemove,
-    manageEventSource
+    manageEventSource,
+    processEnterSendMessage
 }
