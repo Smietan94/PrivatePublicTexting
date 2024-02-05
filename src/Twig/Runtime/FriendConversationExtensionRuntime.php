@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Twig\Runtime;
 
+use App\Entity\Conversation;
 use App\Entity\User;
 use App\Repository\ConversationRepository;
 use App\Repository\UserRepository;

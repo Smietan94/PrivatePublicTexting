@@ -8,7 +8,13 @@
     {% set topics            = topics|Push(previewTopics) %}
 {% endif %}
 
-{% block title %}Enjoy group conversations!{% endblock %}
+{% block title %}
+    {% if conversation is defined and conversation is not null %}
+        {{ conversation.name }} group conversation
+    {% else %}
+        You aren't participating in group conversation yet
+    {% endif %}
+{% endblock %}
 
 {% block javascripts %}
     {{ encore_entry_script_tags('chat') }}

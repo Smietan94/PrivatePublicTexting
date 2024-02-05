@@ -1,5 +1,4 @@
 function startEventSource(url) {
-
     let eventSource = new EventSource(url, {
         withCredentials: true
     });
@@ -80,12 +79,14 @@ function processEnterSendMessage() {
 }
 
 function msgFormTextareaEventListenerFunction(event) {
-    let messageFormTextarea = document.querySelector('textarea[name="message[message]"]');
+    const isTextAWhitespaceString = str => !str.replace(/\s/g, '').length
+    let messageFormTextarea       = document.querySelector('textarea[name="message[message]"]');
+
     messageFormTextarea.setCustomValidity('');
     if (event.keyCode == 13 && !event.shiftKey) {
         event.preventDefault();
         let messageForm = document.querySelector('form[name="message"]');
-        if (messageFormTextarea.value == '') {
+        if (isTextAWhitespaceString(messageFormTextarea.value)) {
             messageFormTextarea.setCustomValidity('fill in this field.');
         } else {
             messageFormTextarea.setCustomValidity('');

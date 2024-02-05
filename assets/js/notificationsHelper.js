@@ -1,7 +1,6 @@
 import { Modal } from "bootstrap";
 
 function startActiveNotificationChannelEventSource(url) {
-    let reloadWindowModal = new Modal(document.getElementById('reload-window-modal'));
     let eventSource       = new EventSource(url, {
         withCredentials: true
     });
@@ -50,7 +49,7 @@ function startActiveNotificationChannelEventSource(url) {
 
     eventSource.onerror = event => {
         setActivityStatus(2);
-        reloadWindowModal.show();
+        processPageReload();
     }
 
     return eventSource;
@@ -269,6 +268,17 @@ function removeUserRemoveButton(removedUserId) {
     if (userRemoveLiElement) {
         userRemoveLiElement.remove();
     }
+}
+
+function processPageReload() {
+    let reloadWindowModal = new Modal(document.getElementById('reload-window-modal'));
+    let reloadPageBtn     = document.getElementById('reload-page-btn');
+
+    reloadWindowModal.show();
+
+    reloadPageBtn.addEventListener('click', function () {
+        location.reload(true);
+    });
 }
 
 export {
