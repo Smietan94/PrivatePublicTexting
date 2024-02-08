@@ -7,9 +7,11 @@ namespace App\Controller;
 use App\Entity\FriendRequest;
 use App\Entity\User;
 use App\Enum\FriendStatus;
+use App\Enum\NotificationType;
 use App\Repository\FriendRequestRepository;
 use App\Repository\UserRepository;
 use App\Service\FriendRequestService;
+use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -27,6 +29,7 @@ class FriendRequestsController extends AbstractController
         private FriendRequestRepository $friendRequestRepository,
         private EntityManagerInterface  $entityManager,
         private FriendRequestService    $friendRequestService,
+        private NotificationService     $notificationService
     ) {
         // collecting logged user
         $username          = $this->security->getUser()->getUserIdentifier();
@@ -160,6 +163,12 @@ class FriendRequestsController extends AbstractController
         if (!$friendRequest) {
             $this->redirectToRoute('app_friends_requests');
         }
+
+        $this->notificationService->processFriendStatusNotification(
+            NotificationType::FRIEND_REQUEST_DENIED,
+            $friendRequest->getRequestingUser(),
+            $friendRequest->getRequestedUser()
+        );
 
         $this->friendRequestService->deleteRequestAndSetHistory($friendRequest, FriendStatus::CANCELLED->value);
 

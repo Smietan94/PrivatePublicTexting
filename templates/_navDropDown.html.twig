@@ -1,0 +1,74 @@
+{% set unseenReceivedNotifications = app.user | UnseenReceivedNotifications | length %}
+{# <div class="dropdown user-dropdown-menu px-3"> #}
+    <a class="my-1 user-dropdown-menu bg-primary px-3 dropdown-toggle nav-hover-bordered rounded-3 text-decoration-none d-flex align-items-center text-light"
+    id="userDropDownMenu"
+    href="#"
+    aria-expand="false"
+    data-bs-toggle="dropdown"
+    aria-expanded="false">
+        <i class="bi bi-person-lines-fill bi-user-icon me-2"></i>
+        <span>
+            {{ app.user.username }}
+            {% if unseenReceivedNotifications != 0 %}
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger my-1 px-3">
+                    {{ unseenReceivedNotifications }}
+                    <i class="bi bi-arrow-return-left position-absolute top-100 start-25 text-danger fs-6"></i>
+                </span>
+            {% endif %}
+        </span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end dropstart bg-light" aria-labelledby="userDropDownMenu">
+        <li class="px-3">
+            <a class="dropdown-item" href="#">
+                notifications
+                <span class="badge rounded-pill
+                {% if unseenReceivedNotifications > 0 %}
+                    bg-danger
+                {% else %}
+                    bg-primary
+                {% endif %}
+                px-3 py-2 ms-3">
+                    {{ unseenReceivedNotifications }}
+                </span>
+            </a>
+        </li>
+        <li class="px-3">
+            <a class="dropdown-item" href="{{ path('app_friends_requests') }}">
+                friend requests
+            </a>
+        </li>
+        <li class="px-3">
+            <a class="dropdown-item" href="#">settings</a>
+        </li>
+        <li><hr class="dropdown-divider"></li>
+        <li class="px-3">
+            <form action="{{ path('app_logout') }}" method="post">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                <button class="dropdown-item" href="#">log out</button>
+            </form>
+        </li>
+    </ul>
+{# </div> #}
+
+{# <nav class="navbar navbar-expand-lg navbar-dark bg-dark"> #}
+  {# <div class="container-fluid">
+    <a class="navbar-brand" href="#">Navbar</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
+      <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+          <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            Dropdown
+          </button>
+          <ul class="dropdown-menu dropdown-menu-dark">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Another action</a></li>
+            <li><a class="dropdown-item" href="#">Something else here</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav> #}

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Enum\NotificationType;
 use App\Repository\ConversationRepository;
 use App\Repository\UserRepository;
 use App\Service\ChatService;
@@ -46,7 +47,7 @@ class ChatMembersController extends AbstractController
         $removedName    = $memberToRm->getUsername();
 
         // in chat service occurs conversation member check then removes member
-        if ($this->chatService->removeMember($conversation, $memberToRm)) {
+        if ($this->chatService->removeMember(NotificationType::REMOVED_FROM_CONVERSATION, $conversation, $memberToRm, $this->currentUser)) {
             $this->addFlash(
                 'success',
                 sprintf('%s successfully removed from conversation', $removedName)
@@ -78,12 +79,10 @@ class ChatMembersController extends AbstractController
     {
         $data           = $request->get('remove_conversation_member');
         $conversationId = (int) $data['conversationId'];
-        $memberId       = (int) $data['memberId'];
         $conversation   = $this->conversationRepository->find($conversationId);
-        $memberToRm     = $this->userRepository->find($memberId);
 
         // in chat service occurs conversation member check then removes current user from chat
-        if ($this->chatService->removeMember($conversation, $memberToRm)) {
+        if ($this->chatService->removeMember(NotificationType::LEFT_THE_CONVERSATION, $conversation, $this->currentUser)) {
             $this->addFlash('success', 'You left the conversation');
         } else {
             $this->addFlash('warning', 'You are not part of this conversation');
@@ -115,6 +114,7 @@ class ChatMembersController extends AbstractController
 
         // after adding new members, it returns array of messages 
         $messages = $this->conversationRepository->addNewMember(
+            $this->currentUser,
             $conversationId,
             $newMembers
         );

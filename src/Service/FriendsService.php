@@ -6,6 +6,7 @@ namespace App\Service;
 
 use App\Entity\User;
 use App\Enum\FriendStatus;
+use App\Enum\NotificationType;
 use App\Repository\FriendHistoryRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,7 +16,8 @@ class FriendsService
     public function __construct(
         private UserRepository          $userRepository,
         private FriendHistoryRepository $friendHistoryRepository,
-        private EntityManagerInterface  $entityManager
+        private EntityManagerInterface  $entityManager,
+        private NotificationService     $notificationService
     ) {
     }
 
@@ -58,6 +60,12 @@ class FriendsService
 
         $currentUser->removeFriend($friend);
         $friendHistory->setStatus(FriendStatus::DELETED->value);
+
+        $this->notificationService->processFriendStatusNotification(
+            NotificationType::REMOVED_FROM_FRIENDS_LIST,
+            $currentUser,
+            $friend
+        );
 
         $this->entityManager->flush();
     }

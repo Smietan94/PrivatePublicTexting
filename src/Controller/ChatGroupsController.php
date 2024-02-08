@@ -190,7 +190,7 @@ class ChatGroupsController extends AbstractController
         $conversation   = $this->conversationRepository->find($conversationId);
 
         if (in_array($conversation, $this->currentUser->getConversations()->toArray())) {
-            $this->conversationRepository->conversationSoftDelete($conversation);
+            $this->conversationRepository->conversationSoftDelete($this->currentUser, $conversation);
 
             $this->addFlash('success', 'Conversation successfully deleted');
         } else {

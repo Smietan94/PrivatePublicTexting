@@ -6,6 +6,8 @@ namespace App\Repository;
 
 use App\Entity\FriendRequest;
 use App\Entity\User;
+use App\Enum\NotificationType;
+use App\Service\NotificationService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -24,6 +26,7 @@ class FriendRequestRepository extends ServiceEntityRepository
         ManagerRegistry                $registry,
         private UserRepository         $userRepository,
         private EntityManagerInterface $entityManager,
+        private NotificationService    $notificationService
     ) {
         parent::__construct($registry, FriendRequest::class);
     }
@@ -45,6 +48,12 @@ class FriendRequestRepository extends ServiceEntityRepository
 
         $this->entityManager->persist($friendRequest);
         $this->entityManager->flush();
+
+        $this->notificationService->processFriendStatusNotification(
+            NotificationType::FRIEND_REQUEST_RECEIVED,
+            $user,
+            $requestedUser
+        );
 
         return $friendRequest;
     }

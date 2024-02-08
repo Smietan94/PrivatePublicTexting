@@ -3,7 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Notification;
+use App\Entity\User;
+use App\Enum\NotificationStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -16,9 +19,61 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class NotificationRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+        private EntityManagerInterface $entityManager
+    ) {
         parent::__construct($registry, Notification::class);
+    }
+
+    /**
+     * storeNotification
+     *
+     * @param  int    $notificationType
+     * @param  User   $sender
+     * @param  User   $receiver
+     * @param  string $message
+     * @return Notification
+     */
+    public function storeNotification(int $notificationType, User $sender, User $receiver, string $message): Notification
+    {
+        $notification = new Notification();
+
+        $notification->setNotificationType($notificationType);
+        $notification->setDisplayed(NotificationStatus::UNSEEN->toBool());
+        $notification->setSender($sender);
+        $notification->setReceiver($receiver);
+        $notification->setMessage($message);
+        $notification->setUpdatedAt(new \DateTime());
+
+        $this->entityManager->persist($notification);
+        $this->entityManager->flush();
+
+        return $notification;
+    }
+
+    /**
+     * getUnseenNotifications
+     *
+     * @param  User $user
+     * @return Notification[]
+     */
+    public function getUnseenNotifications(User $user): array
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+
+        return $qb->select('n')
+            ->from(Notification::class, 'n')
+            ->andWhere(
+                $qb->expr()->eq('n.receiver', ':user'),
+                $qb->expr()->eq('n.displayed', ':displayed')
+            )
+            ->setParameters([
+                'user'      => $user,
+                'displayed' => NotificationStatus::UNSEEN->toBool()
+            ])
+            ->getQuery()
+            ->getResult();
     }
 
 //    /**

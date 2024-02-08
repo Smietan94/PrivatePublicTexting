@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Entity\Conversation;
 use App\Entity\User;
+use App\Enum\NotificationStatus;
 use App\Enum\UserStatus;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;

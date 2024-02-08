@@ -189,7 +189,7 @@ class ConversationRepository extends ServiceEntityRepository
      * @param  User[] $newMembers
      * @return array
      */
-    public function addNewMember(int $conversationId, array $newMembers): array
+    public function addNewMember(User $currentUser, int $conversationId, array $newMembers): array
     {
         $conversation  = $this->find($conversationId);
         $newMembersIds = [];
@@ -212,6 +212,11 @@ class ConversationRepository extends ServiceEntityRepository
             $this->notificationService->processNewConversationMemberAddition(
                 $conversation
             );
+            $this->notificationService->processNewConversationMemberAdditionNotification(
+                $currentUser,
+                $newMembers,
+                $conversation
+            );
         }
 
         $this->entityManager->flush();
@@ -225,12 +230,13 @@ class ConversationRepository extends ServiceEntityRepository
      * @param  Conversation $conversation
      * @return void
      */
-    public function conversationSoftDelete(Conversation $conversation): void 
+    public function conversationSoftDelete(User $currentUser, Conversation $conversation): void 
     {
         $conversation->setStatus(ConversationStatus::DELETED->toInt());
         $conversation->setDeletedAt(new \DateTime());
 
         $this->notificationService->processConversationRemove($conversation);
+        $this->notificationService->processConversationRemoveNotification($currentUser, $conversation);
 
         $this->entityManager->flush();
     }

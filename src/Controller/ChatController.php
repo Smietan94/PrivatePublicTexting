@@ -56,7 +56,7 @@ class ChatController extends AbstractController
             ConversationType::SOLO->toInt()
         );
         // getting first conversation on list
-        $conversation = $conversations[0];
+        $conversation = isset($conversations[0]) ? $conversations[0] : null;
 
         // Checks if the user has friends to talk to
         if (count($this->currentUser->getFriends()) === 0) {

@@ -8,6 +8,7 @@ use App\Entity\FriendRequest;
 use App\Entity\FriendHistory;
 use App\Entity\User;
 use App\Enum\ConversationType;
+use App\Enum\NotificationType;
 use App\Repository\ConversationRepository;
 use App\Repository\FriendHistoryRepository;
 use App\Repository\FriendRequestRepository;
@@ -19,7 +20,8 @@ class FriendRequestService
         private EntityManagerInterface  $entityManager,
         private FriendRequestRepository $friendRequestRepository,
         private FriendHistoryRepository $friendHistoryRepository,
-        private ConversationRepository  $conversationRepository
+        private ConversationRepository  $conversationRepository,
+        private NotificationService     $notificationService
     ) {
     }
 
@@ -37,7 +39,12 @@ class FriendRequestService
         $requestingUser = $request->getRequestingUser();
 
         $currentUser->addFriend($requestingUser);
-        // $requestingUser->addFriend($currentUser);
+
+        $this->notificationService->processFriendStatusNotification(
+            NotificationType::FRIEND_REQUEST_ACCEPTED,
+            $currentUser,
+            $requestingUser
+        );
 
         // checks if conversation already exists (users could be friends earlier) then creating conversation (or not if it already exists)
         if ($this->conversationRepository->getFriendConversation($currentUser, $requestingUser) == null) {

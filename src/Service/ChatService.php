@@ -6,6 +6,7 @@ namespace App\Service;
 
 use App\Entity\Conversation;
 use App\Entity\User;
+use App\Enum\NotificationType;
 use App\Form\AddUsersToConversationType;
 use App\Form\ChangeConversationNameType;
 use App\Form\CreateGroupConversationType;
@@ -89,16 +90,34 @@ class ChatService
     /**
      * removeMember
      *
-     * @param  Conversation $conversation
-     * @param  User         $memberToRm
+     * @param  NotificationType $type
+     * @param  Conversation     $conversation
+     * @param  User             $memberToRm
+     * @param  ?User            $currentUser
      * @return bool
      */
-    public function removeMember(Conversation $conversation, User $memberToRm): bool
+    public function removeMember(NotificationType $type, Conversation $conversation, User $memberToRm, ?User $currentUser = null): bool
     {
         if ($this->checkIfUserIsMemberOfConversation($conversation, $memberToRm)) {
-            $this->notificationService->processConversationMemberRemove($conversation, $memberToRm->getId());
+            $this->notificationService->processConversationMemberRemove(
+                $conversation,
+                $memberToRm->getId()
+            );
+
+            match ($type) {
+                NotificationType::REMOVED_FROM_CONVERSATION => $this->notificationService->processConversationMemberRemoveNotification(
+                    $currentUser, // if currentUser is null that means
+                    $memberToRm,
+                    $conversation
+                ),
+                NotificationType::LEFT_THE_CONVERSATION     => $this->notificationService->processConversationLeftNotification(
+                    $memberToRm,
+                    $conversation
+                )
+            };
 
             $conversation->removeConversationMember($memberToRm);
+
             $this->entityManager->flush();
 
             return true;
@@ -112,16 +131,23 @@ class ChatService
      *
      * @param  Conversation $conversation
      * @param  string       $conversationName
-     * @param  User         $user
+     * @param  User         $currentUser
      * @return bool
      */
-    public function changeConversationName(Conversation $conversation, string $conversationName, User $user): bool
+    public function changeConversationName(Conversation $conversation, string $conversationName, User $currentUser): bool
     {
-        if ($this->checkIfUserIsMemberOfConversation($conversation, $user)) {
+        if ($this->checkIfUserIsMemberOfConversation($conversation, $currentUser)) {
+            $conversationOldName = $conversation->getName();
+
             $conversation->setName($conversationName);
             $this->entityManager->flush();
 
             $this->notificationService->processNameChange($conversation);
+            $this->notificationService->processNameChangeNotification(
+                $currentUser,
+                $conversation,
+                $conversationOldName
+            );
 
             return true;
         }

@@ -1,5 +1,8 @@
 import { Modal } from "bootstrap";
 
+const STATUS_ACTIVE   = 0;
+const STATUS_INACTIVE = 2;
+
 function startActiveNotificationChannelEventSource(url) {
     let eventSource       = new EventSource(url, {
         withCredentials: true
@@ -8,7 +11,7 @@ function startActiveNotificationChannelEventSource(url) {
     console.log('Active notification channel event source started');
 
     eventSource.onopen = event => {
-        setActivityStatus(0);
+        setActivityStatus(STATUS_ACTIVE);
     }
 
     eventSource.onmessage = event => {
@@ -45,10 +48,12 @@ function startActiveNotificationChannelEventSource(url) {
         if (data['removedConversationId']) {
             processConversationRemove(data['removedConversationId']);
         }
+
+        updateNotificationsNumber();
     }
 
     eventSource.onerror = event => {
-        setActivityStatus(2);
+        setActivityStatus(STATUS_INACTIVE);
         processPageReload();
     }
 
@@ -205,6 +210,19 @@ async function processMessagePreview(data) {
             console.log('Error during processing message preview', error);
         }
     }
+}
+
+async function updateNotificationsNumber() {
+    let navDropDown = document.getElementById('nav-drop-down');
+    let response    = await fetch('/notifications/getUnseenNotificationsNumber', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({data: true})
+    });
+
+    navDropDown.innerHTML = await response.text();
 }
 
 async function updateConversationMembersList(conversationId) {

@@ -5,24 +5,25 @@
 
 html {
     height: 100%;
-    background-color: #2f3132;
+    background-color: #{$dark};
 }
 
 body {
-    background: rgb(241,247,248);
-    background-image: linear-gradient(144deg, rgba(241,247,248,1) 0%, rgba(95,118,119,1) 78%, rgba(47,49,50,1) 100%);
+    background: #{$light};
+    background-image: linear-gradient(144deg, #{$light} 0%, #{$primary} 78%, #{$dark} 100%);
+
     background-attachment: fixed;
     background-size: cover;
     font-family: 'Roboto Mono', monospace;
 }
 
 footer {
-    background-color: #2f3132;
+    background-color: #{$dark};
     height: 200px;
 }
 
 .form-control {
-    background-color: #f1f7f8;
+    background-color: #{$light};
 }
 
 .friend-card {
@@ -45,12 +46,16 @@ footer {
 }
 
 .navbar-dark {
-    background-color: #2f3132;
-    color: #f1f7f8;
+    background-color: #{$dark};
+    color: #{$light};
 }
 
 .bi-user-icon {
     font-size: 25px;
+}
+
+.bi-danger {
+    color: #{$danger};
 }
 
 .btn-search {
@@ -58,7 +63,7 @@ footer {
 }
 
 .container-shadow {
-    box-shadow: 0px 0px 10px #2f3132;
+    box-shadow: 0px 0px 10px #{$dark};
 }
 
 .container-body {
@@ -82,7 +87,7 @@ footer {
 
 .messenger-input {
     resize: none;
-    background-color: #f1f7f8;
+    background-color: #{$light};
 }
 
 .list-group-scroll{
@@ -103,11 +108,32 @@ footer {
     border: none;
 }
 
+.nav-hover-bordered:hover {
+    background-color: #{$primary};
+    color: #{$light};
+    box-shadow: 0px 0px 10px, inset 0px 0px 7px #{$light};
+}
+
+.current-path-bordered {
+    color: #{$light};
+    box-shadow: 0px 0px 10px, inset 0px 0px 7px #{$light};
+}
+
 .btn-start-conversation:hover,
 .btn-friend-msg-list:hover {
-    background-color: #9eb2b3;
-    color: #f1f7f8;
-    box-shadow: 0px 0px 10px #2f3132;
+    background-color: #{$dark};
+    color: #{$light};
+    box-shadow: 0px 0px 10px #{$dark};
+}
+
+.offcanvas-size-sm {
+    --#{$prefix}offcanvas-width: min(120vw, 300px) !important;
+}
+
+.custom-tooltip {
+    --bs-tooltip-bg: #{$light};
+    --bs-tooltip-color: #{$dark};
+    --bs-tooltip-opacity: .8;
 }
 
 /* https://colormagic.app/palette/iWzC4fi6j6e9gv3J2b1j */

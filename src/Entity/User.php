@@ -68,7 +68,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'sender', targetEntity: Notification::class, orphanRemoval: true)]
     private Collection $sentNotifications;
 
-    #[ORM\ManyToMany(targetEntity: Notification::class, mappedBy: 'receivers')]
+    #[ORM\OneToMany(mappedBy: 'receiver', targetEntity: Notification::class, orphanRemoval: true)]
     private Collection $receivedNotifications;
 
     public function __construct()
@@ -79,8 +79,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->sentFriendHistory      = new ArrayCollection();
         $this->receivedFriendHistory  = new ArrayCollection();
         $this->conversations          = new ArrayCollection();
-        $this->sentNotifications = new ArrayCollection();
-        $this->receivedNotifications = new ArrayCollection();
+        $this->sentNotifications      = new ArrayCollection();
+        $this->receivedNotifications  = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -403,7 +403,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->receivedNotifications->contains($receivedNotification)) {
             $this->receivedNotifications->add($receivedNotification);
-            $receivedNotification->addReceiver($this);
+            $receivedNotification->setReceiver($this);
         }
 
         return $this;
@@ -412,7 +412,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeReceivedNotification(Notification $receivedNotification): static
     {
         if ($this->receivedNotifications->removeElement($receivedNotification)) {
-            $receivedNotification->removeReceiver($this);
+            // set the owning side to null (unless already changed)
+            if ($receivedNotification->getReceiver() === $this) {
+                $receivedNotification->setReceiver(null);
+            }
         }
 
         return $this;

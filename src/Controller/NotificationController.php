@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\ConversationRepository;
+use App\Repository\NotificationRepository;
 use App\Repository\UserRepository;
 use App\Service\ChatService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,6 +24,7 @@ class NotificationController extends AbstractController
         private Security               $security,
         private UserRepository         $userRepository,
         private ConversationRepository $conversationRepository,
+        private NotificationRepository $notificationRepository,
         private ChatService            $chatService
     ) {
         // collecting current user
@@ -191,6 +193,20 @@ class NotificationController extends AbstractController
 
         $this->userRepository->changeActivityStatus($this->currentUser, $jsonData['data']);
 
-        return new JsonResponse();
+        return new JsonResponse([
+            'response' => true
+        ]);
+    }
+
+    /**
+     * getUnseenNotificationsNumber
+     * 
+     * @param  Request $request
+     * @return Response
+     */
+    #[Route('/notifications/getUnseenNotificationsNumber', name: 'app_get_unseen_notifications_number')]
+    public function getUnseenNotificationsNumber(Request $request): Response
+    {
+        return $this->render('_navDropDown.html.twig');
     }
 }

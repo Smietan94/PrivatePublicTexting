@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\NotificationRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
@@ -28,16 +26,15 @@ class Notification
     #[ORM\JoinColumn(nullable: true)]
     private ?User $sender = null;
 
-    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'receivedNotifications')]
-    private Collection $receivers;
-
     #[ORM\Column]
     private ?bool $displayed = null;
 
-    public function __construct()
-    {
-        $this->receivers = new ArrayCollection();
-    }
+    #[ORM\ManyToOne(inversedBy: 'receivedNotifications')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $receiver = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $message = null;
 
     public function getId(): ?int
     {
@@ -68,30 +65,6 @@ class Notification
         return $this;
     }
 
-    /**
-     * @return Collection<int, User>
-     */
-    public function getReceivers(): Collection
-    {
-        return $this->receivers;
-    }
-
-    public function addReceiver(User $receiver): static
-    {
-        if (!$this->receivers->contains($receiver)) {
-            $this->receivers->add($receiver);
-        }
-
-        return $this;
-    }
-
-    public function removeReceiver(User $receiver): static
-    {
-        $this->receivers->removeElement($receiver);
-
-        return $this;
-    }
-
     public function isDisplayed(): ?bool
     {
         return $this->displayed;
@@ -100,6 +73,30 @@ class Notification
     public function setDisplayed(bool $displayed): static
     {
         $this->displayed = $displayed;
+
+        return $this;
+    }
+
+    public function getReceiver(): ?User
+    {
+        return $this->receiver;
+    }
+
+    public function setReceiver(?User $receiver): static
+    {
+        $this->receiver = $receiver;
+
+        return $this;
+    }
+
+    public function getMessage(): ?string
+    {
+        return $this->message;
+    }
+
+    public function setMessage(string $message): static
+    {
+        $this->message = $message;
 
         return $this;
     }

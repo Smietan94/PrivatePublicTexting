@@ -8,6 +8,7 @@ use App\Entity\Conversation;
 use App\Entity\Message;
 use App\Entity\User;
 use App\Enum\ConversationType;
+use App\Enum\NotificationType;
 use App\Form\CreateGroupConversationType;
 use App\Form\MessageType;
 use App\Repository\ConversationRepository;
@@ -117,6 +118,11 @@ class MessageService
             );
 
             $this->processSuccedData($data, $conversation);
+
+            $this->notificationService->processNewConversationGroupNotification(
+                $currentUser,
+                $conversation
+            );
 
             $this->notificationService->processFirstGroupMessagePreview($conversation);
 
