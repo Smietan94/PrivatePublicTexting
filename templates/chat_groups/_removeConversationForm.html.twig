@@ -1,5 +1,5 @@
 {{ form_start(removeConversationForm, {
-    'action': path('app_chat_remove_conversation'),
+    'action': path(GetRouteName('APP_CHAT_REMOVE_CONVERSATION')),
     'method': 'GET'
 }) }}
     {{ form_widget(removeConversationForm.conversationId, {'attr': {

@@ -40,12 +40,6 @@ class FriendRequestService
 
         $currentUser->addFriend($requestingUser);
 
-        $this->notificationService->processFriendStatusNotification(
-            NotificationType::FRIEND_REQUEST_ACCEPTED,
-            $currentUser,
-            $requestingUser
-        );
-
         // checks if conversation already exists (users could be friends earlier) then creating conversation (or not if it already exists)
         if ($this->conversationRepository->getFriendConversation($currentUser, $requestingUser) == null) {
             $this->conversationRepository->storeConversation(
@@ -54,6 +48,15 @@ class FriendRequestService
                 ConversationType::SOLO->toInt()
             );
         }
+
+        $conversation = $this->conversationRepository->getFriendConversation($currentUser, $requestingUser);
+
+        $this->notificationService->processFriendStatusNotification(
+            NotificationType::FRIEND_REQUEST_ACCEPTED,
+            $currentUser,
+            $requestingUser,
+            $conversation->getId()
+        );
 
         return $this->deleteRequestAndSetHistory($request, $status);
     }

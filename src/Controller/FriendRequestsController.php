@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Constants\RouteName;
+use App\Entity\Constants\RoutePath;
 use App\Entity\FriendRequest;
 use App\Entity\User;
 use App\Enum\FriendStatus;
@@ -41,7 +43,10 @@ class FriendRequestsController extends AbstractController
      *
      * @return Response
      */
-    #[Route('/friendsRequests', name: 'app_friends_requests')]
+    #[Route(
+        RoutePath::FRIENDS_REQUEST,
+        name: RouteName::APP_FRIENDS_REQUESTS
+    )]
     public function friendRequest(): Response
     {
         // rendering friends list
@@ -58,9 +63,9 @@ class FriendRequestsController extends AbstractController
      * @return Response
      */
     #[Route(
-        '/sendFriendRequest',
+        RoutePath::SEND_FRIENDS_REQUEST,
         methods: ['POST'],
-        name: 'app_send_friend_request'
+        name: RouteName::APP_SEND_FRIEND_REQUEST
     )]
     public function sendFriendRequest(Request $request): Response
     {
@@ -76,13 +81,13 @@ class FriendRequestsController extends AbstractController
         ))
         {
             $this->addFlash('error', 'You already sent this request');
-            return $this->redirectToRoute('app_friends_requests');
+            return $this->redirectToRoute(RouteName::APP_FRIENDS_REQUESTS);
         }
 
         $this->friendRequestRepository->setNewFriendRequest($this->currentUser, $requestedUser);
 
         $this->addFlash('success', 'Friend Request Sent');
-        return $this->redirectToRoute('app_friends_requests');
+        return $this->redirectToRoute(RouteName::APP_FRIENDS_REQUESTS);
     }
 
     /**
@@ -92,9 +97,9 @@ class FriendRequestsController extends AbstractController
      * @return Response
      */
     #[Route(
-        '/friendRequests/accept',
+        RoutePath::ACCEPT_FRIEND_REQUEST,
         methods: ['POST'],
-        name: 'app_accept_friend_request'
+        name: RouteName::APP_ACCEPT_FRIEND_REQUEST
     )]
     public function accept(Request $request): Response
     {
@@ -103,7 +108,7 @@ class FriendRequestsController extends AbstractController
 
         // if friend request does not extist routing back to friend requests list
         if (!$friendRequest) {
-            $this->redirectToRoute('app_friends_requests');
+            $this->redirectToRoute(RouteName::APP_FRIENDS_REQUESTS);
         }
 
         $this->friendRequestService->acceptRequest(
@@ -114,7 +119,7 @@ class FriendRequestsController extends AbstractController
 
         $this->addFlash('success', 'You are friends now');
 
-        return $this->redirectToRoute('app_friends_requests');
+        return $this->redirectToRoute(RouteName::APP_FRIENDS_REQUESTS);
     }
 
     /**
@@ -124,9 +129,9 @@ class FriendRequestsController extends AbstractController
      * @return Response
      */
     #[Route(
-        '/friendRequests/decline',
+        RoutePath::DECLINE_FRIEND_REQUEST,
         methods: ['POST'],
-        name: 'app_decline_friend_request'
+        name: RouteName::APP_DECLINE_FRIEND_REQUEST
     )]
     public function decline(Request $request): Response
     {
@@ -135,12 +140,12 @@ class FriendRequestsController extends AbstractController
 
         // if friend request does not extist routing back to friend requests list
         if (!$friendRequest) {
-            $this->redirectToRoute('app_friends_requests');
+            $this->redirectToRoute(RouteName::APP_FRIENDS_REQUESTS);
         }
 
         $this->friendRequestService->deleteRequestAndSetHistory($friendRequest, FriendStatus::REJECTED->value);
 
-        return $this->redirectToRoute('app_friends_requests');
+        return $this->redirectToRoute(RouteName::APP_FRIENDS_REQUESTS);
     }
 
     /**
@@ -150,9 +155,9 @@ class FriendRequestsController extends AbstractController
      * @return Response
      */
     #[Route(
-        '/friendRequest/cancel',
+        RoutePath::CANCEL_FRIEND_REQUEST,
         methods: ['POST'],
-        name: 'app_cancel_friend_request'
+        name: RouteName::APP_CANCEL_FRIEND_REQUEST
     )]
     public function cancel(Request $request): Response
     {
@@ -161,7 +166,7 @@ class FriendRequestsController extends AbstractController
 
         // if friend request does not extist routing back to friend requests list
         if (!$friendRequest) {
-            $this->redirectToRoute('app_friends_requests');
+            $this->redirectToRoute(RouteName::APP_FRIENDS_REQUESTS);
         }
 
         $this->notificationService->processFriendStatusNotification(
@@ -172,7 +177,7 @@ class FriendRequestsController extends AbstractController
 
         $this->friendRequestService->deleteRequestAndSetHistory($friendRequest, FriendStatus::CANCELLED->value);
 
-        return $this->redirectToRoute('app_friends_requests');
+        return $this->redirectToRoute(RouteName::APP_FRIENDS_REQUESTS);
     }
     
     /**

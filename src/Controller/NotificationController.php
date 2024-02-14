@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Constants\RouteName;
+use App\Entity\Constants\RoutePath;
 use App\Entity\User;
 use App\Repository\ConversationRepository;
 use App\Repository\NotificationRepository;
@@ -38,7 +40,10 @@ class NotificationController extends AbstractController
      * @param  Request  $request
      * @return Response
      */
-    #[Route('/chats/messagePreview', name: 'app_chat_message_preview')]   
+    #[Route(
+        RoutePath::MESSAGE_PREVIEW,
+        name: RouteName::APP_CHAT_MESSAGE_PREVIEW
+    )]
     public function processMessagePreview(Request $request): Response
     {
         $jsonData = json_decode(
@@ -46,8 +51,14 @@ class NotificationController extends AbstractController
             true
         );
 
+        $conversation = $this->conversationRepository->find((int) $jsonData['conversationId']);
+        $lastMessage  = $conversation->getLastMessage();
+
         return $this->render('chat_components/_messagePreview.html.twig', [
-            'data' => $jsonData['data']
+            'data' => [
+                'senderId' => $lastMessage->getSenderId(),
+                'message'  => substr($lastMessage->getMessage(), 0, 20)
+            ]
         ]);
     }
 
@@ -57,7 +68,10 @@ class NotificationController extends AbstractController
      * @param  Request  $request
      * @return Response
      */
-    #[Route('/chats/processConversationLabel', name: 'app_chat_group_conversation_label')]
+    #[Route(
+        RoutePath::PROCESS_CONVERSATION_LABEL,
+        name: RouteName::APP_CHAT_GROUP_CONVERSATION_LABEL
+    )]
     public function processConversationLabelPreview(Request $request): Response
     {
         $jsonData = json_decode(
@@ -65,7 +79,7 @@ class NotificationController extends AbstractController
             true
         );
 
-        $converastionId = (int) $jsonData['data'];
+        $converastionId = (int) $jsonData['conversationId'];
         $conversation   = $this->conversationRepository->find($converastionId);
         $lastMessage    = $conversation->getLastMessage();
 
@@ -85,7 +99,10 @@ class NotificationController extends AbstractController
      * @param  Request  $request
      * @return Response
      */
-    #[Route('/chats/groupChat/processEventSourceScriptTag', name: 'app_chat_process_event_source_tag')]
+    #[Route(
+        RoutePath::PROCESS_EVENT_SOURCE_SCRIPT_TAG,
+        name: RouteName::APP_CHAT_PROCESS_EVENT_SOURCE_TAG
+    )]
     public function createMercureEventSourceScriptTagForConversationLabel(Request $request): Response
     {
         // collecting message from ajax call
@@ -105,7 +122,10 @@ class NotificationController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route('/chats/redirectRemovedUser', name: 'app_chat_redeirect_removed_user')]
+    #[Route(
+        RoutePath::REDIRECT_REMOVED_USER,
+        name: RouteName::APP_CHAT_REDEIRECT_REMOVED_USER
+    )]
     public function redirectRemovedUser(Request $request): Response
     {
         // collecting data from ajax call
@@ -136,7 +156,10 @@ class NotificationController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route('/chats/processConversationRemove', name: 'app_chat_peocess_conversation_remove')]
+    #[Route(
+        RoutePath::PROCESS_CONVERSATION_REMOVE,
+        name: RouteName::APP_CHAT_PEOCESS_CONVERSATION_REMOVE
+    )]
     public function processConversationRemove(Request $request): Response
     {
         $jsonData = json_decode(
@@ -144,11 +167,13 @@ class NotificationController extends AbstractController
             true
         );
 
-        $conversation = $this->conversationRepository->find($jsonData['data']);
+        $conversation = $this->conversationRepository->find($jsonData['removedConversationId']);
 
         $this->addFlash('warning', sprintf('Conversation %s has been deleted', $conversation->getName()));
 
-        return new JsonResponse();
+        return new JsonResponse([
+            'response' => true
+        ]);
     }
 
     /**
@@ -157,7 +182,10 @@ class NotificationController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route('/chats/group/updateMembersList', name: 'app_chat_update_members_list')]
+    #[Route(
+        RoutePath::UPDATE_MEMBERS_LIST,
+        name: RouteName::APP_CHAT_UPDATE_MEMBERS_LIST
+    )]
     public function processConversationMembersList(Request $request): Response
     {
         $jsonData = json_decode(
@@ -165,7 +193,7 @@ class NotificationController extends AbstractController
             true
         );
 
-        $conversation      = $this->conversationRepository->find($jsonData['data']);
+        $conversation      = $this->conversationRepository->find($jsonData['conversationId']);
         $removeMemberForms = $this->chatService->getRemoveConversationMemberForms(
             $conversation->getConversationMembers()->toArray()
         );
@@ -183,7 +211,10 @@ class NotificationController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route('/setActivityStatus', name: 'app_set_activity_status')]
+    #[Route(
+        RoutePath::SET_ACTIVITY_STATUS,
+        name: RouteName::APP_SET_ACTIVITY_STATUS
+    )]
     public function setActivityStatus(Request $request): Response
     {
         $jsonData = json_decode(
@@ -191,7 +222,7 @@ class NotificationController extends AbstractController
             true
         );
 
-        $this->userRepository->changeActivityStatus($this->currentUser, $jsonData['data']);
+        $this->userRepository->changeActivityStatus($this->currentUser, $jsonData['userActivityStatusCode']);
 
         return new JsonResponse([
             'response' => true
@@ -204,7 +235,10 @@ class NotificationController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route('/notifications/getUnseenNotificationsNumber', name: 'app_get_unseen_notifications_number')]
+    #[Route(
+        RoutePath::GET_UNSEEN_NOTIFICATIONS_NUMBER,
+        name: RouteName::APP_GET_UNSEEN_NOTIFICATIONS_NUMBER
+    )]
     public function getUnseenNotificationsNumber(Request $request): Response
     {
         return $this->render('_navDropDown.html.twig');

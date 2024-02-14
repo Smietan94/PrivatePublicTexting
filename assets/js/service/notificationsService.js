@@ -1,4 +1,6 @@
 import { Modal } from "bootstrap";
+import { PHPRoutePath } from "../constants";
+import { removeFriendCard } from "./friendService";
 
 const STATUS_ACTIVE   = 0;
 const STATUS_INACTIVE = 2;
@@ -19,8 +21,7 @@ function startActiveNotificationChannelEventSource(url) {
 
         if (data['messagePreview']) {
             processMessagePreview(
-                data['messagePreview'],
-                '/chats/messagePreview'
+                data['messagePreview']
             );
         }
 
@@ -49,7 +50,12 @@ function startActiveNotificationChannelEventSource(url) {
             processConversationRemove(data['removedConversationId']);
         }
 
+        if (data['friendRemoveData']) {
+            removeFriendCard(data['friendRemoveData']['removingUserId']);
+        }
+
         updateNotificationsNumber();
+        // odswiezanie modala z powiadomieniami
     }
 
     eventSource.onerror = event => {
@@ -89,7 +95,7 @@ function startConversationHelperEventSource(url) {
 }
 
 async function processConversationMemberRemoval(data) {
-    let response = await fetch('/chats/redirectRemovedUser', {
+    let response = await fetch(PHPRoutePath.REDIRECT_REMOVED_USER, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -101,7 +107,7 @@ async function processConversationMemberRemoval(data) {
 
     if (document.getElementById(`conversation-${ data['conversationId'] }-name`)) {
         if (responseData['currentUserId'] == responseData['removedUserId']) {
-            window.location.href = '/chats/groups/';
+            window.location.href = PHPRoutePath.GROUPS;
         } else {
             removeUserRemoveButton(responseData['removedUserId']);
         }
@@ -111,42 +117,42 @@ async function processConversationMemberRemoval(data) {
 }
 
 async function setActivityStatus(activityStatusCode) {
-    fetch('/setActivityStatus', {
+    await fetch(PHPRoutePath.SET_ACTIVITY_STATUS, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({data: activityStatusCode})
+        body: JSON.stringify({userActivityStatusCode: activityStatusCode})
     });
 }
 
-async function processConversationRemove(removedConversationId) {
-    let response = await fetch('/chats/processConversationRemove', {
+async function processConversationRemove(conversationId) {
+    let response = await fetch(PHPRoutePath.PROCESS_CONVERSATION_REMOVE, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({data: removedConversationId})
+        body: JSON.stringify({removedConversationId: conversationId})
     });
 
-    if (document.getElementById(`conversation-${ removedConversationId }-name`)) {
-        window.location.href = '/chats/groups/';
+    if (document.getElementById(`conversation-${ conversationId }-name`)) {
+        window.location.href = PHPRoutePath.GROUPS;
     } else if (document.getElementsByName('group-conversations-list')) {
-        removeConversationLabel(removedConversationId);
+        removeConversationLabel(conversationId);
     }
 }
 
-async function processGroupConversationLabel(conversationId, isConversationUpdate = false) {
+async function processGroupConversationLabel(convId, isConversationUpdate = false) {
     let groupConversationsList = document.getElementsByName('group-conversations-list')[0];
 
     if (groupConversationsList) {
         try {
-            const response = await fetch('/chats/processConversationLabel', {
+            const response = await fetch(PHPRoutePath.PROCESS_CONVERSATION_LABEL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({data: conversationId})
+                body: JSON.stringify({conversationId: convId})
             });
 
             if (!response.ok) {
@@ -157,10 +163,10 @@ async function processGroupConversationLabel(conversationId, isConversationUpdat
 
             groupConversationsList.innerHTML += element;
 
-            sortConversationLabels(conversationId);
+            sortConversationLabels(convId);
 
             if (isConversationUpdate == true) {
-                updateConversationMembersList(conversationId);
+                updateConversationMembersList(convId);
             }
 
         } catch(error) {
@@ -169,33 +175,17 @@ async function processGroupConversationLabel(conversationId, isConversationUpdat
     }
 }
 
-function processConversationNameChange(data) {
-    let conversationId   = data['conversationId'];
-    let conversationName = data['conversationName'];
-
-    let conversationNameHeader = document.getElementById(`conversation-${ conversationId }-name`);
-    let conversationNameLabel  = document.getElementById(`conversation-${ conversationId }-name-label`);
-
-    if (conversationNameHeader) {
-        conversationNameHeader.innerHTML = conversationName;
-    }
-
-    if (conversationNameLabel) {
-        conversationNameLabel.innerHTML  = conversationName.slice(0, 20);
-    }
-}
-
 async function processMessagePreview(data) {
     let messagePreviewElement = document.getElementById(`conversation-${data['conversationId']}-last-message`);
 
     if (messagePreviewElement) {
         try {
-            const response = await fetch('/chats/messagePreview', {
+            const response = await fetch(PHPRoutePath.MESSAGE_PREVIEW, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({data: data})
+                body: JSON.stringify({conversationId: data['conversationId']})
             });
 
             if (!response.ok) {
@@ -214,7 +204,7 @@ async function processMessagePreview(data) {
 
 async function updateNotificationsNumber() {
     let navDropDown = document.getElementById('nav-drop-down');
-    let response    = await fetch('/notifications/getUnseenNotificationsNumber', {
+    let response    = await fetch(PHPRoutePath.GET_UNSEEN_NOTIFICATIONS_NUMBER, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -225,17 +215,17 @@ async function updateNotificationsNumber() {
     navDropDown.innerHTML = await response.text();
 }
 
-async function updateConversationMembersList(conversationId) {
+async function updateConversationMembersList(convId) {
     let conversationMembersList = document.getElementById('conversation-members-list');
 
     if (conversationMembersList) {
         try {
-            let response = await fetch('/chats/group/updateMembersList', {
+            let response = await fetch(PHPRoutePath.UPDATE_MEMBERS_LIST, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({data: conversationId})
+                body: JSON.stringify({conversationId: convId})
             });
 
             if (!response.ok) {
@@ -246,6 +236,22 @@ async function updateConversationMembersList(conversationId) {
         } catch (error) {
             console.log('Error during updating conversation members list', error);
         }
+    }
+}
+
+function processConversationNameChange(data) {
+    let conversationId   = data['conversationId'];
+    let conversationName = data['conversationName'];
+
+    let conversationNameHeader = document.getElementById(`conversation-${ conversationId }-name`);
+    let conversationNameLabel  = document.getElementById(`conversation-${ conversationId }-name-label`);
+
+    if (conversationNameHeader) {
+        conversationNameHeader.innerHTML = conversationName;
+    }
+
+    if (conversationNameLabel) {
+        conversationNameLabel.innerHTML  = conversationName.slice(0, 20);
     }
 }
 
@@ -289,18 +295,22 @@ function removeUserRemoveButton(removedUserId) {
 }
 
 function processPageReload() {
-    let reloadWindowModal = new Modal(document.getElementById('reload-window-modal'));
-    let reloadPageBtn     = document.getElementById('reload-page-btn');
-
-    reloadWindowModal.show();
-
-    reloadPageBtn.addEventListener('click', function () {
-        location.reload(true);
-    });
+    location.reload(true);
 }
+
+function getNewMemberPreviewScriptTag() {
+    let scriptTagId = document.getElementById('mercureScriptTagId').value;
+
+    return new Promise(function (resolve) {
+        setTimeout(function () {
+            resolve(document.getElementById(scriptTagId));
+        }, 1000);
+    });
+};
 
 export {
     startMessagePreviewEventSource,
     startActiveNotificationChannelEventSource,
-    startConversationHelperEventSource
+    startConversationHelperEventSource,
+    getNewMemberPreviewScriptTag
 };

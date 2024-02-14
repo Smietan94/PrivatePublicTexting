@@ -108,10 +108,57 @@ footer {
     border: none;
 }
 
-.nav-hover-bordered:hover {
+.current-conversation-border {
+    color: #{$dark};
+    background-color: #{$secondary};
+    box-shadow: 0px 0px 10px #{$primary}, inset 0px 0px 15px #{$primary};
+}
+
+.btn-start-conversation,
+.btn-friend-msg-list,
+.nav-hover-dropdown,
+.current-conversation-border,
+.nav-hover-bordered,
+.blurred-button,
+.blurred-button:hover {
+    -webkit-transition: all .4s;
+    transition: all .4s;
+}
+
+.btn-start-conversation,
+.btn-friend-msg-list {
+    box-shadow: 0px 0px 10px #{$light}, inset 0px 0px 7px #{$light};
+}
+
+.nav-hover-dropdown,
+.nav-hover-bordered {
+    box-shadow: 0px 0px 10px #{$dark}, inset 0px 0px 7px #{$dark};
+}
+
+.nav-hover-dropdown:hover {
     background-color: #{$primary};
     color: #{$light};
-    box-shadow: 0px 0px 10px, inset 0px 0px 7px #{$light};
+    box-shadow: 0px 0px 10px #{$primary}, inset 0px 0px 7px #{$dark};
+    -webkit-transition: all .4s;
+    transition: all .4s;
+}
+
+.nav-hover-bordered:hover {
+    background-color: #{$light};
+    color: #{$dark};
+    box-shadow: 0px 0px 10px #{$light}, inset 0px 0px 7px #{$dark};
+    -webkit-transition: all .4s;
+    transition: all .4s;
+}
+
+.blurred-button {
+    -webkit-filter: blur(1.2px);
+    filter: blur(1.2px);
+}
+
+.blurred-button:hover {
+    -webkit-filter: blur(0);
+    filter: blur(0);
 }
 
 .current-path-bordered {
@@ -119,11 +166,14 @@ footer {
     box-shadow: 0px 0px 10px, inset 0px 0px 7px #{$light};
 }
 
+.current-conversation-border:hover,
 .btn-start-conversation:hover,
 .btn-friend-msg-list:hover {
-    background-color: #{$dark};
+    background-color: #{$primary};
     color: #{$light};
     box-shadow: 0px 0px 10px #{$dark};
+    -webkit-transition: all .4s;
+    transition: all .4s;
 }
 
 .offcanvas-size-sm {
@@ -134,6 +184,14 @@ footer {
     --bs-tooltip-bg: #{$light};
     --bs-tooltip-color: #{$dark};
     --bs-tooltip-opacity: .8;
+}
+
+.message {
+    white-space: pre-wrap;
+}
+
+.dropdown-btn {
+    font-size: 1.3rem;
 }
 
 /* https://colormagic.app/palette/iWzC4fi6j6e9gv3J2b1j */

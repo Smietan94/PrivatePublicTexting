@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Notification;
@@ -35,7 +37,7 @@ class NotificationRepository extends ServiceEntityRepository
      * @param  string $message
      * @return Notification
      */
-    public function storeNotification(int $notificationType, User $sender, User $receiver, string $message): Notification
+    public function storeNotification(int $notificationType, User $sender, User $receiver, string $message, ?int $conversationId = null): Notification
     {
         $notification = new Notification();
 
@@ -45,6 +47,7 @@ class NotificationRepository extends ServiceEntityRepository
         $notification->setReceiver($receiver);
         $notification->setMessage($message);
         $notification->setUpdatedAt(new \DateTime());
+        $notification->setConversationId($conversationId);
 
         $this->entityManager->persist($notification);
         $this->entityManager->flush();

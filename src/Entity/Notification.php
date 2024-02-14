@@ -36,6 +36,9 @@ class Notification
     #[ORM\Column(length: 255)]
     private ?string $message = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $conversationId = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -97,6 +100,18 @@ class Notification
     public function setMessage(string $message): static
     {
         $this->message = $message;
+
+        return $this;
+    }
+
+    public function getConversationId(): ?int
+    {
+        return $this->conversationId;
+    }
+
+    public function setConversationId(?int $conversationId): static
+    {
+        $this->conversationId = $conversationId;
 
         return $this;
     }

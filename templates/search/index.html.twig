@@ -7,7 +7,7 @@
         <h2 class="fw-bold mb-2 text-light">Find new friends</h2>
         <p class="text-white-50 mb-4">Please type username or email!</p>
         <div class="form-outline form-white" {{ stimulus_controller('search', {
-            url: path('app_search_users')
+            url: path(GetRouteName('APP_SEARCH_USERS'))
         }) }}>
             {{ form_start(searchForm) }}
                 <div class="input-group">

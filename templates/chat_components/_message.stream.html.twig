@@ -6,7 +6,7 @@
                 {% if message.attachment == true %}
                     {% include 'chat_components/_attachment.html.twig' %}
                 {% endif %}
-                <p class="text-start mx-2">{{ message.message }}</p>
+                <p class="text-start mx-2 message">{{ message.message }}</p>
                 <small class="text-start mx-2">{{ 'now'|date('d M, Y H:i') }}</small>
             </div>
         </div>
@@ -17,7 +17,7 @@
                 {% if message.attachment == true %}
                     {% include 'chat_components/_attachment.html.twig' %}
                 {% endif %}
-                <p class="text-start mx-2">{{ message.message }}</p>
+                <p class="text-start mx-2 message">{{ message.message }}</p>
                 <small class="text-start mx-2">{{ 'now'|date('d M, Y H:i') }}</small>
             </div>
         </div>

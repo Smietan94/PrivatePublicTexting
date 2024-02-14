@@ -6,9 +6,7 @@ namespace App\Repository;
 
 use App\Entity\Conversation;
 use App\Entity\User;
-use App\Enum\NotificationStatus;
 use App\Enum\UserStatus;
-use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
@@ -206,49 +204,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                 'username'   => $username
             ]);
     }
-
-    // /**
-    //  * getFriendsConversationsData
-    //  *
-    //  * @param  User $currentUser
-    //  * @param  string $searchTerm
-    //  * @return User[] array
-    //  */
-    // public function getFriendsConversationsData(User $currentUser, string $searchTerm): array
-    // {
-    //     $qb = $this->findUsersQueryBuilder($searchTerm, $currentUser->getUsername());
-
-    //     return $qb
-    //         ->andWhere($qb->expr()->isMemberOf(':user', 'u.friends'))
-    //         ->setParameter('user', $currentUser)
-    //         ->getQuery()
-    //         ->getResult();
-    // }
-
-    // /**
-    //  * changeStatus
-    //  *
-    //  * @param  int  $status
-    //  * @param  User $user
-    //  * @return void
-    //  */
-    // public function changeStatus(int $status, User $user): void
-    // {
-    //     $user->setStatus($status);
-    //     $this->entityManager->flush();
-    // }
-
-    // /**
-    //  * updateLastSeen
-    //  *
-    //  * @param  User $user
-    //  * @return void
-    //  */
-    // public function updateLastSeen(User $user): void
-    // {
-    //     $user->setLastSeen(new \DateTime());
-    //     $this->entityManager->flush();
-    // }
 
     /**
      * getNotConversationMemberFriends

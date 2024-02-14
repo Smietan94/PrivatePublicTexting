@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Constants\RouteName;
+use App\Entity\Constants\RoutePath;
 use App\Entity\User;
 use App\Enum\UserStatus;
 use App\Form\LoginFormType;
@@ -51,14 +53,17 @@ class AuthController extends AbstractController
      * @param  AutheticationUtils $authenticationUtils
      * @return Response
      */
-    #[Route('/login', name: 'app_login')]
+    #[Route(
+        RoutePath::LOGIN,
+        name: RouteName::APP_LOGIN
+    )]
     #[IsGranted('PUBLIC_ACCESS')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
         try {
             if ($this->security->isGranted('ROLE_USER')) {
-                $this->userRepository->changeStatus(UserStatus::ACTIVE->toInt(), $this->currentUser);
-                return $this->redirectToRoute('app_home');
+                $this->userRepository->changeActivityStatus($this->currentUser, UserStatus::ACTIVE->toInt());
+                return $this->redirectToRoute(RouteName::APP_HOME);
             }
 
             $form  = $this->formFactory->create(LoginFormType::class);
@@ -67,7 +72,7 @@ class AuthController extends AbstractController
             if ($error) {
                 $this->addFlash('warning', $error->getMessage());
 
-                return $this->redirectToRoute('app_login');
+                return $this->redirectToRoute(RouteName::APP_LOGIN);
             }
 
             return $this->render('auth/login.html.twig', [
@@ -79,13 +84,13 @@ class AuthController extends AbstractController
             $this->logger->error('Error has occured during login: ' . $e->getMessage());
             $this->addFlash('error', 'Error has occured during login');
 
-            return $this->redirectToRoute('app_register');
+            return $this->redirectToRoute(RouteName::APP_REGISTER);
 
         } catch (ValidationFailedException $e) {
             $this->logger->error('Error has occured during login: ' . $e->getMessage());
             $this->addFlash('error', 'Error has occured during login');
 
-            return $this->redirectToRoute('app_register');
+            return $this->redirectToRoute(RouteName::APP_REGISTER);
         }
     }
 
@@ -95,12 +100,15 @@ class AuthController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route('/register', name: 'app_register')]
+    #[Route(
+        RoutePath::REGISTER,
+        name: RouteName::APP_REGISTER
+    )]
     #[IsGranted('PUBLIC_ACCESS')]
     public function register(Request $request): Response
     {
         if ($this->security->isGranted('ROLE_USER')) {
-            return $this->redirectToRoute('app_home');
+            return $this->redirectToRoute(RouteName::APP_HOME);
         }
 
         $form = $this->formFactory->create(RegisterFormType::class);
@@ -120,10 +128,13 @@ class AuthController extends AbstractController
      *
      * @return Response
      */
-    #[Route('/logout', name: 'app_logout')]
+    #[Route(
+        RoutePath::LOGOUT,
+        name: RouteName::APP_LOGOUT
+    )]
     public function logout(): Response
     {
-        return $this->redirectToRoute('app_login');
+        return $this->redirectToRoute(RouteName::APP_LOGIN);
     }
 
     /**
@@ -142,7 +153,7 @@ class AuthController extends AbstractController
 
                 if ($confirmPassword !== $password) {
                     $this->addFlash('warning', 'Passwords are not the same!');
-                    return $this->redirectToRoute('app_register');
+                    return $this->redirectToRoute(RouteName::APP_REGISTER);
                 }
 
                 // creating new user in database
@@ -151,26 +162,26 @@ class AuthController extends AbstractController
                 $this->addFlash('success', 'User Registration Succeded');
                 $this->security->login($newUser, null, 'registration');
 
-                return $this->redirectToRoute('app_home');
+                return $this->redirectToRoute(RouteName::APP_HOME);
             } else {
                 foreach($this->validator->validate($form) as $error) {
                     $this->addFlash('warning', $error->getMessage());
                 }
 
-                return $this->redirectToRoute('app_register');
+                return $this->redirectToRoute(RouteName::APP_REGISTER);
             }
 
         } catch (Error $e) {
             $this->logger->error('Error has occured during registration: ' . $e->getMessage());
             $this->addFlash('error', 'Error has occured during registration');
 
-            return $this->redirectToRoute('app_register');
+            return $this->redirectToRoute(RouteName::APP_REGISTER);
 
         } catch (Exception $e) {
             $this->logger->error('Error has occured during registration: ' . $e->getMessage());
             $this->addFlash('error', 'Error has occured during registration');
 
-            return $this->redirectToRoute('app_register');
+            return $this->redirectToRoute(RouteName::APP_REGISTER);
         }
     }
 }

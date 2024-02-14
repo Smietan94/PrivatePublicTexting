@@ -30,18 +30,16 @@ class NotificationService
      * @param  int          $senderId
      * @return void
      */
-    public function messagePreviewMercureUpdater(Conversation $conversation, string $message, int $senderId): void
+    public function messagePreviewMercureUpdater(Conversation $conversation): void
     {
         $topics = $this->conversationProcessor->getConversationTopics($conversation);
 
         if (count($topics) > 0) {
             $data = ['messagePreview' => [
-                'message'        => substr($message, 0, 20),
-                'senderId'       => $senderId,
                 'conversationId' => $conversation->getId(),
             ]];
 
-            $this->publicMercureUpdate($topics, $data);
+            $this->publishMercureUpdate($topics, $data);
         }
     }
 
@@ -58,7 +56,7 @@ class NotificationService
         if (count($topics) > 0) {
             $data = ['conversationId' => $conversation->getId()];
 
-            $this->publicMercureUpdate($topics, $data);
+            $this->publishMercureUpdate($topics, $data);
         }
     }
 
@@ -79,7 +77,7 @@ class NotificationService
                 'removedUserId'  => $removedUserId,
             ]];
 
-            $this->publicMercureUpdate($topics, $data);
+            $this->publishMercureUpdate($topics, $data);
         }
     }
 
@@ -98,7 +96,7 @@ class NotificationService
                 'conversationName' => $conversation->getName(),
                 'conversationId'   => $conversation->getId()
             ]];
-            $this->publicMercureUpdate($topics, $data);
+            $this->publishMercureUpdate($topics, $data);
         }
     }
 
@@ -117,7 +115,7 @@ class NotificationService
                 'conversationId'       => $conversation->getId(),
                 'isConversationUpdate' => true,
             ]];
-            $this->publicMercureUpdate($topics, $data);
+            $this->publishMercureUpdate($topics, $data);
         }
     }
 
@@ -133,8 +131,26 @@ class NotificationService
 
         if (count($topics) > 0) {
             $data = ['removedConversationId' => $conversation->getId()];
-            $this->publicMercureUpdate($topics, $data);
+            $this->publishMercureUpdate($topics, $data);
         }
+    }
+
+    /**
+     * processFriendRemove
+     *
+     * @param  User $currentUser
+     * @param  User $friendToRm
+     * @return void
+     */
+    public function processFriendRemove(User $currentUser, User $friendToRm): void
+    {
+        $topic = sprintf('notifications%d', $friendToRm->getId());
+        $data  = ['friendRemoveData' => [
+            'removingUserId' => $currentUser->getId(),
+            'removedUserId'  => $friendToRm->getId()
+        ]];
+
+        $this->publishMercureUpdate($topic, $data);
     }
 
     /**
@@ -152,6 +168,7 @@ class NotificationService
         $currentUserName  = $currentUser->getUsername();
         $removedUserName  = $removedUser->getUsername();
         $conversationName = $conversation->getName();
+        $conversationId   = $conversation->getId();
 
         foreach ($conversation->getConversationMembers() as $receiver) {
             $message = match (true) {
@@ -166,7 +183,8 @@ class NotificationService
                     NotificationType::REMOVED_FROM_CONVERSATION->toInt(),
                     $currentUser,
                     $receiver,
-                    $message
+                    $message,
+                    ($receiver !== $removedUser) ? $conversationId: null
                 )
             );
         }
@@ -186,6 +204,7 @@ class NotificationService
         $format              = NotificationType::CONVERSATION_NAME_CHANGED->toString();
         $newConversationName = $conversation->getName();
         $currentUserName     = $currentUser->getUsername();
+        $conversationId      = $conversation->getId();
 
         foreach ($conversation->getConversationMembers() as $receiver) {
             $message = match (true) {
@@ -199,7 +218,8 @@ class NotificationService
                     NotificationType::CONVERSATION_NAME_CHANGED->toInt(),
                     $currentUser,
                     $receiver,
-                    $message
+                    $message,
+                    $conversationId
                 )
             );
         }
@@ -219,6 +239,7 @@ class NotificationService
         $format              = NotificationType::ADDED_TO_CONVERSATION->toString();
         $currentUserName     = $currentUser->getUsername();
         $conversationName    = $conversation->getName();
+        $conversationId      = $conversation->getId();
         $newMembersUsernames = array_map(fn ($user) => $user->getUsername(), $newMembers);
         $processedUsernames  = $this->processNewMembersNames($newMembersUsernames);
 
@@ -239,7 +260,8 @@ class NotificationService
                     NotificationType::ADDED_TO_CONVERSATION->toInt(),
                     $currentUser,
                     $receiver,
-                    $message
+                    $message,
+                    $conversationId
                 )
             );
         }
@@ -293,7 +315,16 @@ class NotificationService
         );
     }
 
-    public function processFriendStatusNotification(NotificationType $type, User $sender, User $receiver): Notification
+    /**
+     * processFriendStatusNotification
+     *
+     * @param  NotificationType $type
+     * @param  User             $sender
+     * @param  User             $receiver
+     * @param  ?int             $conversationId
+     * @return Notification
+     */
+    public function processFriendStatusNotification(NotificationType $type, User $sender, User $receiver, ?int $conversatoinId = null): Notification
     {
         $format  = $type->toString();
         $message = sprintf($format, $sender->getUsername());
@@ -302,7 +333,8 @@ class NotificationService
             $type->toInt(),
             $sender,
             $receiver,
-            $message
+            $message,
+            $conversatoinId
         );
     }
 
@@ -327,13 +359,20 @@ class NotificationService
                 default                    => sprintf($format, $currentUserName, $conversationName)
             };
 
+            $conversationId = match (true) {
+                $type === NotificationType::CONVERSATION_GROUP_CREATED => $conversation->getId(),
+                $type === NotificationType::LEFT_THE_CONVERSATION      => ($receiver === $currentUser) ? $conversation->getId(): null,
+                default                                                => null
+            };
+
             array_push(
                 $notifications,
                 $this->notificationRepository->storeNotification(
                     $type->toInt(),
                     $currentUser,
                     $receiver,
-                    $message
+                    $message,
+                    $conversationId
                 )
             );
         };
@@ -342,13 +381,13 @@ class NotificationService
     }
 
     /**
-     * publicMercureUpdate
+     * publishMercureUpdate
      *
-     * @param  string[] $topics
+     * @param  string|string[] $topics
      * @param  array    $data
      * @return void
      */
-    private function publicMercureUpdate(array $topics, array $data): void
+    private function publishMercureUpdate(string|array $topics, array $data): void
     {
         $update = new Update(
             $topics,
@@ -368,7 +407,7 @@ class NotificationService
      */
     private function processNewMembersUsernamesWhenIsReceiver(array $newMembersUsernames, string $targetUsername): string
     {
-        if (count($newMembersUsernames) > 1) {
+        if (count($newMembersUsernames) > 0) {
             $index                       = array_search($targetUsername, $newMembersUsernames);
             $newMembersUsernames[$index] = 'You';
         }

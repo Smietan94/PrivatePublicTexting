@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Constants\RouteName;
+use App\Entity\Constants\RoutePath;
 use App\Entity\Conversation;
 use App\Entity\User;
 use App\Enum\ConversationType;
@@ -48,7 +50,10 @@ class ChatController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route(['/', '/home', '/chats/solo'], name: 'app_home')]
+    #[Route(
+        RoutePath::HOME,
+        name: RouteName::APP_HOME
+    )]
     public function index(Request $request): Response
     {
         $conversations = $this->conversationRepository->getConversations(
@@ -64,7 +69,7 @@ class ChatController extends AbstractController
                 'warning',
                 'You have no friends to talk'
             );
-            return $this->redirectToRoute('app_search_users');
+            return $this->redirectToRoute(RouteName::APP_SEARCH_USERS);
         }
 
         return $this->processResponse(
@@ -82,8 +87,8 @@ class ChatController extends AbstractController
      * @return Response
      */
     #[Route(
-        '/chats/solo/{conversationId}',
-        name: 'app_chat',
+        RoutePath::SOLO,
+        name: RouteName::APP_CHAT,
         requirements: ['conversationId' => '[0-9]+']
     )]
     public function chat(Request $request, int $conversationId): Response
@@ -97,7 +102,7 @@ class ChatController extends AbstractController
         // cheks if user exists and if friends with current user
         if (!$conversation) {
             $this->addFlash('warning', 'Conversation does not exists');
-            return $this->redirectToRoute('app_home');
+            return $this->redirectToRoute(RouteName::APP_HOME);
         }
 
         return $this->processResponse(
@@ -114,9 +119,9 @@ class ChatController extends AbstractController
      * @return Response
      */
     #[Route(
-        '/chats/solo/startConversation',
+        RoutePath::START_SOLO_CONVERSATION,
         methods: ['POST'],
-        name: 'app_start_private_conversation'
+        name: RouteName::APP_START_PRIVATE_CONVERSATION
     )]
     public function startConversation(Request $request): Response
     {
@@ -134,7 +139,7 @@ class ChatController extends AbstractController
         if (!$this->checkIfConversationAlreadyExists($friend)) {
             // if not, then flashes inforamation
             $this->addFlash('warning', 'You already have conversation');
-            return $this->redirectToRoute('app_home');
+            return $this->redirectToRoute(RouteName::APP_HOME);
         }
 
         $this->conversationRepository->storeConversation(
@@ -143,7 +148,7 @@ class ChatController extends AbstractController
             ConversationType::SOLO->toInt()
         );
 
-        return $this->redirectToRoute('app_home');
+        return $this->redirectToRoute(RouteName::APP_HOME);
     }
 
     /**

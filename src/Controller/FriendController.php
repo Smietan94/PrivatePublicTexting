@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Constants\RouteName;
+use App\Entity\Constants\RoutePath;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\FriendsService;
@@ -37,7 +39,10 @@ class FriendController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route('/friends', name: 'app_friends_list')]
+    #[Route(
+        RoutePath::FRIENDS,
+        name: RouteName::APP_FRIENDS_LIST
+    )]
     public function index(Request $request): Response
     {
         // collecting paginated query
@@ -64,9 +69,9 @@ class FriendController extends AbstractController
      * @return Response
      */
     #[Route(
-        '/friends/remove',
+        RoutePath::REMOVE_FRIEND,
         methods:['DELETE'],
-        name: 'app_friends_remove'
+        name: RouteName::APP_FRIENDS_REMOVE
     )]
     public function removeFriend(Request $request): Response
     {
@@ -77,18 +82,18 @@ class FriendController extends AbstractController
         // check if friend exists
         if (!$friend) {
             $this->addFlash('error', 'User does not exist');
-            return $this->redirectToRoute('app_friends_list');
+            return $this->redirectToRoute(RouteName::APP_FRIENDS_LIST);
         }
 
         // check if user in friends list
         if (!in_array($friend, $this->currentUser->getFriends()->toArray())) {
             $this->addFlash('error', 'You are not friends');
-            return $this->redirectToRoute('app_friends_list');
+            return $this->redirectToRoute(RouteName::APP_FRIENDS_LIST);
         }
 
         $this->friendsService->removeFriend($this->currentUser, $friend);
 
-        return $this->redirectToRoute('app_friends_list');
+        return $this->redirectToRoute(RouteName::APP_FRIENDS_LIST);
     }
 
     // #[Route('/deleteUser')]

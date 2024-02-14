@@ -1,4 +1,4 @@
-<a type="button" id="conversation-{{ data.conversationId }}" href="{{ path('app_chat_group', {conversationId: data.conversationId}) }}"
+<a type="button" id="conversation-{{ data.conversationId }}" href="{{ path(GetRouteName('APP_CHAT_GROUP'), {conversationId: data.conversationId}) }}"
     class="list-group-item text-start w-100 rounded btn-friend-msg-list ps-3 py-2"
     value="{{ data.conversationId }}">
     <div class="d-flex w-100">

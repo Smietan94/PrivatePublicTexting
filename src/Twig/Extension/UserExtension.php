@@ -1,15 +1,13 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Twig\Extension;
 
-use App\Twig\Runtime\BasicStuffRuntime;
+use App\Twig\Runtime\UserExtensionRuntime;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
 
-class BasicStuffExtension extends AbstractExtension
+class UserExtension extends AbstractExtension
 {
     public function getFilters(): array
     {
@@ -17,14 +15,7 @@ class BasicStuffExtension extends AbstractExtension
             // If your filter generates SAFE HTML, you should add a third
             // parameter: ['is_safe' => ['html']]
             // Reference: https://twig.symfony.com/doc/3.x/advanced.html#automatic-escaping
-            new TwigFilter('Push', [BasicStuffRuntime::class, 'push']),
-        ];
-    }
-
-    public function getFunctions()
-    {
-        return [
-            new TwigFunction('GetRouteName', [BasicStuffRuntime::class, 'getRouteName'])
+            new TwigFilter('GetFriendsTopics', [UserExtensionRuntime::class, 'getFriendsTopics']),
         ];
     }
 }

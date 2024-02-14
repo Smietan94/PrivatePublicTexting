@@ -1,6 +1,6 @@
 {% set unseenReceivedNotifications = app.user | UnseenReceivedNotifications | length %}
 {# <div class="dropdown user-dropdown-menu px-3"> #}
-    <a class="my-1 user-dropdown-menu bg-primary px-3 dropdown-toggle nav-hover-bordered rounded-3 text-decoration-none d-flex align-items-center text-light"
+    <a class="p-1 my-1 user-dropdown-menu px-3 dropdown-toggle rounded-3 text-decoration-none d-flex align-items-center text-light nav-hover-dropdown"
     id="userDropDownMenu"
     href="#"
     aria-expand="false"
@@ -18,8 +18,8 @@
         </span>
     </a>
     <ul class="dropdown-menu dropdown-menu-end dropstart bg-light" aria-labelledby="userDropDownMenu">
-        <li class="px-3">
-            <a class="dropdown-item" href="#">
+        <li>
+            <a id="toogle-notifications-modal" class="dropdown-item" href="#" role="button" data-bs-toggle="modal" data-bs-target="#notifications-modal">
                 notifications
                 <span class="badge rounded-pill
                 {% if unseenReceivedNotifications > 0 %}
@@ -32,17 +32,17 @@
                 </span>
             </a>
         </li>
-        <li class="px-3">
-            <a class="dropdown-item" href="{{ path('app_friends_requests') }}">
+        <li>
+            <a class="dropdown-item" href="{{ path(GetRouteName('APP_FRIENDS_REQUESTS')) }}">
                 friend requests
             </a>
         </li>
-        <li class="px-3">
+        <li>
             <a class="dropdown-item" href="#">settings</a>
         </li>
         <li><hr class="dropdown-divider"></li>
-        <li class="px-3">
-            <form action="{{ path('app_logout') }}" method="post">
+        <li>
+            <form action="{{ path(GetRouteName('APP_LOGOUT')) }}" method="post">
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
                 <button class="dropdown-item" href="#">log out</button>
             </form>

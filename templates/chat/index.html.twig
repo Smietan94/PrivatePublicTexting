@@ -1,5 +1,9 @@
 {% extends 'base.html.twig' %}
 
+{# {% block javascripts %}
+    {{ encore_entry_script_tags('chatController') }}
+{% endblock %} #}
+
 {% if conversation is defined %}
     {% set conversationTopic = 'conversation.priv' ~ conversation.id %}
     {% set previewTopic      = (conversation | GetConversationTopics) %}
@@ -16,16 +20,12 @@
     {% endif %}
 {% endblock %}
 
-{% block javascripts %}
-    {{ encore_entry_script_tags('chat') }}
-{% endblock %}
-
 {% block body %}
 <div class="container container-body container-shadow m-auto mt-5 p-5 bg-dark ">
     <h2 class="fw-bold mb-2 text-light">Conversations</h2>
     <p class="text-white-50 mb-4">Choose a friend to talk</p>
     <div class="row mx-2 mb-2"{{ stimulus_controller('conversation', {
-        url: path('app_chat_search')
+        url: path(GetRouteName('APP_CHAT_SEARCH'))
     }) }}>
         <div class="col-xl-4 col-lg-5 col-sm-12 bg-light rounded card messenger-window">
             {% set activeConversationId = conversation.id %}
@@ -48,12 +48,6 @@
     </div>
 </div>
 {% if conversation is defined %}
-    {#<script type="application/json" id="message-url">
-        {{ path('handle_message_app') }}
-    </script>
-    <script type="application/json" id="message-preview-url">
-        {{ path('app_chat_message_preview') }}
-    </script>#}
     <script type="application/json" id="mercure-url">
         {{ mercure(conversationTopic)|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_HEX_TAG'))|raw  }}
     </script>

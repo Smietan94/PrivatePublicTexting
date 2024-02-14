@@ -1,5 +1,16 @@
 {% extends 'base.html.twig' %}
 
+{# {% block javascripts %}
+    {{ encore_entry_script_tags('friendController') }}
+{% endblock %} #}
+
+{% if topics is not defined %}
+    {% set topics = [] %}
+{% endif %}
+
+{% set friendsTopics = app.user | GetFriendsTopics %}
+{% set topics        = topics | Push(friendsTopics) %}
+
 {% block title %}Friends list!{% endblock %}
 
 {% block body %}
@@ -7,12 +18,12 @@
     <h2 class="fw-bold mb-2 text-light">Your Friends</h2>
     <p class="text-white-50 mb-4">Friends list!</p>
     <turbo-frame id="mix-browse-list-{{ pager.currentPage }}" target="_top">
-        <div class="row mb-2">
+        <div id="friends-cards" class="row mb-2">
             {% for friend in pager %}
-                <div class="col-xl-4 col-lg-6 col-md-12  col-xs-12 mt-4 rounded-3">
+                <div id="friend-{{ friend.id }}" class="friend-card-row col-xl-4 col-lg-6 col-md-12  col-xs-12 mt-4 rounded-3">
                     <div class=" mx-auto card friend-card bg-light">
                         <div class="card-body">
-                            <p>Username: <h4>{{ friend.username }}</h4></p>
+                            <p>Username: <h4 id="username-{{ friend.id }}">{{ friend.username }}</h4></p>
                         </div>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item">name: {{ friend.name }}</li>
@@ -21,14 +32,17 @@
                         </ul>
                         <div class="card-body row">
                             <div class="col">
-                                <form action="{{ path('app_friends_remove') }}" method="delete">
-                                    <button type="submit" name="friendId" value="{{ friend.id }}" class="btn btn-dark" target="_top">Remove friend</button>
+                                <form action="{{ path(GetRouteName('APP_FRIENDS_REMOVE')) }}" method="delete">
+                                    <button type="submit" name="friendId" value="{{ friend.id }}" class="btn btn-dark btn-remove-friend" target="_top">Remove friend</button>
                                 </form>
                             </div>
                             <div class="col">
-                                <a href="{{ path('app_chat', {conversationId: friend | ConversationId}) }}" class="btn btn-dark" target="_top">Send Message</a>
+                                <a href="{{ path(GetRouteName('APP_CHAT'), {conversationId: friend | ConversationId}) }}" class="btn btn-dark" target="_top">Send Message</a>
                             </div>
                         </div>
+                        <script type="application/json" id="mercure-friend-{{ friend.id }}-remove">
+                            {{ mercure('notifications' ~ friend.id)|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_HEX_TAG'))|raw  }}
+                        </script>
                     </div>
                 </div>
             {% endfor %}

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Constants\RouteName;
+use App\Entity\Constants\RoutePath;
 use App\Entity\User;
 use App\Enum\NotificationType;
 use App\Repository\ConversationRepository;
@@ -36,7 +38,11 @@ class ChatMembersController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route('/chat/groups/removeFromConversation', methods: ['POST'], name: 'app_chat_group_remove_from_conversation')]
+    #[Route(
+        RoutePath::REMOVE_FROM_CONVERSATION,
+        methods: ['POST'],
+        name: RouteName::APP_CHAT_GROUP_REMOVE_FROM_CONVERSATION
+    )]
     public function removeUserFromConversation(Request $request): Response
     {
         $data           = $request->get('remove_conversation_member');
@@ -59,7 +65,7 @@ class ChatMembersController extends AbstractController
             );
         }
 
-        return $this->redirectToRoute('app_chat_group', [
+        return $this->redirectToRoute(RouteName::APP_CHAT_GROUP, [
             'conversationId' => $conversationId,
         ]);
     }
@@ -71,9 +77,9 @@ class ChatMembersController extends AbstractController
      * @return Response
      */
     #[Route(
-        '/chat/groups/leaveConversation',
+        RoutePath::LEAVE_CONVERSATION,
         methods: ['POST'],
-        name: 'app_chat_group_leave_conversation'
+        name: RouteName::APP_CHAT_GROUP_LEAVE_CONVERSATION
     )]
     public function leaveConversation(Request $request): Response
     {
@@ -88,7 +94,7 @@ class ChatMembersController extends AbstractController
             $this->addFlash('warning', 'You are not part of this conversation');
         }
 
-        return $this->redirectToRoute('app_chat_groups');
+        return $this->redirectToRoute(RouteName::APP_CHAT_GROUPS);
     }
 
     /**
@@ -98,9 +104,9 @@ class ChatMembersController extends AbstractController
      * @return Response
      */
     #[Route(
-        '/chat/groups/addMembers',
+        RoutePath::ADD_MEMBERS,
         methods: ['POST'],
-        name: 'app_chat_group_add_members'
+        name: RouteName::APP_CHAT_GROUP_ADD_MEMBERS
     )]
     public function addNewConversationMembers(Request $request): Response
     {
@@ -133,7 +139,7 @@ class ChatMembersController extends AbstractController
             }
         }
 
-        return $this->redirectToRoute('app_chat_group', [
+        return $this->redirectToRoute(RouteName::APP_CHAT_GROUP, [
             'conversationId' => $conversationId,
         ]);
     }

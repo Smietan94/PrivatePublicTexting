@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Constants\RouteName;
+use App\Entity\Constants\RoutePath;
 use App\Entity\Conversation;
 use App\Entity\User;
 use App\Enum\ConversationStatus;
@@ -15,7 +17,6 @@ use App\Repository\UserRepository;
 use App\Service\ChatService;
 use App\Service\MessageAttachmentService;
 use App\Service\MessageService;
-use App\Service\NotificationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -49,7 +50,10 @@ class ChatGroupsController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route('/chats/groups/', name: 'app_chat_groups')]
+    #[Route(
+        RoutePath::GROUPS,
+        name: RouteName::APP_CHAT_GROUPS
+    )]
     public function index(Request $request): Response
     {
         // collecting group conversations
@@ -82,8 +86,8 @@ class ChatGroupsController extends AbstractController
      * @return Response
      */
     #[Route(
-        '/chats/groups/{conversationId}',
-        name: 'app_chat_group',
+        RoutePath::GROUP,
+        name: RouteName::APP_CHAT_GROUP,
         requirements: ['conversationId' => '[0-9]+']
     )]
     public function groupChat(Request $request, int $conversationId): Response
@@ -96,13 +100,13 @@ class ChatGroupsController extends AbstractController
 
         if (!$groupConversation) {
             $this->addFlash('warning', 'chat group does not exists');
-            return $this->redirectToRoute('app_chat_groups');
+            return $this->redirectToRoute(RouteName::APP_CHAT_GROUPS);
         }
 
         // checks if user part of conversation group
         if (!$this->chatService->checkIfUserIsMemberOfConversation($groupConversation, $this->currentUser)) {
             $this->addFlash('warning', 'Invalid conversation');
-            return $this->redirectToRoute('app_chat_groups');
+            return $this->redirectToRoute(RouteName::APP_CHAT_GROUPS);
         }
 
         return $this->processResponse(
@@ -118,7 +122,10 @@ class ChatGroupsController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route('/chats/groups/startGroupConversation', name: 'app_chat_group_create')]
+    #[Route(
+        RoutePath::START_GROUP_CONVERSATION,
+        name: RouteName::APP_CHAT_GROUP_CREATE
+    )]
     public function createChatGroup(Request $request): Response
     {
         $groupConversations = $this->conversationRepository->getConversations(
@@ -131,11 +138,11 @@ class ChatGroupsController extends AbstractController
         $searchForm        = $this->chatService->createSearchForm();
 
         if ($createGroupResult['success'] === true) {
-            return $this->redirectToRoute('app_chat_group', [
+            return $this->redirectToRoute(RouteName::APP_CHAT_GROUP, [
                 'conversationId' => $createGroupResult['conversationId'],
             ]);
         } else if ($createGroupResult['success'] === false) {
-            return $this->redirectToRoute('app_chat_group_create');
+            return $this->redirectToRoute(RouteName::APP_CHAT_GROUP_CREATE);
         }
 
         return $this->render('chat_groups/index.html.twig', [
@@ -153,9 +160,9 @@ class ChatGroupsController extends AbstractController
      * @return Response
      */
     #[Route(
-        '/chats/groups/changeConversationName',
+        RoutePath::CHANGE_CONVERSATION_NAME,
         methods: ['POST'],
-        name:'app_chat_group_change_name'
+        name: RouteName::APP_CHAT_GROUP_CHANGE_NAME
     )]
     public function processConversationNameChangeForm(Request $request): Response
     {
@@ -183,7 +190,10 @@ class ChatGroupsController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route('group/chats/removeConversation', name: 'app_chat_remove_conversation')]
+    #[Route(
+        RoutePath::REMOVE_CONVERSATION,
+        name: RouteName::APP_CHAT_REMOVE_CONVERSATION
+    )]
     public function removeConversation(Request $request): Response
     {
         $conversationId = $request->get('remove_conversation')['conversationId'];
@@ -197,7 +207,7 @@ class ChatGroupsController extends AbstractController
             $this->addFlash('danger', 'You are not member of this conversation');
         }
 
-        return $this->redirectToRoute('app_chat_groups');
+        return $this->redirectToRoute(RouteName::APP_CHAT_GROUPS);
     }
 
     /**
@@ -213,7 +223,7 @@ class ChatGroupsController extends AbstractController
         if ($groupConversation->getStatus() === ConversationStatus::DELETED->toInt()) {
             $this->addFlash('warning', 'Invalid conversation');
 
-            return $this->redirectToRoute('app_chat_groups');
+            return $this->redirectToRoute(RouteName::APP_CHAT_GROUPS);
         }
 
         // creating forms

@@ -51,20 +51,24 @@ class FriendsService
      * removeFriend
      *
      * @param  User $currentUser
-     * @param  User $friend
+     * @param  User $friendToRm
      * @return void
      */
-    public function removeFriend(User $currentUser, User $friend): void
+    public function removeFriend(User $currentUser, User $friendToRm): void
     {
-        $friendHistory = $this->friendHistoryRepository->getFriendHistory($currentUser, $friend);
+        $friendHistory = $this->friendHistoryRepository->getFriendHistory($currentUser, $friendToRm);
 
-        $currentUser->removeFriend($friend);
+        $currentUser->removeFriend($friendToRm);
         $friendHistory->setStatus(FriendStatus::DELETED->value);
 
+        $this->notificationService->processFriendRemove(
+            $currentUser,
+            $friendToRm
+        );
         $this->notificationService->processFriendStatusNotification(
             NotificationType::REMOVED_FROM_FRIENDS_LIST,
             $currentUser,
-            $friend
+            $friendToRm
         );
 
         $this->entityManager->flush();

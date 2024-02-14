@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Constants\RouteName;
+use App\Entity\Constants\RoutePath;
 use App\Entity\User;
 use App\Enum\ConversationType;
 use App\Repository\ConversationRepository;
@@ -36,7 +38,10 @@ class ChatComponentController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route('/chat/search', name: 'app_chat_search')]
+    #[Route(
+        RoutePath::CHAT_SEARCH,
+        name: RouteName::APP_CHAT_SEARCH
+    )]
     public function processConversationSearch(Request $request): Response
     {
         $searchTerm       = $request->query->get('q');
@@ -66,9 +71,9 @@ class ChatComponentController extends AbstractController
      * @return Response
      */
     #[Route(
-        '/chats/handleMessage',
+        RoutePath::HANDLE_MESSAGE,
         methods: ['POST'],
-        name: 'handle_message_app'
+        name: RouteName::APP_HANDLE_MESSAGE
     )]
     public function handleMessage(Request $request): Response
     {
@@ -78,12 +83,11 @@ class ChatComponentController extends AbstractController
             true
         );
 
-        $message = $this->messageRepository->find($jsonData['data']);
+        $message = $this->messageRepository->find($jsonData['messageId']);
 
         // returning data to current user view
         return $this->render('chat_components/_message.stream.html.twig', [
             'message' => $message,
-            // 'currentUserId' => $this->currentUser->getId(),
         ]);
     }
 }

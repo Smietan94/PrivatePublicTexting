@@ -1,4 +1,4 @@
-{{ form_start(createGroupForm, {'attr' : { 'class': ' messenger-window', 'action': path('app_chat_group_create') } }) }}
+{{ form_start(createGroupForm, {'attr' : { 'class': 'messenger-window', 'action': path(GetRouteName('APP_CHAT_GROUP_CREATE')) } }) }}
     <div class="card h-100 bg-light border-0">
         <div class="card-header messenger-card p-3">
             {{ form_widget(createGroupForm.friends, {'attr': {'data-action': 'conversation#mercureEventSource'}}) }}

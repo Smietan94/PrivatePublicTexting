@@ -24,7 +24,7 @@
                                 Request Sent <i class="bi bi-person-raised-hand"></i>
                             </button>
                         {% else %}
-                            <form action="{{ path('app_send_friend_request') }}" method="POST">
+                            <form action="{{ path(GetRouteName('APP_SEND_FRIEND_REQUEST')) }}" method="POST">
                                 <button name="requestUserId" type="submit" 
                                     class="px-4 btn btn btn-dark btn-search" 
                                     value="{{ user.id }}">

@@ -8,7 +8,6 @@ use App\Entity\Conversation;
 use App\Entity\Message;
 use App\Entity\User;
 use App\Enum\ConversationType;
-use App\Enum\NotificationType;
 use App\Form\CreateGroupConversationType;
 use App\Form\MessageType;
 use App\Repository\ConversationRepository;
@@ -72,11 +71,7 @@ class MessageService
             );
 
             //TODO send message preview through notifications channel
-            $this->notificationService->messagePreviewMercureUpdater(
-                $conversation,
-                $data['message'],
-                $data['senderId']
-            );
+            $this->notificationService->messagePreviewMercureUpdater($conversation);
 
             $result['success'] = true;
             $result['form']    = $emptyForm;

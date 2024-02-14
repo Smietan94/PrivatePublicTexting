@@ -1,3 +1,5 @@
+import { PHPRoutePath } from "../constants";
+
 function startEventSource(url) {
     let eventSource = new EventSource(url, {
         withCredentials: true
@@ -22,16 +24,16 @@ function checkLastEventSource(topic, activeEventSource) {
     return activeTopic == topic;
 }
 
-async function processMessage(messageId) {
+async function processMessage(msgId) {
     const resultTarget = document.getElementById('messages');
 
     try {
-        const response = await fetch('/chats/handleMessage', {
+        const response = await fetch(PHPRoutePath.HANDLE_MESSAGE, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({data: messageId})
+            body: JSON.stringify({messageId: msgId})
         });
 
         if (!response.ok) {
@@ -96,7 +98,7 @@ function msgFormTextareaEventListenerFunction(event) {
                 msgFormTextareaEventListenerFunction
             );
         }
-        messageFormTextarea.reportValidity();
+        messageFormTextarea.reportValidity()
     }
 }
 

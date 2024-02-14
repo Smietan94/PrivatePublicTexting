@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Constants\RouteName;
+use App\Entity\Constants\RoutePath;
 use App\Entity\MessageAttachment;
 use App\Entity\User;
 use App\Repository\MessageAttachmentRepository;
@@ -36,8 +38,8 @@ class FileController extends AbstractController
      * @return Response
      */
     #[Route(
-        '/getImg/{attachmentId}',
-        name: 'get_sent_img_app',
+        RoutePath::GET_IMG,
+        name: RouteName::APP_GET_SENT_IMG,
         requirements: ['attachmentId' => '[0-9]+']
     )]
     public function getImage(int $attachmentId): Response

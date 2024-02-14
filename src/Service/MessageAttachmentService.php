@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Entity\Constants\Constant;
 use App\Entity\Message;
 use App\Entity\MessageAttachment;
 use App\Repository\MessageAttachmentRepository;
@@ -28,7 +29,7 @@ class MessageAttachmentService
     public function processAttachmentUpload(array $files, int $senderId, int $conversationId): array
     {
         $filePaths = [];
-        $basePath  = sprintf('/conversation_attachments/conversation%d/', $conversationId);
+        $basePath  = sprintf(Constant::CHAT_FILES_STORAGE_PATH, $conversationId);
 
         foreach ($files as $file) {
             $pathFormat = match ($file->getClientMimeType()) {

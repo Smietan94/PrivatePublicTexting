@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Constants\RoutePath;
 use App\Entity\User;
 use App\Form\SearchFormType;
 use App\Repository\FriendRequestRepository;
@@ -39,7 +40,10 @@ class SearchController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route('/search', methods: ['GET'], name: 'app_search_users')]
+    #[Route(
+        RoutePath::FRIENDS_SEARCH,
+        methods: ['GET'], name: 'app_search_users'
+    )]
     public function index(Request $request): Response
     {
         $searchTerm = $request->query->get('q');

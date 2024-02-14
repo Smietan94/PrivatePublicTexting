@@ -1,10 +1,12 @@
 {% if conversations %}
     {% for conversation in conversations %}
         {% set receiver = conversation | GetReceiver %}
-        <a type="button" id="conversation-{{ conversation.id }}" href="{{ path('app_chat', {conversationId: conversation.id}) }}"
-            class="list-group-item text-start w-100 rounded btn-friend-msg-list ps-3 py-2
+        <a type="button" id="conversation-{{ conversation.id }}" href="{{ path(GetRouteName('APP_CHAT'), {conversationId: conversation.id}) }}"
+            class="list-group-item text-start w-100 rounded rounded-3 ps-3 py-2
                 {% if activeConversationId is defined and conversation.id == activeConversationId %}
-                    border border-info border-4
+                    current-conversation-border
+                {% else %}
+                    btn-friend-msg-list
                 {% endif %}"
             value="{{ receiver.id }}">
             <div class="d-flex w-100">
