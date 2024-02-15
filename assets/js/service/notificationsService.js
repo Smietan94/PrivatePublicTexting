@@ -1,9 +1,8 @@
 import { Modal } from "bootstrap";
-import { PHPRoutePath } from "../constants";
+import { PHP_ROUTE_PATH, ACTIVITY_STATUS } from "../constants";
 import { removeFriendCard } from "./friendService";
 
-const STATUS_ACTIVE   = 0;
-const STATUS_INACTIVE = 2;
+
 
 function startActiveNotificationChannelEventSource(url) {
     let eventSource       = new EventSource(url, {
@@ -13,45 +12,41 @@ function startActiveNotificationChannelEventSource(url) {
     console.log('Active notification channel event source started');
 
     eventSource.onopen = event => {
-        setActivityStatus(STATUS_ACTIVE);
+        setActivityStatus(ACTIVITY_STATUS.ACTIVE);
     }
 
     eventSource.onmessage = event => {
         const data = JSON.parse(event.data);
 
-        if (data['messagePreview']) {
-            processMessagePreview(
-                data['messagePreview']
-            );
+        if (data.messagePreview) {
+            processMessagePreview(data.messagePreview);
         }
 
-        if (data['conversationId']) {
+        if (data.conversationId) {
+            processGroupConversationLabel(data.conversationId);
+        }
+
+        if (data.conversationNameChangeData) {
+            processConversationNameChange(data.conversationNameChangeData);
+        }
+
+        if (data.removedUserData) {
+            processConversationMemberRemoval(data.removedUserData);
+        }
+
+        if (data.newConversationData) {
             processGroupConversationLabel(
-                data['conversationId']
+                data.newConversationData.conversationId,
+                data.newConversationData.isConversationUpdate
             );
         }
 
-        if (data['conversationNameChangeData']) {
-            processConversationNameChange(data['conversationNameChangeData']);
+        if (data.removedConversationId) {
+            processConversationRemove(data.removedConversationId);
         }
 
-        if (data['removedUserData']) {
-            processConversationMemberRemoval(data['removedUserData']);
-        }
-
-        if (data['newConversationData']) {
-            processGroupConversationLabel(
-                data['newConversationData']['conversationId'],
-                data['newConversationData']['isConversationUpdate']
-            );
-        }
-
-        if (data['removedConversationId']) {
-            processConversationRemove(data['removedConversationId']);
-        }
-
-        if (data['friendRemoveData']) {
-            removeFriendCard(data['friendRemoveData']['removingUserId']);
+        if (data.friendRemoveData) {
+            removeFriendCard(data.friendRemoveData.removingUserId);
         }
 
         updateNotificationsNumber();
@@ -59,7 +54,7 @@ function startActiveNotificationChannelEventSource(url) {
     }
 
     eventSource.onerror = event => {
-        setActivityStatus(STATUS_INACTIVE);
+        setActivityStatus(ACTIVITY_STATUS.INACTIVE);
         processPageReload();
     }
 
@@ -76,10 +71,8 @@ function startMessagePreviewEventSource(url) {
     eventSource.onmessage = event => {
         const data = JSON.parse(event.data);
 
-        if (data['messagePreview']) {
-            processMessagePreview(
-                data['messagePreview']
-            );
+        if (data.messagePreview) {
+            processMessagePreview(data.messagePreview);
         }
     }
 
@@ -95,7 +88,7 @@ function startConversationHelperEventSource(url) {
 }
 
 async function processConversationMemberRemoval(data) {
-    let response = await fetch(PHPRoutePath.REDIRECT_REMOVED_USER, {
+    let response = await fetch(PHP_ROUTE_PATH.REDIRECT_REMOVED_USER, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -105,19 +98,21 @@ async function processConversationMemberRemoval(data) {
 
     let responseData = await response.json();
 
-    if (document.getElementById(`conversation-${ data['conversationId'] }-name`)) {
-        if (responseData['currentUserId'] == responseData['removedUserId']) {
-            window.location.href = PHPRoutePath.GROUPS;
+    if (document.getElementById(`conversation-${ data.conversationId }-name`)) {
+        if (responseData.currentUserId == responseData.removedUserId) {
+            window.location.href = PHP_ROUTE_PATH.GROUPS;
+
         } else {
-            removeUserRemoveButton(responseData['removedUserId']);
+            removeUserRemoveButton(responseData.removedUserId);
         }
-    } else if (responseData['currentUserId'] == responseData['removedUserId']) {
-        removeConversationLabel(responseData['conversationId']);
+
+    } else if (responseData.currentUserId == responseData.removedUserId) {
+        removeConversationLabel(responseData.conversationId);
     }
 }
 
 async function setActivityStatus(activityStatusCode) {
-    await fetch(PHPRoutePath.SET_ACTIVITY_STATUS, {
+    await fetch(PHP_ROUTE_PATH.SET_ACTIVITY_STATUS, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -127,7 +122,7 @@ async function setActivityStatus(activityStatusCode) {
 }
 
 async function processConversationRemove(conversationId) {
-    let response = await fetch(PHPRoutePath.PROCESS_CONVERSATION_REMOVE, {
+    let response = await fetch(PHP_ROUTE_PATH.PROCESS_CONVERSATION_REMOVE, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -136,7 +131,8 @@ async function processConversationRemove(conversationId) {
     });
 
     if (document.getElementById(`conversation-${ conversationId }-name`)) {
-        window.location.href = PHPRoutePath.GROUPS;
+        window.location.href = PHP_ROUTE_PATH.GROUPS;
+
     } else if (document.getElementsByName('group-conversations-list')) {
         removeConversationLabel(conversationId);
     }
@@ -147,7 +143,7 @@ async function processGroupConversationLabel(convId, isConversationUpdate = fals
 
     if (groupConversationsList) {
         try {
-            const response = await fetch(PHPRoutePath.PROCESS_CONVERSATION_LABEL, {
+            const response = await fetch(PHP_ROUTE_PATH.PROCESS_CONVERSATION_LABEL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -176,16 +172,16 @@ async function processGroupConversationLabel(convId, isConversationUpdate = fals
 }
 
 async function processMessagePreview(data) {
-    let messagePreviewElement = document.getElementById(`conversation-${data['conversationId']}-last-message`);
+    let messagePreviewElement = document.getElementById(`conversation-${ data.conversationId }-last-message`);
 
     if (messagePreviewElement) {
         try {
-            const response = await fetch(PHPRoutePath.MESSAGE_PREVIEW, {
+            const response = await fetch(PHP_ROUTE_PATH.MESSAGE_PREVIEW, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({conversationId: data['conversationId']})
+                body: JSON.stringify({conversationId: data.conversationId})
             });
 
             if (!response.ok) {
@@ -194,7 +190,7 @@ async function processMessagePreview(data) {
 
             messagePreviewElement.innerHTML = await response.text();
 
-            sortConversationLabels(data['conversationId']);
+            sortConversationLabels(data.conversationId);
 
         } catch(error) {
             console.log('Error during processing message preview', error);
@@ -204,7 +200,7 @@ async function processMessagePreview(data) {
 
 async function updateNotificationsNumber() {
     let navDropDown = document.getElementById('nav-drop-down');
-    let response    = await fetch(PHPRoutePath.GET_UNSEEN_NOTIFICATIONS_NUMBER, {
+    let response    = await fetch(PHP_ROUTE_PATH.GET_UNSEEN_NOTIFICATIONS_NUMBER, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -220,7 +216,7 @@ async function updateConversationMembersList(convId) {
 
     if (conversationMembersList) {
         try {
-            let response = await fetch(PHPRoutePath.UPDATE_MEMBERS_LIST, {
+            let response = await fetch(PHP_ROUTE_PATH.UPDATE_MEMBERS_LIST, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -233,6 +229,7 @@ async function updateConversationMembersList(convId) {
             }
 
             conversationMembersList.innerHTML = await response.text();
+
         } catch (error) {
             console.log('Error during updating conversation members list', error);
         }
@@ -240,8 +237,8 @@ async function updateConversationMembersList(convId) {
 }
 
 function processConversationNameChange(data) {
-    let conversationId   = data['conversationId'];
-    let conversationName = data['conversationName'];
+    let conversationId   = data.conversationId;
+    let conversationName = data.conversationName;
 
     let conversationNameHeader = document.getElementById(`conversation-${ conversationId }-name`);
     let conversationNameLabel  = document.getElementById(`conversation-${ conversationId }-name-label`);
@@ -268,6 +265,7 @@ function sortConversationLabels(conversationId) {
         conversationLabelsArray.forEach(element => {
             if (element != conversationLabelToMove) {
                 conversationsListDiv.append(element);
+
                 if (element != conversationLabelsArray[conversationLabelsArray.length - 1]) {
                     conversationsListDiv.innerHTML += '<hr class="hr w-100"/>'
                 }
@@ -281,6 +279,7 @@ function removeConversationLabel(conversationId) {
     let hrLineToDelete    = converastionLabel.nextElementSibling;
 
     converastionLabel.remove();
+
     if (hrLineToDelete) {
         hrLineToDelete.remove();
     }

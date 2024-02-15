@@ -15,7 +15,7 @@ class NotificationExtension extends AbstractExtension
             // If your filter generates SAFE HTML, you should add a third
             // parameter: ['is_safe' => ['html']]
             // Reference: https://twig.symfony.com/doc/3.x/advanced.html#automatic-escaping
-            new TwigFilter('ProcessNotification', [NotificationExtensionRuntime::class, 'processNotification']),
+            new TwigFilter('processNotification', [NotificationExtensionRuntime::class, 'processNotification']),
         ];
     }
 }

@@ -208,7 +208,7 @@ class MessageService
     public function messageMercureUpdater(string $topic, Conversation $conversation): void
     {
         $update = new Update(
-            sprintf("%s%d", $topic, $conversation->getId()),
+            sprintf($topic, $conversation->getId()),
             json_encode([
                 'messageId' => $conversation->getLastMessage()->getId(),
             ]),

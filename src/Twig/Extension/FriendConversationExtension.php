@@ -16,7 +16,7 @@ class FriendConversationExtension extends AbstractExtension
             // If your filter generates SAFE HTML, you should add a third
             // parameter: ['is_safe' => ['html']]
             // Reference: https://twig.symfony.com/doc/3.x/advanced.html#automatic-escaping
-            new TwigFilter('ConversationId', [FriendConversationExtensionRuntime::class, 'getConversationId'])
+            new TwigFilter('conversationId', [FriendConversationExtensionRuntime::class, 'getConversationId'])
         ];
     }
 }

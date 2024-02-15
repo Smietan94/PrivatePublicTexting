@@ -8,8 +8,8 @@
     {% set topics = [] %}
 {% endif %}
 
-{% set friendsTopics = app.user | GetFriendsTopics %}
-{% set topics        = topics | Push(friendsTopics) %}
+{% set friendsTopics = app.user|getFriendsTopics %}
+{% set topics        = topics|push(friendsTopics) %}
 
 {% block title %}Friends list!{% endblock %}
 
@@ -32,16 +32,16 @@
                         </ul>
                         <div class="card-body row">
                             <div class="col">
-                                <form action="{{ path(GetRouteName('APP_FRIENDS_REMOVE')) }}" method="delete">
+                                <form action="{{ path(getRouteName('APP_FRIENDS_REMOVE')) }}" method="delete">
                                     <button type="submit" name="friendId" value="{{ friend.id }}" class="btn btn-dark btn-remove-friend" target="_top">Remove friend</button>
                                 </form>
                             </div>
                             <div class="col">
-                                <a href="{{ path(GetRouteName('APP_CHAT'), {conversationId: friend | ConversationId}) }}" class="btn btn-dark" target="_top">Send Message</a>
+                                <a href="{{ path(getRouteName('APP_CHAT'), {conversationId: friend|conversationId}) }}" class="btn btn-dark" target="_top">Send Message</a>
                             </div>
                         </div>
                         <script type="application/json" id="mercure-friend-{{ friend.id }}-remove">
-                            {{ mercure('notifications' ~ friend.id)|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_HEX_TAG'))|raw  }}
+                            {{ mercure(getConstant('NOTIFICATIONS')|format(friend.id))|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_HEX_TAG'))|raw  }}
                         </script>
                     </div>
                 </div>

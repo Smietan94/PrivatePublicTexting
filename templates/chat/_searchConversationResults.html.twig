@@ -1,7 +1,7 @@
 {% if conversations %}
     {% for conversation in conversations %}
-        {% set receiver = conversation | GetReceiver %}
-        <a type="button" id="conversation-{{ conversation.id }}" href="{{ path(GetRouteName('APP_CHAT'), {conversationId: conversation.id}) }}"
+        {% set receiver = conversation|getReceiver %}
+        <a type="button" id="conversation-{{ conversation.id }}" href="{{ path(getRouteName('APP_CHAT'), {conversationId: conversation.id}) }}"
             class="list-group-item text-start w-100 rounded rounded-3 ps-3 py-2
                 {% if activeConversationId is defined and conversation.id == activeConversationId %}
                     current-conversation-border
@@ -10,7 +10,7 @@
                 {% endif %}"
             value="{{ receiver.id }}">
             <div class="d-flex w-100">
-                <h5 class="mb-1">{{ receiver.id | UserName }}</h5>
+                <h5 class="mb-1">{{ receiver.id|userName }}</h5>
             </div>
             <p class="mb-1" id="conversation-{{ conversation.id }}-last-message">
                 {% set lastMessage = conversation.lastMessage %}
@@ -18,7 +18,7 @@
                     {% if lastMessage.senderId == app.user.id %}
                         You:
                     {% else %}
-                        {{ lastMessage.senderId | UserName }}:
+                        {{ lastMessage.senderId|userName }}:
                     {% endif %}
                     {{ lastMessage.message[:20] }}{% if lastMessage.message | length > 20 %}(...){% endif %}
                 {% else %}

@@ -16,12 +16,12 @@
     </head>
     <body>
         {% set currentUserId      = app.user.id %}
-        {% set notificationsTopic = 'notifications' ~ currentUserId %}
+        {% set notificationsTopic = getConstant('NOTIFICATIONS')|format(currentUserId) %}
         <div class="container-shadow bg-dark">
             <div class="container pt-4 pb-2">
                 <nav class="navbar navbar-expand-lg navbar-dark">
 
-                    <a class="fs-4 navbar-brand fw-bold my-auto" href="{{ path(GetRouteName('APP_HOME')) }}">
+                    <a class="fs-4 navbar-brand fw-bold my-auto" href="{{ path(getRouteName('APP_HOME')) }}">
                         P<small class="fs-6 fw-lighter">(rivate)</small>P<small class="fs-6 fw-lighter">(ublic)</small>T<small class="fs-6 fw-lighter">(exting)</small>
                     </a>
 
@@ -39,15 +39,15 @@
                         <div class="offcanvas-body">
                             <ul class="navbar-nav ms-auto me-2">
                                 <li class="nav-item my-auto me-1
-                                {% if currentPath == GetRouteName('APP_HOME') or currentPath == GetRouteName('APP_CHAT') %}
+                                {% if currentPath == getRouteName('APP_HOME') or currentPath == getRouteName('APP_CHAT') %}
                                 {% else %}
                                     blurred-button
                                 {% endif %}">
                                     <a class="nav-link px-3 nav-hover-bordered rounded-3 my-1
-                                    {% if currentPath == GetRouteName('APP_HOME') or currentPath == GetRouteName('APP_CHAT') %}
+                                    {% if currentPath == getRouteName('APP_HOME') or currentPath == getRouteName('APP_CHAT') %}
                                         {{ currentPathStyling }}
                                     {% endif %}"
-                                    href="{{ path(GetRouteName('APP_HOME')) }}"
+                                    href="{{ path(getRouteName('APP_HOME')) }}"
                                     data-bs-toggle="tooltip"
                                     data-bs-custom-class="custom-tooltip"
                                     data-bs-placement="bottom"
@@ -60,15 +60,15 @@
                                     </a>
                                 </li>
                                 <li class="nav-item my-auto me-1
-                                {% if currentPath == GetRouteName('APP_CHAT_GROUPS') or currentPath == GetRouteName('APP_CHAT_GROUP') %}
+                                {% if currentPath == getRouteName('APP_CHAT_GROUPS') or currentPath == getRouteName('APP_CHAT_GROUP') %}
                                 {% else %}
                                     blurred-button
                                 {% endif %}">
                                     <a class="nav-link px-3 nav-hover-bordered rounded-3 my-1
-                                    {% if currentPath == GetRouteName('APP_CHAT_GROUPS') or currentPath == GetRouteName('APP_CHAT_GROUP') %}
+                                    {% if currentPath == getRouteName('APP_CHAT_GROUPS') or currentPath == getRouteName('APP_CHAT_GROUP') %}
                                         {{ currentPathStyling }}
                                     {% endif %}"
-                                    href="{{ path(GetRouteName('APP_CHAT_GROUPS')) }}"
+                                    href="{{ path(getRouteName('APP_CHAT_GROUPS')) }}"
                                     data-bs-toggle="tooltip"
                                     data-bs-custom-class="custom-tooltip"
                                     data-bs-placement="bottom"
@@ -80,14 +80,14 @@
                                     </a>
                                 </li>
                                 <li class="nav-item my-auto me-1
-                                {% if currentPath != GetRouteName('APP_FRIENDS_LIST') %}
+                                {% if currentPath != getRouteName('APP_FRIENDS_LIST') %}
                                     blurred-button
                                 {% endif %}">
                                     <a class="nav-link px-3 nav-hover-bordered rounded-3 my-1
-                                    {% if currentPath == GetRouteName('APP_FRIENDS_LIST') %}
+                                    {% if currentPath == getRouteName('APP_FRIENDS_LIST') %}
                                         {{ currentPathStyling }}
                                     {% endif %}"
-                                    href="{{ path(GetRouteName('APP_FRIENDS_LIST')) }}"
+                                    href="{{ path(getRouteName('APP_FRIENDS_LIST')) }}"
                                     data-bs-toggle="tooltip"
                                     data-bs-custom-class="custom-tooltip"
                                     data-bs-placement="bottom"
@@ -99,14 +99,14 @@
                                     </a>
                                 </li>
                                 <li class="nav-item my-auto me-1
-                                {% if currentPath != GetRouteName('APP_SEARCH_USERS') %}
+                                {% if currentPath != getRouteName('APP_SEARCH_USERS') %}
                                     blurred-button
                                 {% endif %}">
                                     <a class="nav-link px-3 nav-hover-bordered rounded-3 my-1
-                                    {% if currentPath == GetRouteName('APP_SEARCH_USERS') %}
+                                    {% if currentPath == getRouteName('APP_SEARCH_USERS') %}
                                         {{ currentPathStyling }}
                                     {% endif %}"
-                                    href="{{ path(GetRouteName('APP_SEARCH_USERS')) }}"
+                                    href="{{ path(getRouteName('APP_SEARCH_USERS')) }}"
                                     data-bs-toggle="tooltip"
                                     data-bs-custom-class="custom-tooltip"
                                     data-bs-placement="bottom"
@@ -133,7 +133,7 @@
         {% if topics is not defined %}
             {% set topics = [] %} {# setting array of topics to subscibe within authorization cookie #}
         {% endif %}
-        {% set topics = topics|Push(notificationsTopic) %}
+        {% set topics = topics|push(notificationsTopic) %}
 
         <script type="application/json" id="mercure-notifications-url">
             {{ mercure(notificationsTopic, { subscribe: topics })|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_HEX_TAG'))|raw  }}

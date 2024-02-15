@@ -18,10 +18,10 @@
             <div class="col-6">
                 {% if prevMsg is defined %}
                     {% if prevMsg.senderId != message.senderId %}
-                        <small class="text-start mx-2">{{ message.senderId | UserName }}:</small>
+                        <small class="text-start mx-2">{{ message.senderId|userName }}:</small>
                     {% endif %}
                 {% else %}
-                    <small class="text-start mx-2">{{ message.senderId | UserName }}:</small>
+                    <small class="text-start mx-2">{{ message.senderId|userName }}:</small>
                 {% endif %}
                 <div class="border rounded-4 mb-2 bg-secondary p-3">
                     {% if message.attachment == true %}

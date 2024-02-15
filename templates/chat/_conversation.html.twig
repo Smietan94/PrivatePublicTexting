@@ -36,7 +36,7 @@
         </turbo-frame>
 {% else %}
     <div class="d-flex align-items-center justify-content-center h-100">
-        <form action="{{ path(GetRouteName('APP_START_PRIVATE_CONVERSATION')) }}" method="post">
+        <form action="{{ path(getRouteName('APP_START_PRIVATE_CONVERSATION')) }}" method="post">
             <button name="friendId" value=
                 "
                 {% if friends is defined %}

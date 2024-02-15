@@ -17,14 +17,15 @@ class BasicStuffExtension extends AbstractExtension
             // If your filter generates SAFE HTML, you should add a third
             // parameter: ['is_safe' => ['html']]
             // Reference: https://twig.symfony.com/doc/3.x/advanced.html#automatic-escaping
-            new TwigFilter('Push', [BasicStuffRuntime::class, 'push']),
+            new TwigFilter('push', [BasicStuffRuntime::class, 'push']),
         ];
     }
 
     public function getFunctions()
     {
         return [
-            new TwigFunction('GetRouteName', [BasicStuffRuntime::class, 'getRouteName'])
+            new TwigFunction('getRouteName', [BasicStuffRuntime::class, 'getRouteName']),
+            new TwigFunction('getConstant', [BasicStuffRuntime::class, 'getConstant'])
         ];
     }
 }

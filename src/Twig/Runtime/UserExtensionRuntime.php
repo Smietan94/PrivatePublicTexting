@@ -2,6 +2,7 @@
 
 namespace App\Twig\Runtime;
 
+use App\Entity\Constants\Constant;
 use App\Entity\User;
 use Twig\Extension\RuntimeExtensionInterface;
 
@@ -16,7 +17,7 @@ class UserExtensionRuntime implements RuntimeExtensionInterface
     {
         $friends = $user->getFriends()->toArray();
         return array_map(
-            fn ($friend) => sprintf('notifications%d', $friend->getId()),
+            fn ($friend) => sprintf(Constant::NOTIFICATIONS, $friend->getId()),
             $friends
         );
     }

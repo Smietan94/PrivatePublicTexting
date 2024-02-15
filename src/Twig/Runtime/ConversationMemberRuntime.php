@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Twig\Runtime;
 
+use App\Entity\Constants\Constant;
 use App\Entity\Conversation;
 use App\Entity\User;
 use App\Repository\UserRepository;
@@ -50,7 +51,7 @@ class ConversationMemberRuntime implements RuntimeExtensionInterface
         $members = $conversation->getConversationMembers()->toArray();
         return array_values(array_filter(array_map(function ($member) {
             if ($member !== $this->currentUser) {
-                return sprintf('notifications%d', $member->getId());
+                return sprintf(Constant::NOTIFICATIONS, $member->getId());
             }
         }, $members)));
     }

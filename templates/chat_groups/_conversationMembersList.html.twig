@@ -8,7 +8,7 @@
                 {% if member.id != currentUserId %}
                     {{ form_start(removeMemberForms[member.id], {
                         'name':   'remove_conversation_member_' ~ member.id,
-                        'action': path(GetRouteName('APP_CHAT_GROUP_REMOVE_FROM_CONVERSATION')),
+                        'action': path(getRouteName('APP_CHAT_GROUP_REMOVE_FROM_CONVERSATION')),
                         'method': 'POST'
                     }) }}
                         {{ form_widget(removeMemberForms[member.id].memberId, {'attr': {

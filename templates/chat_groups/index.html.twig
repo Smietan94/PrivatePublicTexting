@@ -5,11 +5,11 @@
 {% endblock %} #}
 
 {% if conversation is defined %}
-    {% set conversationTopic = 'conversation.group' ~ conversation.id %}
-    {% set previewTopics     = (conversation | GetConversationTopics) %}
+    {% set conversationTopic = getConstant('CONVERSATION_GROUP')|format(conversation.id) %}
+    {% set previewTopics     = (conversation|getConversationTopics) %}
     {% set topics            = [] %}
-    {% set topics            = topics|Push(conversationTopic) %}
-    {% set topics            = topics|Push(previewTopics) %}
+    {% set topics            = topics|push(conversationTopic) %}
+    {% set topics            = topics|push(previewTopics) %}
 {% endif %}
 
 {% block title %}
@@ -26,8 +26,8 @@
     <h2 class="fw-bold mb-2 text-light">Group Conversations</h2>
     <p class="text-white-50 mb-4">Choose a group to talk</p>
     <div class="row mx-2 mb-2" {{ stimulus_controller('conversation', {
-        url:  path(GetRouteName('APP_CHAT_SEARCH')),
-        url1: path(GetRouteName('APP_CHAT_PROCESS_EVENT_SOURCE_TAG'))
+        url:  path(getRouteName('APP_CHAT_SEARCH')),
+        url1: path(getRouteName('APP_CHAT_PROCESS_EVENT_SOURCE_TAG'))
     }) }}>
         <div class="col-xl-4 col-lg-5 col-sm-12 bg-light rounded card messenger-window">
             {% set activeConversationId = null %}
@@ -45,7 +45,7 @@
                 {% endif %}
             </div>
             <div class="card-footer py-3">
-                <a type="button" class="btn btn-lg btn-dark w-100" href="{{ path(GetRouteName('APP_CHAT_GROUP_CREATE')) }}">
+                <a type="button" class="btn btn-lg btn-dark w-100" href="{{ path(getRouteName('APP_CHAT_GROUP_CREATE')) }}">
                     Create Chat Group
                 </a>
             </div>

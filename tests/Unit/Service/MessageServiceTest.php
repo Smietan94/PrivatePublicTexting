@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service;
 
+use App\Entity\Constants\Constant;
 use App\Entity\Conversation;
 use App\Entity\Message;
 use App\Entity\MessageAttachment;
@@ -63,7 +64,7 @@ class MessageServiceTest extends TestCase
     {
         $conversation = new Conversation();
         $request      = new Request();
-        $topic        = 'conversation.solo';
+        $topic        = Constant::CONVERSATION_PRIV;
 
         $result = $messageService->processMessage(
             $conversation,
@@ -142,7 +143,7 @@ class MessageServiceTest extends TestCase
         $result = $messageService->processMessage(
             $conversationMock,
             $request,
-            'conversation.priv'
+            Constant::CONVERSATION_PRIV
         );
 
         $this->assertSame(true, $result['success']);
@@ -199,7 +200,7 @@ class MessageServiceTest extends TestCase
         $result = $messageService->processMessage(
             $conversation,
             $request,
-            'conversation.priv'
+            Constant::CONVERSATION_PRIV
         );
 
         $this->assertIsArray($result);

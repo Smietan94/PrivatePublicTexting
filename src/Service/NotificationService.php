@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Entity\Constants\Constant;
 use App\Entity\Conversation;
 use App\Entity\Notification;
 use App\Entity\User;
@@ -144,7 +145,7 @@ class NotificationService
      */
     public function processFriendRemove(User $currentUser, User $friendToRm): void
     {
-        $topic = sprintf('notifications%d', $friendToRm->getId());
+        $topic = sprintf(Constant::NOTIFICATIONS, $friendToRm->getId());
         $data  = ['friendRemoveData' => [
             'removingUserId' => $currentUser->getId(),
             'removedUserId'  => $friendToRm->getId()

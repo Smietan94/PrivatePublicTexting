@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Twig\Runtime;
 
+use App\Entity\Constants\Constant;
 use App\Entity\Constants\RouteName;
 use Twig\Extension\RuntimeExtensionInterface;
 
@@ -30,13 +31,26 @@ class BasicStuffRuntime implements RuntimeExtensionInterface
     /**
      * getRouteName
      *
-     * @param  string $RouteName // case insensitive
+     * @param  string $routeName // case insensitive
      * @return string
      */
-    public function getRouteName(string $RouteName): string
+    public function getRouteName(string $routeName): string
     {
         $reflection = new \ReflectionClass(RouteName::class);
 
-        return $reflection->getConstant(strtoupper($RouteName));
+        return $reflection->getConstant(strtoupper($routeName));
+    }
+
+    /**
+     * getConstant
+     *
+     * @param  string $constName
+     * @return mixed
+     */
+    public function getConstant(string $constName): mixed
+    {
+        $reflection = new \ReflectionClass(Constant::class);
+
+        return $reflection->getConstant(strtoupper($constName));
     }
 }

@@ -1,4 +1,4 @@
-{% set unseenReceivedNotifications = app.user | UnseenReceivedNotifications | length %}
+{% set unseenReceivedNotifications = app.user|unseenReceivedNotifications | length %}
 {# <div class="dropdown user-dropdown-menu px-3"> #}
     <a class="p-1 my-1 user-dropdown-menu px-3 dropdown-toggle rounded-3 text-decoration-none d-flex align-items-center text-light nav-hover-dropdown"
     id="userDropDownMenu"
@@ -33,7 +33,7 @@
             </a>
         </li>
         <li>
-            <a class="dropdown-item" href="{{ path(GetRouteName('APP_FRIENDS_REQUESTS')) }}">
+            <a class="dropdown-item" href="{{ path(getRouteName('APP_FRIENDS_REQUESTS')) }}">
                 friend requests
             </a>
         </li>
@@ -42,7 +42,7 @@
         </li>
         <li><hr class="dropdown-divider"></li>
         <li>
-            <form action="{{ path(GetRouteName('APP_LOGOUT')) }}" method="post">
+            <form action="{{ path(getRouteName('APP_LOGOUT')) }}" method="post">
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
                 <button class="dropdown-item" href="#">log out</button>
             </form>

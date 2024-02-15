@@ -2,7 +2,7 @@
     {% for attachment in message.messageAttachments %}
         <div class="col-6 px-0">
             <img
-                src="{{ path(GetRouteName('APP_GET_SENT_IMG'), {attachmentId: attachment.id}) }}" 
+                src="{{ path(getRouteName('APP_GET_SENT_IMG'), {attachmentId: attachment.id}) }}" 
                 alt="{{ attachment.filename }}"
                 class="img-thumbnail img-fluid"
             >

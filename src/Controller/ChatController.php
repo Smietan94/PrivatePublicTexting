@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Constants\Constant;
 use App\Entity\Constants\RouteName;
 use App\Entity\Constants\RoutePath;
 use App\Entity\Conversation;
@@ -225,7 +226,7 @@ class ChatController extends AbstractController
         $messageFormResult = $this->messageService->processMessage(
             $conversation,
             $request,
-            'conversation.priv'
+            Constant::CONVERSATION_PRIV
         );
 
         if (isset($messageFormResult['messages'])) {

@@ -16,9 +16,9 @@ class ConversationMemberExtension extends AbstractExtension
             // If your filter generates SAFE HTML, you should add a third
             // parameter: ['is_safe' => ['html']]
             // Reference: https://twig.symfony.com/doc/3.x/advanced.html#automatic-escaping
-            new TwigFilter('GetReceiver', [ConversationMemberRuntime::class, 'getReceiver']),
-            new TwigFilter('GetReceiversIds', [ConversationMemberRuntime::class, 'getReceiversIds']),
-            new TwigFilter('GetConversationTopics', [ConversationMemberRuntime::class, 'getConversationTopics'])
+            new TwigFilter('getReceiver', [ConversationMemberRuntime::class, 'getReceiver']),
+            new TwigFilter('getReceiversIds', [ConversationMemberRuntime::class, 'getReceiversIds']),
+            new TwigFilter('getConversationTopics', [ConversationMemberRuntime::class, 'getConversationTopics'])
         ];
     }
 }

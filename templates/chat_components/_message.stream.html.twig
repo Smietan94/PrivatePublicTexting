@@ -12,7 +12,7 @@
         </div>
     {% else %}
         <div class="col-6">
-            <small class="text-start mx-2">{{ message.senderId | UserName }}:</small>
+            <small class="text-start mx-2">{{ message.senderId|userName }}:</small>
             <div class="border rounded-4 mb-2 bg-secondary p-3">
                 {% if message.attachment == true %}
                     {% include 'chat_components/_attachment.html.twig' %}

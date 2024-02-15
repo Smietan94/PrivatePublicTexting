@@ -1,4 +1,4 @@
-import { PHPRoutePath } from "../constants";
+import { PHP_ROUTE_PATH } from "../constants";
 
 function startEventSource(url) {
     let eventSource = new EventSource(url, {
@@ -8,10 +8,8 @@ function startEventSource(url) {
     eventSource.onmessage = event => {
         const data = JSON.parse(event.data);
 
-        if (data['messageId']) {
-            processMessage(
-                data['messageId']
-            );
+        if (data.messageId) {
+            processMessage(data.messageId);
         }
     }
 
@@ -28,7 +26,7 @@ async function processMessage(msgId) {
     const resultTarget = document.getElementById('messages');
 
     try {
-        const response = await fetch(PHPRoutePath.HANDLE_MESSAGE, {
+        const response = await fetch(PHP_ROUTE_PATH.HANDLE_MESSAGE, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

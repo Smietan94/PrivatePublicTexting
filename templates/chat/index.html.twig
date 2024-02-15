@@ -5,16 +5,16 @@
 {% endblock %} #}
 
 {% if conversation is defined %}
-    {% set conversationTopic = 'conversation.priv' ~ conversation.id %}
-    {% set previewTopic      = (conversation | GetConversationTopics) %}
+    {% set conversationTopic = getConstant('CONVERSATION_PRIV')|format(conversation.id) %}
+    {% set previewTopic      = (conversation|getConversationTopics) %}
     {% set topics            = [] %}
-    {% set topics            = topics|Push(conversationTopic) %}
-    {% set topics            = topics|Push(previewTopic) %}
+    {% set topics            = topics|push(conversationTopic) %}
+    {% set topics            = topics|push(previewTopic) %}
 {% endif %}
 
 {% block title %}
     {% if conversation is defined and conversation is not null %}
-        Chat with {{ (conversation|GetReceiver).userName }}
+        Chat with {{ (conversation|getReceiver).userName }}
     {% else %}
         You have no friends yet
     {% endif %}
@@ -25,7 +25,7 @@
     <h2 class="fw-bold mb-2 text-light">Conversations</h2>
     <p class="text-white-50 mb-4">Choose a friend to talk</p>
     <div class="row mx-2 mb-2"{{ stimulus_controller('conversation', {
-        url: path(GetRouteName('APP_CHAT_SEARCH'))
+        url: path(getRouteName('APP_CHAT_SEARCH'))
     }) }}>
         <div class="col-xl-4 col-lg-5 col-sm-12 bg-light rounded card messenger-window">
             {% set activeConversationId = conversation.id %}
