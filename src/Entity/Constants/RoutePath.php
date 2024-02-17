@@ -30,21 +30,24 @@ class RoutePath
 
     // CHAT COMPONENT CONTROLLER
     public const CHAT_SEARCH    = '/chats/search';
-    public const HANDLE_MESSAGE = '/chats/handleMessage';
+    public const HANDLE_MESSAGE = '/chats/handleMessage/{conversationId}';
 
     // FILE CONTROLLER
     public const GET_IMG = '/getImg/{attachmentId}';
 
     // FRIEND CONTROLLER
-    public const FRIENDS       = '/friends';
-    public const REMOVE_FRIEND = '/friends/remove';
+    public const FRIENDS             = '/friends';
+    public const RELOAD_FRIENDS_LIST = '/friends/reloadList';
+    public const REMOVE_FRIEND       = '/friends/remove';
 
     // FRIEND REQUESTS CONTROLLER
-    public const FRIENDS_REQUEST        = '/friendsRequests';
-    public const SEND_FRIENDS_REQUEST   = '/friendRequests/sendFriendRequest';
-    public const ACCEPT_FRIEND_REQUEST  = '/friendRequests/accept';
-    public const DECLINE_FRIEND_REQUEST = '/friendRequests/decline';
-    public const CANCEL_FRIEND_REQUEST  = '/friendRequests/cancel';
+    public const FRIENDS_REQUEST           = '/friendsRequests';
+    public const RECEIVED_FRIENDS_REQUESTS = '/friendsRequests/received';
+    public const SENT_FRIENDS_REQUESTS     = '/friendsRequests/sent';
+    public const SEND_FRIENDS_REQUEST      = '/friendRequests/sendFriendRequest';
+    public const ACCEPT_FRIEND_REQUEST     = '/friendRequests/accept';
+    public const DENY_FRIEND_REQUEST       = '/friendRequests/deny';
+    public const CANCEL_FRIEND_REQUEST     = '/friendRequests/cancel';
 
     // NOTIFICATION CONTROLLER
     public const MESSAGE_PREVIEW                 = '/chats/messagePreview';
@@ -55,7 +58,11 @@ class RoutePath
     public const UPDATE_MEMBERS_LIST             = '/chats/groups/updateMembersList';
     public const SET_ACTIVITY_STATUS             = '/setActivityStatus';
     public const GET_UNSEEN_NOTIFICATIONS_NUMBER = '/notifications/getUnseenNotificationsNumber';
+    public const RELOAD_NOTIFICATIONS_MODAL      = '/notifications/reloadNotificationsModal';
 
     // SEARCH CONTROLLER
     public const FRIENDS_SEARCH = '/search';
+
+    // ADDITIONAL PATHS
+    public const EMPTY_PATH = '#';
 }

@@ -1,3 +1,5 @@
+import { Modal } from "bootstrap";
+
 function handleOffcanvasButtons(tooltipList) {
     const navbarOffcanvas  = document.getElementById('navbarSupportedContent');
     const navChats         = document.getElementById('nav-chats');
@@ -34,6 +36,20 @@ function handleOffcanvasButtons(tooltipList) {
     }
 };
 
+function handleNotificationsModal() {
+    const toogleNotificationsModalATag = document.getElementById('toogle-notifications-modal');
+    const notificationsModal           = document.getElementById('notifications-modal');
+
+    if (toogleNotificationsModalATag && notificationsModal) {
+        let modal = new Modal(notificationsModal);
+
+        toogleNotificationsModalATag.addEventListener('click', function () {
+            modal.show();
+        });
+    }
+}
+
 export {
-    handleOffcanvasButtons
+    handleOffcanvasButtons,
+    handleNotificationsModal
 };

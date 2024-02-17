@@ -127,7 +127,9 @@
             </div>
         </div>
         {% include '_flashes.html.twig' %}
-        {% include '_notificationsModal.html.twig' %}
+        <div id="notifications-modal-container">
+            {% include '_notificationsModal.html.twig' %}
+        </div>
         {% block body %}{% endblock %}
 
         {% if topics is not defined %}

@@ -23,21 +23,24 @@ const PHP_ROUTE_PATH = {
 
     // CHAT COMPONENT CONTROLLER
     CHAT_SEARCH    : '/chats/search',
-    HANDLE_MESSAGE : '/chats/handleMessage',
+    HANDLE_MESSAGE : '/chats/handleMessage/', // {conversationId}
 
     // FILE CONTROLLER
     GET_IMG : '/getImg/', // {attachmentId}
 
     // FRIEND CONTROLLER
-    FRIENDS       : '/friends',
-    REMOVE_FRIEND : '/friends/remove',
+    FRIENDS             : '/friends',
+    RELOAD_FRIENDS_LIST : '/friends/reloadList',
+    REMOVE_FRIEND       : '/friends/remove',
 
     // FRIEND REQUESTS CONTROLLER
-    FRIENDS_REQUEST        : '/friendsRequests',
-    SEND_FRIENDS_REQUEST   : '/friendRequests/sendFriendRequest',
-    ACCEPT_FRIEND_REQUEST  : '/friendRequests/accept',
-    DECLINE_FRIEND_REQUEST : '/friendRequests/decline',
-    CANCEL_FRIEND_REQUEST  : '/friendRequests/cancel',
+    FRIENDS_REQUEST           : '/friendsRequests',
+    RECEIVED_FRIENDS_REQUESTS : '/friendsRequests/received',
+    SENT_FRIENDS_REQUESTS     : '/friendsRequests/sent',
+    SEND_FRIENDS_REQUEST      : '/friendRequests/sendFriendRequest',
+    ACCEPT_FRIEND_REQUEST     : '/friendRequests/accept',
+    DENY_FRIEND_REQUEST       : '/friendRequests/deny',
+    CANCEL_FRIEND_REQUEST     : '/friendRequests/cancel',
 
     // NOTIFICATION CONTROLLER
     MESSAGE_PREVIEW                 : '/chats/messagePreview',
@@ -48,6 +51,7 @@ const PHP_ROUTE_PATH = {
     UPDATE_MEMBERS_LIST             : '/chats/groups/updateMembersList',
     SET_ACTIVITY_STATUS             : '/setActivityStatus',
     GET_UNSEEN_NOTIFICATIONS_NUMBER : '/notifications/getUnseenNotificationsNumber',
+    RELOAD_NOTIFICATIONS_MODAL      : '/notifications/reloadNotificationsModal',
 
     // SEARCH CONTROLLER
     FRIENDS_SEARCH : '/search',
@@ -84,15 +88,18 @@ const PHP_ROUTE_NAME = {
     APP_GET_SENT_IMG : 'get_sent_img_app',
 
     // FRIEND CONTROLLER
-    APP_FRIENDS_LIST   : 'app_friends_list',
-    APP_FRIENDS_REMOVE : 'app_friends_remove',
+    APP_FRIENDS_LIST        : 'app_friends_list',
+    APP_RELOAD_FRIENDS_LIST : 'app_friends_list_reload',
+    APP_FRIENDS_REMOVE      : 'app_friends_remove',
 
     // FRIEND REQUEST CONTROLLER
-    APP_FRIENDS_REQUESTS       : 'app_friends_requests',
-    APP_SEND_FRIEND_REQUEST    : 'app_send_friend_request',
-    APP_ACCEPT_FRIEND_REQUEST  : 'app_accept_friend_request',
-    APP_DECLINE_FRIEND_REQUEST : 'app_decline_friend_request',
-    APP_CANCEL_FRIEND_REQUEST  : 'app_cancel_friend_request',
+    APP_FRIENDS_REQUESTS          : 'app_friends_requests',
+    APP_RECEIVED_FRIENDS_REQUESTS : 'app_received_friends_requests',
+    APP_SENT_FRIENDS_REQUESTS     : 'app_sent_friends_requests',
+    APP_SEND_FRIEND_REQUEST       : 'app_send_friend_request',
+    APP_ACCEPT_FRIEND_REQUEST     : 'app_accept_friend_request',
+    APP_DENY_FRIEND_REQUEST       : 'app_deny_friend_request',
+    APP_CANCEL_FRIEND_REQUEST     : 'app_cancel_friend_request',
 
     // NOTIFICATIONS CONTROLLER
     APP_CHAT_MESSAGE_PREVIEW             : 'app_chat_message_preview',
@@ -103,6 +110,7 @@ const PHP_ROUTE_NAME = {
     APP_CHAT_UPDATE_MEMBERS_LIST         : 'app_chat_update_members_list',
     APP_SET_ACTIVITY_STATUS              : 'app_set_activity_status',
     APP_GET_UNSEEN_NOTIFICATIONS_NUMBER  : 'app_get_unseen_notifications_number',
+    APP_RELOAD_NOTIFICATIONS_MODAL       : 'app_reload_notifications_modal',
 
     // SEARCH CONTROLLER
     APP_SEARCH_USERS : 'app_search_users',

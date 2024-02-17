@@ -1,0 +1,33 @@
+<ul class="list-group mb-5">
+    {% for request in received %}
+        <li class="list-group-item bg-light">
+            <div class="row">
+                <div class="col-xl-6 col-lg-12 col-md-6 col-xs-12">
+                    <div class="col">
+                        <p>From: {{ request.requestingUser.username }}</p>
+                    </div>
+                    <div class="col">
+                        <p>Status: <small class="fw-bold">{{ request.status|statusEnum|upper}}</small></p>
+                    </div>
+                    <div class="col">
+                        <p><small>Received: {{ request.createdat | ago}}</small></p>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-lg-12 col-md-6 col-xs-12 my-auto">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 my-auto">
+                            <form action="{{ path(getRouteName('APP_ACCEPT_FRIEND_REQUEST')) }}" method="post">
+                                <button name="accepted" value="{{ request.id }}" type="submit" class="btn btn-dark w-100">Accept</button>
+                            </form>
+                        </div>
+                        <div class="col-lg-12 col-md-12 my-2">
+                            <form action="{{ path(getRouteName('APP_DENY_FRIEND_REQUEST')) }}" method="post">
+                                <button name="rejected" value="{{ request.id }}" type="submit" class="btn btn-dark w-100">Decline</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    {% endfor %}
+</ul>

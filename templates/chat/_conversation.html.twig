@@ -22,12 +22,9 @@
         </div>
     </div>
     <div class="card-body messenger-card list-group-msg-scroll">
-        <div id="messages"></div>
-        {% if pager %}
-            <turbo-frame id="mix-message-list-{{ pager.currentPage }}">
-                {% include 'chat_components/_message.html.twig' %}
-            </turbo-frame>
-        {% endif %}
+        <div id="messages">
+            {% include 'chat_components/_message.html.twig' %}
+        </div>
     </div>
         <turbo-frame id="message_form">
             <div class="card-footer messenger-card">

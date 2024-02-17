@@ -1,0 +1,34 @@
+<turbo-frame id="mix-browse-list-{{ pager.currentPage }}" target="_top">
+    <div id="friends-cards" class="row mb-2">
+        {% for friend in pager %}
+            <div class="friend-card-row col-xl-4 col-lg-6 col-md-12 col-xs-12 mt-4 rounded-3">
+                <div id="friend-{{ friend.id }}" class="mx-auto card friend-card bg-light">
+                    <div class="card-body">
+                        <p>Username: <h4 id="username-{{ friend.id }}">{{ friend.username }}</h4></p>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">name: {{ friend.name }}</li>
+                        <li class="list-group-item">email: {{ friend.email }}</li>
+                        <li class="list-group-item" id="friends-since-{{ friend.id }}">You made friends {{ friendsSince[friend.username] | ago }} </li>
+                    </ul>
+                    <div class="card-body row">
+                        <div class="col">
+                            <form action="{{ path(getRouteName('APP_FRIENDS_REMOVE')) }}" method="delete" id="remove-friend-{{ friend.id }}-form">
+                                <button type="submit" name="friendId" value="{{ friend.id }}" class="btn btn-dark btn-remove-friend" target="_top">Remove friend</button>
+                            </form>
+                        </div>
+                        <div class="col">
+                            <a href="{{ path(getRouteName('APP_CHAT'), {conversationId: friend|conversationId}) }}" class="btn btn-dark" target="_top">Send Message</a>
+                        </div>
+                    </div>
+                    <script type="application/json" id="mercure-friend-{{ friend.id }}-remove">
+                        {{ mercure(getConstant('NOTIFICATIONS')|format(friend.id))|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_HEX_TAG'))|raw  }}
+                    </script>
+                </div>
+            </div>
+        {% endfor %}
+        {% if pager.hasNextPage %}
+            <turbo-frame id="mix-browse-list-{{ pager.nextPage }}" src="{{ pagerfanta_page_url(pager, pager.nextPage) }}" loading="lazy"></turbo-frame>
+        {% endif %}
+    </div>
+</turbo-frame>

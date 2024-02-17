@@ -38,20 +38,25 @@ class FriendRequestRepository extends ServiceEntityRepository
      * @param  User $requestedUser
      * @return FriendRequest
      */
-    public function setNewFriendRequest(User $user, User $requestedUser): FriendRequest
+    public function setNewFriendRequest(User $currentUser, User $requestedUser): FriendRequest
     {
         $friendRequest = new FriendRequest();
 
-        $friendRequest->setRequestingUser($user);
+        $friendRequest->setRequestingUser($currentUser);
         $friendRequest->setRequestedUser($requestedUser);
         $friendRequest->setStatus(0);
 
         $this->entityManager->persist($friendRequest);
         $this->entityManager->flush();
 
+        $this->notificationService->processFriendRequestReceive(
+            $friendRequest,
+            'receivedFriendRequestId'
+        );
+
         $this->notificationService->processFriendStatusNotification(
             NotificationType::FRIEND_REQUEST_RECEIVED,
-            $user,
+            $currentUser,
             $requestedUser
         );
 

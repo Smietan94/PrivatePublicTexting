@@ -1,8 +1,5 @@
-import { Modal } from "bootstrap";
 import { PHP_ROUTE_PATH, ACTIVITY_STATUS } from "../constants";
-import { removeFriendCard } from "./friendService";
-
-
+import { reloadFriendCardDiv, processRequestsList } from "./friendService";
 
 function startActiveNotificationChannelEventSource(url) {
     let eventSource       = new EventSource(url, {
@@ -18,39 +15,47 @@ function startActiveNotificationChannelEventSource(url) {
     eventSource.onmessage = event => {
         const data = JSON.parse(event.data);
 
-        if (data.messagePreview) {
-            processMessagePreview(data.messagePreview);
-        }
+        switch (true) {
+            case !!data.messagePreview:
+                processMessagePreview(data.messagePreview);
 
-        if (data.conversationId) {
-            processGroupConversationLabel(data.conversationId);
-        }
+            case !!data.conversationId:
+                processGroupConversationLabel(data.conversationId);
 
-        if (data.conversationNameChangeData) {
-            processConversationNameChange(data.conversationNameChangeData);
-        }
+            case !!data.conversationNameChangeData:
+                processConversationNameChange(data.conversationNameChangeData);
 
-        if (data.removedUserData) {
-            processConversationMemberRemoval(data.removedUserData);
-        }
+            case !!data.removedUserData:
+                processConversationMemberRemoval(data.removedUserData);
 
-        if (data.newConversationData) {
-            processGroupConversationLabel(
-                data.newConversationData.conversationId,
-                data.newConversationData.isConversationUpdate
-            );
-        }
+            case !!data.newConversationData:
+                processGroupConversationLabel(
+                    data.newConversationData.conversationId,
+                    data.newConversationData.isConversationUpdate
+                );
 
-        if (data.removedConversationId) {
-            processConversationRemove(data.removedConversationId);
-        }
+            case !!data.removedConversationId:
+                processConversationRemove(data.removedConversationId);
 
-        if (data.friendRemoveData) {
-            removeFriendCard(data.friendRemoveData.removingUserId);
-        }
+            case !!(data.friendRemoveData || data.acceptedFriendRequestId):
+                if (window.location.pathname == PHP_ROUTE_PATH.FRIENDS) {
+                    reloadFriendCardDiv();
+                }
 
-        updateNotificationsNumber();
-        // odswiezanie modala z powiadomieniami
+            case !!data.receivedFriendRequestId:
+                if (window.location.pathname == PHP_ROUTE_PATH.FRIENDS_REQUEST) {
+                    processRequestsList('received-requests-list', PHP_ROUTE_PATH.RECEIVED_FRIENDS_REQUESTS);
+                }
+
+            case !!(data.deniedFriendRequestId || data.acceptedFriendRequestId):
+                if (window.location.pathname == PHP_ROUTE_PATH.FRIENDS_REQUEST) {
+                    processRequestsList('sent-requests-list', PHP_ROUTE_PATH.SENT_FRIENDS_REQUESTS);
+                }
+
+            default:
+                updateNotificationsNumber();
+                updateNotificationsModal();
+        }
     }
 
     eventSource.onerror = event => {
@@ -200,7 +205,8 @@ async function processMessagePreview(data) {
 
 async function updateNotificationsNumber() {
     let navDropDown = document.getElementById('nav-drop-down');
-    let response    = await fetch(PHP_ROUTE_PATH.GET_UNSEEN_NOTIFICATIONS_NUMBER, {
+
+    let response = await fetch(PHP_ROUTE_PATH.GET_UNSEEN_NOTIFICATIONS_NUMBER, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -209,6 +215,20 @@ async function updateNotificationsNumber() {
     });
 
     navDropDown.innerHTML = await response.text();
+}
+
+async function updateNotificationsModal() {
+    let notificationsModalContainer = document.getElementById('notifications-modal-container');
+
+    let response = await fetch(PHP_ROUTE_PATH.RELOAD_NOTIFICATIONS_MODAL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({data: true})
+    });
+
+    notificationsModalContainer.innerHTML = await response.text();
 }
 
 async function updateConversationMembersList(convId) {

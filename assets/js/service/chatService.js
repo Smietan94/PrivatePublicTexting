@@ -8,8 +8,8 @@ function startEventSource(url) {
     eventSource.onmessage = event => {
         const data = JSON.parse(event.data);
 
-        if (data.messageId) {
-            processMessage(data.messageId);
+        if (data.conversationId) {
+            processMessage(data.conversationId);
         }
     }
 
@@ -22,23 +22,23 @@ function checkLastEventSource(topic, activeEventSource) {
     return activeTopic == topic;
 }
 
-async function processMessage(msgId) {
+async function processMessage(conversationId) {
     const resultTarget = document.getElementById('messages');
 
     try {
-        const response = await fetch(PHP_ROUTE_PATH.HANDLE_MESSAGE, {
+        const response = await fetch(`${PHP_ROUTE_PATH.HANDLE_MESSAGE}${conversationId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({messageId: msgId})
+            body: JSON.stringify({data: true})
         });
 
         if (!response.ok) {
             throw new Error('Failed to send message to the server');
         }
 
-        resultTarget.innerHTML += await response.text();
+        resultTarget.innerHTML = await response.text();
 
     } catch (error) {
         console.log('Error sending message to server: ', error);

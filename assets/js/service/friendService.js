@@ -1,4 +1,5 @@
 import { manageEventSource } from "./chatService";
+import { PHP_ROUTE_PATH } from "../constants";
 
 let friendRemoveEventSource = null;
 
@@ -24,13 +25,11 @@ function removeFriend(rmFriendBtn) {
     }
 
     rmFriendBtn.addEventListener('click', function(event) {
-        console.log(friendRemoveEventSource);
         handleRemoveEventSource();
         let friendUsername = document.getElementById(`username-${ rmFriendBtn.value }`);
         var confirmation   = confirm(`Do You want to remove ${ friendUsername.innerHTML } from friends list?`);
 
         if (!confirmation) {
-            console.log(friendRemoveEventSource);
             friendRemoveEventSource.close();
             event.preventDefault();
         }
@@ -46,19 +45,37 @@ function startFriendRemoveEventSource(url) {
 
     eventSource.onmessage = event => {
         eventSource.close();
-        console.log(eventSource);
     };
 
     return eventSource;
 };
 
-function removeFriendCard(removingUserId) {
-    const userCardDiv = document.getElementById(`friend-${ removingUserId }`);
+async function reloadFriendCardDiv() {
+    let friendsListDiv = document.getElementById('friends-list');
 
-    if (userCardDiv) {
-        userCardDiv.remove();
-        sortFriendsCards();
-    }
+    let response = await fetch(PHP_ROUTE_PATH.RELOAD_FRIENDS_LIST, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({data: true})
+    });
+
+    friendsListDiv.innerHTML = await response.text();
+}
+
+async function processRequestsList(elementId, url) {
+    let friendsRequestsList = document.getElementById(elementId);
+
+    let response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({data: true})
+    });
+
+    friendsRequestsList.innerHTML = await response.text();
 }
 
 function sortFriendsCards() {
@@ -69,11 +86,12 @@ function sortFriendsCards() {
 
     friendsCardsArray.forEach(element => {
         friendsCardsListDiv.append(element);
-    })
+    });
 }
 
 export {
     removeFriend,
-    removeFriendCard,
-    sortFriendsCards
+    reloadFriendCardDiv,
+    sortFriendsCards,
+    processRequestsList
 };

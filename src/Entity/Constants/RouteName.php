@@ -36,15 +36,18 @@ class RouteName
     public const APP_GET_SENT_IMG = 'get_sent_img_app';
 
     // FRIEND CONTROLLER
-    public const APP_FRIENDS_LIST   = 'app_friends_list';
-    public const APP_FRIENDS_REMOVE = 'app_friends_remove';
+    public const APP_FRIENDS_LIST        = 'app_friends_list';
+    public const APP_RELOAD_FRIENDS_LIST = 'app_friends_list_reload';
+    public const APP_FRIENDS_REMOVE      = 'app_friends_remove';
 
     // FRIEND REQUEST CONTROLLER
-    public const APP_FRIENDS_REQUESTS       = 'app_friends_requests';
-    public const APP_SEND_FRIEND_REQUEST    = 'app_send_friend_request';
-    public const APP_ACCEPT_FRIEND_REQUEST  = 'app_accept_friend_request';
-    public const APP_DECLINE_FRIEND_REQUEST = 'app_decline_friend_request';
-    public const APP_CANCEL_FRIEND_REQUEST  = 'app_cancel_friend_request';
+    public const APP_FRIENDS_REQUESTS          = 'app_friends_requests';
+    public const APP_RECEIVED_FRIENDS_REQUESTS = 'app_received_friends_requests';
+    public const APP_SENT_FRIENDS_REQUESTS     = 'app_sent_friends_requests';
+    public const APP_SEND_FRIEND_REQUEST       = 'app_send_friend_request';
+    public const APP_ACCEPT_FRIEND_REQUEST     = 'app_accept_friend_request';
+    public const APP_DENY_FRIEND_REQUEST       = 'app_deny_friend_request';
+    public const APP_CANCEL_FRIEND_REQUEST     = 'app_cancel_friend_request';
 
     // NOTIFICATIONS CONTROLLER
     public const APP_CHAT_MESSAGE_PREVIEW             = 'app_chat_message_preview';
@@ -55,10 +58,8 @@ class RouteName
     public const APP_CHAT_UPDATE_MEMBERS_LIST         = 'app_chat_update_members_list';
     public const APP_SET_ACTIVITY_STATUS              = 'app_set_activity_status';
     public const APP_GET_UNSEEN_NOTIFICATIONS_NUMBER  = 'app_get_unseen_notifications_number';
+    public const APP_RELOAD_NOTIFICATIONS_MODAL       = 'app_reload_notifications_modal';
 
     // SEARCH CONTROLLER
     public const APP_SEARCH_USERS = 'app_search_users';
-
-    // ADDITIONAL PATHS
-    public const EMPTY_PATH = '#';
 }

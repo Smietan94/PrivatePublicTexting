@@ -57,6 +57,40 @@ class FriendRequestsController extends AbstractController
     }
 
     /**
+     * renderReceivedRequests
+     *
+     * @param  Request $request
+     * @return Response
+     */
+    #[Route(
+        RoutePath::RECEIVED_FRIENDS_REQUESTS,
+        name: RouteName::APP_RECEIVED_FRIENDS_REQUESTS
+    )]
+    public function renderReceivedRequests(Request $request): Response
+    {
+        return $this->render('friend_requests/_receivedRequestsList.html.twig', [
+            'received' => $this->currentUser->getReceivedFriendRequests()->toArray()
+        ]);
+    }
+    
+    /**
+     * renderSentRequests
+     *
+     * @param  Request $request
+     * @return Response
+     */
+    #[Route(
+        RoutePath::SENT_FRIENDS_REQUESTS,
+        name: RouteName::APP_SENT_FRIENDS_REQUESTS
+    )]
+    public function renderSentRequests(Request $request): Response
+    {
+        return $this->render('friend_requests/_sentRequestsList.html.twig', [
+            'sent' => $this->currentUser->getSentFriendRequests()->toArray()
+        ]);
+    }
+
+    /**
      * sendFriendRequest
      *
      * @param  Request $request
@@ -74,12 +108,7 @@ class FriendRequestsController extends AbstractController
         $requestedUser = $this->userRepository->find($requestUserId);
 
         // check if user already requested
-        if ($this->friendRequestRepository->getFriendRequest(
-            $this->currentUser,
-            $requestedUser,
-            FriendStatus::PENDING->value
-        ))
-        {
+        if ($this->friendRequestRepository->getFriendRequest($this->currentUser, $requestedUser, FriendStatus::PENDING->toInt())) {
             $this->addFlash('error', 'You already sent this request');
             return $this->redirectToRoute(RouteName::APP_FRIENDS_REQUESTS);
         }
@@ -123,17 +152,17 @@ class FriendRequestsController extends AbstractController
     }
 
     /**
-     * decline
+     * deny
      *
      * @param  Request $request
      * @return Response
      */
     #[Route(
-        RoutePath::DECLINE_FRIEND_REQUEST,
+        RoutePath::DENY_FRIEND_REQUEST,
         methods: ['POST'],
-        name: RouteName::APP_DECLINE_FRIEND_REQUEST
+        name: RouteName::APP_DENY_FRIEND_REQUEST
     )]
-    public function decline(Request $request): Response
+    public function deny(Request $request): Response
     {
         // friend request validation
         $friendRequest = $this->preprocessFriendRequest($request, FriendStatus::REJECTED->toString());
@@ -142,6 +171,17 @@ class FriendRequestsController extends AbstractController
         if (!$friendRequest) {
             $this->redirectToRoute(RouteName::APP_FRIENDS_REQUESTS);
         }
+
+        $this->notificationService->processFriendStatusNotification(
+            NotificationType::FRIEND_REQUEST_DENIED,
+            $friendRequest->getRequestingUser(),
+            $friendRequest->getRequestedUser()
+        );
+
+        $this->notificationService->processFriendRequestDenied(
+            $friendRequest,
+            'deniedFriendRequestId'
+        );
 
         $this->friendRequestService->deleteRequestAndSetHistory($friendRequest, FriendStatus::REJECTED->value);
 
@@ -169,13 +209,7 @@ class FriendRequestsController extends AbstractController
             $this->redirectToRoute(RouteName::APP_FRIENDS_REQUESTS);
         }
 
-        $this->notificationService->processFriendStatusNotification(
-            NotificationType::FRIEND_REQUEST_DENIED,
-            $friendRequest->getRequestingUser(),
-            $friendRequest->getRequestedUser()
-        );
-
-        $this->friendRequestService->deleteRequestAndSetHistory($friendRequest, FriendStatus::CANCELLED->value);
+        $this->friendRequestService->deleteRequestAndSetHistory($friendRequest, FriendStatus::CANCELLED->toInt());
 
         return $this->redirectToRoute(RouteName::APP_FRIENDS_REQUESTS);
     }

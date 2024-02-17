@@ -10,11 +10,11 @@ import '../styles/app.scss';
 // start the Stimulus application
 import '../bootstrap';
 
-import { Tooltip, Modal } from "bootstrap";
+import { Tooltip } from "bootstrap";
 import { startActiveNotificationChannelEventSource, startMessagePreviewEventSource, startConversationHelperEventSource, getNewMemberPreviewScriptTag } from './service/notificationsService';
 import { startEventSource, manageEventSource, confirmMemberRemove, processEnterSendMessage } from './service/chatService';
 import { removeFriend } from './service/friendService';
-import { handleOffcanvasButtons } from './service/basicStuffService';
+import { handleOffcanvasButtons, handleNotificationsModal } from './service/basicStuffService';
 
 require('bootstrap');
 
@@ -41,12 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         handleOffcanvasButtons(tooltipList);
 
-        const toogleNotificationsModalATag = document.getElementById('toogle-notifications-modal');
-        const notificationsModal           = document.getElementById('notifications-modal');
-        let modal = new Modal(notificationsModal);
-        toogleNotificationsModalATag.addEventListener('click', function () {
-            modal.show();
-        });
+        handleNotificationsModal();
 
         removeFriendsButtons.forEach(function(rmFriendBtn) {
             removeFriend(rmFriendBtn);

@@ -45,21 +45,22 @@ class FriendController extends AbstractController
     )]
     public function index(Request $request): Response
     {
-        // collecting paginated query
-        $queryBuilder = $this->userRepository->getFriendsQuery($this->currentUser);
-        $adapter      = new QueryAdapter($queryBuilder);
-        $pagerfanta   = Pagerfanta::createForCurrentPageWithMaxPerPage(
-            $adapter,
-            (int) $request->query->get('page', 1),
-            6
-        );
+        return $this->processFriendsList($request, 'friend/index.html.twig');
+    }
 
-        // dd($this->friendsService->getHowLongFriends($this->currentUser));
-
-        return $this->render('friend/index.html.twig', [
-            'pager'        => $pagerfanta,
-            'friendsSince' => $this->friendsService->getHowLongFriends($this->currentUser), // collecting date of accepting friend request
-        ]);
+    /**
+     * friendListReload
+     *
+     * @param  Request $request
+     * @return Response
+     */
+    #[Route(
+        RoutePath::RELOAD_FRIENDS_LIST,
+        name: RouteName::APP_RELOAD_FRIENDS_LIST
+    )]
+    public function friendListReload(Request $request): Response
+    {
+        return $this->processFriendsList($request, 'friend/_friendsList.html.twig');
     }
 
     /**
@@ -94,6 +95,30 @@ class FriendController extends AbstractController
         $this->friendsService->removeFriend($this->currentUser, $friend);
 
         return $this->redirectToRoute(RouteName::APP_FRIENDS_LIST);
+    }
+
+    /**
+     * processFriendsList
+     *
+     * @param  Request $request
+     * @param  string  $path
+     * @return Response
+     */
+    public function processFriendsList(Request $request, string $path): Response
+    {
+        // collecting paginated query
+        $queryBuilder = $this->userRepository->getFriendsQuery($this->currentUser);
+        $adapter      = new QueryAdapter($queryBuilder);
+        $pagerfanta   = Pagerfanta::createForCurrentPageWithMaxPerPage(
+            $adapter,
+            (int) $request->query->get('page', 1),
+            6
+        );
+
+        return $this->render($path, [
+            'pager'        => $pagerfanta,
+            'friendsSince' => $this->friendsService->getHowLongFriends($this->currentUser), // collecting date of accepting friend request
+        ]);
     }
 
     // #[Route('/deleteUser')]

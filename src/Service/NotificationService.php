@@ -6,6 +6,7 @@ namespace App\Service;
 
 use App\Entity\Constants\Constant;
 use App\Entity\Conversation;
+use App\Entity\FriendRequest;
 use App\Entity\Notification;
 use App\Entity\User;
 use App\Enum\NotificationType;
@@ -33,15 +34,11 @@ class NotificationService
      */
     public function messagePreviewMercureUpdater(Conversation $conversation): void
     {
-        $topics = $this->conversationProcessor->getConversationTopics($conversation);
+        $data = ['messagePreview' => [
+            'conversationId' => $conversation->getId(),
+        ]];
 
-        if (count($topics) > 0) {
-            $data = ['messagePreview' => [
-                'conversationId' => $conversation->getId(),
-            ]];
-
-            $this->publishMercureUpdate($topics, $data);
-        }
+        $this->processConversationMercureUpdate($conversation, $data);
     }
 
     /**
@@ -52,13 +49,9 @@ class NotificationService
      */
     public function processFirstGroupMessagePreview(Conversation $conversation): void
     {
-        $topics  = $this->conversationProcessor->getConversationTopics($conversation);
+        $data = ['conversationId' => $conversation->getId()];
 
-        if (count($topics) > 0) {
-            $data = ['conversationId' => $conversation->getId()];
-
-            $this->publishMercureUpdate($topics, $data);
-        }
+        $this->processConversationMercureUpdate($conversation, $data);
     }
 
     /**
@@ -70,16 +63,12 @@ class NotificationService
      */
     public function processConversationMemberRemove(Conversation $conversation, int $removedUserId): void
     {
-        $topics = $this->conversationProcessor->getConversationTopics($conversation);
+        $data = ['removedUserData' => [
+            'conversationId' => $conversation->getId(),
+            'removedUserId'  => $removedUserId,
+        ]];
 
-        if (count($topics) > 0) {
-            $data = ['removedUserData' => [
-                'conversationId' => $conversation->getId(),
-                'removedUserId'  => $removedUserId,
-            ]];
-
-            $this->publishMercureUpdate($topics, $data);
-        }
+        $this->processConversationMercureUpdate($conversation, $data);
     }
 
     /**
@@ -90,15 +79,12 @@ class NotificationService
      */
     public function processNameChange(Conversation $conversation): void
     {
-        $topics = $this->conversationProcessor->getConversationTopics($conversation);
+        $data   = ['conversationNameChangeData' => [
+            'conversationName' => $conversation->getName(),
+            'conversationId'   => $conversation->getId()
+        ]];
 
-        if (count($topics) > 0) {
-            $data   = ['conversationNameChangeData' => [
-                'conversationName' => $conversation->getName(),
-                'conversationId'   => $conversation->getId()
-            ]];
-            $this->publishMercureUpdate($topics, $data);
-        }
+        $this->processConversationMercureUpdate($conversation, $data);
     }
 
     /**
@@ -109,15 +95,12 @@ class NotificationService
      */
     public function processNewConversationMemberAddition(Conversation $conversation): void
     {
-        $topics = $this->conversationProcessor->getConversationTopics($conversation);
+        $data = ['newConversationData' =>[
+            'conversationId'       => $conversation->getId(),
+            'isConversationUpdate' => true,
+        ]];
 
-        if (count($topics) > 0) {
-            $data = ['newConversationData' =>[
-                'conversationId'       => $conversation->getId(),
-                'isConversationUpdate' => true,
-            ]];
-            $this->publishMercureUpdate($topics, $data);
-        }
+        $this->processConversationMercureUpdate($conversation, $data);
     }
 
     /**
@@ -128,12 +111,9 @@ class NotificationService
      */
     public function processConversationRemove(Conversation $conversation): void
     {
-        $topics = $this->conversationProcessor->getConversationTopics($conversation);
+        $data = ['removedConversationId' => $conversation->getId()];
 
-        if (count($topics) > 0) {
-            $data = ['removedConversationId' => $conversation->getId()];
-            $this->publishMercureUpdate($topics, $data);
-        }
+        $this->processConversationMercureUpdate($conversation, $data);
     }
 
     /**
@@ -150,6 +130,48 @@ class NotificationService
             'removingUserId' => $currentUser->getId(),
             'removedUserId'  => $friendToRm->getId()
         ]];
+
+        $this->publishMercureUpdate($topic, $data);
+    }
+
+    /**
+     * processFriendRequestReceive
+     *
+     * @param  FriendRequest $friendRequest
+     * @return void
+     */
+    public function processFriendRequestReceive(FriendRequest $friendRequest): void
+    {
+        $topic = sprintf(Constant::NOTIFICATIONS, $friendRequest->getRequestedUser()->getId());
+        $data  = ['receivedFriendRequestId' => $friendRequest->getId()];
+
+        $this->publishMercureUpdate($topic, $data);
+    }
+
+    /**
+     * processFriendReqeustDenied
+     *
+     * @param  FriendRequest $friendRequest
+     * @return void
+     */
+    public function processFriendRequestDenied(FriendRequest $friendRequest): void
+    {
+        $topic = sprintf(Constant::NOTIFICATIONS, $friendRequest->getRequestingUser()->getId());
+        $data  = ['deniedFriendRequestId' => $friendRequest->getId()];
+
+        $this->publishMercureUpdate($topic, $data);
+    }
+
+    /**
+     * processFriendRequestAccept
+     *
+     * @param  FriendRequest $friendRequest
+     * @return void
+     */
+    public function processFriendRequestAccept(FriendRequest $friendRequest): void
+    {
+        $topic = sprintf(Constant::NOTIFICATIONS, $friendRequest->getRequestingUser()->getId());
+        $data  = ['acceptedFriendRequestId' => $friendRequest->getId()];
 
         $this->publishMercureUpdate($topic, $data);
     }
@@ -194,9 +216,9 @@ class NotificationService
     /**
      * processNameChangeNotification
      *
-     * @param  User          $currentUser
+     * @param  User         $currentUser
      * @param  Conversation $conversation
-     * @param  string        $oldConversationName
+     * @param  string       $oldConversationName
      * @return void
      */
     public function processNameChangeNotification(User $currentUser, Conversation $conversation, string $oldConversationName): void
@@ -397,6 +419,22 @@ class NotificationService
         );
 
         $this->hub->publish($update);
+    }
+
+    /**
+     * processConversationMercureUpdate
+     *
+     * @param  Conversation $conversation
+     * @param  array        $data
+     * @return void
+     */
+    private function processConversationMercureUpdate(Conversation $conversation, array $data): void
+    {
+        $topics = $this->conversationProcessor->getConversationTopics($conversation);
+
+        if (count($topics) > 0) {
+            $this->publishMercureUpdate($topics, $data);
+        }
     }
 
     /**

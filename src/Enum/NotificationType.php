@@ -5,19 +5,20 @@ declare(strict_types=1);
 namespace App\Enum;
 
 use App\Entity\Constants\RouteName;
+use App\Entity\Constants\RoutePath;
 
 enum NotificationType: int
 {
-    case CONVERSATION_GROUP_CREATED = 0; // ✓ // ✓
-    case REMOVED_FROM_CONVERSATION  = 1; // ✓ // ✓
-    case LEFT_THE_CONVERSATION      = 2; // ✓ // ✓
-    case REMOVED_CONVERSATION       = 3; // ✓ // ✓
-    case ADDED_TO_CONVERSATION      = 4; // ✓ // ✓
-    case CONVERSATION_NAME_CHANGED  = 5; // ✓ // ✓
-    case FRIEND_REQUEST_RECEIVED    = 6; // ✓
-    case FRIEND_REQUEST_DENIED      = 7; // ✓
-    case FRIEND_REQUEST_ACCEPTED    = 8; // ✓
-    case REMOVED_FROM_FRIENDS_LIST  = 9; // ✓ // ✓
+    case CONVERSATION_GROUP_CREATED = 0;
+    case REMOVED_FROM_CONVERSATION  = 1;
+    case LEFT_THE_CONVERSATION      = 2;
+    case REMOVED_CONVERSATION       = 3;
+    case ADDED_TO_CONVERSATION      = 4;
+    case CONVERSATION_NAME_CHANGED  = 5;
+    case FRIEND_REQUEST_RECEIVED    = 6;
+    case FRIEND_REQUEST_DENIED      = 7;
+    case FRIEND_REQUEST_ACCEPTED    = 8;
+    case REMOVED_FROM_FRIENDS_LIST  = 9;
 
     /**
      * 
@@ -49,15 +50,15 @@ enum NotificationType: int
     public function getRouteName()
     {
         return match($this) {
-            self::REMOVED_FROM_CONVERSATION => RouteName::EMPTY_PATH,
+            self::REMOVED_FROM_CONVERSATION => RoutePath::EMPTY_PATH,
             self::LEFT_THE_CONVERSATION     => RouteName::APP_CHAT_GROUP,
-            self::REMOVED_CONVERSATION      => RouteName::EMPTY_PATH,
+            self::REMOVED_CONVERSATION      => RoutePath::EMPTY_PATH,
             self::ADDED_TO_CONVERSATION     => RouteName::APP_CHAT_GROUP,
             self::CONVERSATION_NAME_CHANGED => RouteName::APP_CHAT_GROUP,
             self::FRIEND_REQUEST_RECEIVED   => RouteName::APP_FRIENDS_REQUESTS,
-            self::FRIEND_REQUEST_DENIED     => RouteName::EMPTY_PATH,
+            self::FRIEND_REQUEST_DENIED     => RoutePath::EMPTY_PATH,
             self::FRIEND_REQUEST_ACCEPTED   => RouteName::APP_CHAT,
-            self::REMOVED_FROM_FRIENDS_LIST => RouteName::EMPTY_PATH,
+            self::REMOVED_FROM_FRIENDS_LIST => RoutePath::EMPTY_PATH,
             default                         => RouteName::APP_CHAT_GROUP
         };
     }

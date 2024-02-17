@@ -243,4 +243,19 @@ class NotificationController extends AbstractController
     {
         return $this->render('_navDropDown.html.twig');
     }
+
+    /**
+     * reloadNotificationsModal
+     *
+     * @param  Request $request
+     * @return Response
+     */
+    #[Route(
+        RoutePath::RELOAD_NOTIFICATIONS_MODAL,
+        name: RouteName::APP_RELOAD_NOTIFICATIONS_MODAL
+    )]
+    public function reloadNotificationsModal(Request $request): Response
+    {
+        return $this->render('_notificationsModal.html.twig');
+    }
 }

@@ -51,6 +51,11 @@ class FriendRequestService
 
         $conversation = $this->conversationRepository->getFriendConversation($currentUser, $requestingUser);
 
+        $this->notificationService->processFriendRequestAccept(
+            $request,
+            'acceptedFriendRequestId'
+        );
+
         $this->notificationService->processFriendStatusNotification(
             NotificationType::FRIEND_REQUEST_ACCEPTED,
             $currentUser,

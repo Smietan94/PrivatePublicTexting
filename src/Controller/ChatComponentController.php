@@ -11,6 +11,7 @@ use App\Enum\ConversationType;
 use App\Repository\ConversationRepository;
 use App\Repository\MessageRepository;
 use App\Repository\UserRepository;
+use App\Service\ChatService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,7 +26,8 @@ class ChatComponentController extends AbstractController
         private Security               $security,
         private ConversationRepository $conversationRepository,
         private UserRepository         $userRepository,
-        private MessageRepository      $messageRepository
+        private MessageRepository      $messageRepository,
+        private ChatService            $chatService
     ) {
         // collecting logged user
         $userName          = $this->security->getUser()->getUserIdentifier();
@@ -64,7 +66,7 @@ class ChatComponentController extends AbstractController
         ]);
     }
 
-        /**
+    /**
      * handleMessage
      *
      * @param  Request $request
@@ -72,22 +74,20 @@ class ChatComponentController extends AbstractController
      */
     #[Route(
         RoutePath::HANDLE_MESSAGE,
-        methods: ['POST'],
-        name: RouteName::APP_HANDLE_MESSAGE
+        name: RouteName::APP_HANDLE_MESSAGE,
+        requirements: ['conversationId' => '[0-9]+']
     )]
-    public function handleMessage(Request $request): Response
+    public function handleMessage(Request $request, int $conversationId): Response
     {
-        // collecting message from ajax call
-        $jsonData = json_decode(
-            $request->getContent(),
-            true
-        );
-
-        $message = $this->messageRepository->find($jsonData['messageId']);
+        $conversation = $this->conversationRepository->find($conversationId);
 
         // returning data to current user view
-        return $this->render('chat_components/_message.stream.html.twig', [
-            'message' => $message,
+        return $this->render('chat_components/_message.html.twig', [
+            'pager' => $this->chatService->getMsgPager(
+                (int) $request->query->get('page', 1),
+                $conversation,
+                $conversation->getConversationType()
+            ) ?? null
         ]);
     }
 }

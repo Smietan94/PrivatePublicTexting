@@ -210,7 +210,7 @@ class MessageService
         $update = new Update(
             sprintf($topic, $conversation->getId()),
             json_encode([
-                'messageId' => $conversation->getLastMessage()->getId(),
+                'conversationId' => $conversation->getId()
             ]),
             true
         );
