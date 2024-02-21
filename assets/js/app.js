@@ -11,7 +11,7 @@ import '../styles/app.scss';
 import '../bootstrap';
 
 import { Tooltip } from "bootstrap";
-import { startActiveNotificationChannelEventSource, startMessagePreviewEventSource, startConversationHelperEventSource, getNewMemberPreviewScriptTag } from './service/notificationsService';
+import { startActiveNotificationChannelEventSource, startMessagePreviewEventSource, startConversationHelperEventSource, getNewMemberPreviewScriptTag, handleNotificationTag } from './service/notificationsService';
 import { startEventSource, manageEventSource, confirmMemberRemove, processEnterSendMessage } from './service/chatService';
 import { removeFriend } from './service/friendService';
 import { handleOffcanvasButtons, handleNotificationsModal } from './service/basicStuffService';

@@ -59,6 +59,8 @@ class RoutePath
     public const SET_ACTIVITY_STATUS             = '/setActivityStatus';
     public const GET_UNSEEN_NOTIFICATIONS_NUMBER = '/notifications/getUnseenNotificationsNumber';
     public const RELOAD_NOTIFICATIONS_MODAL      = '/notifications/reloadNotificationsModal';
+    public const SET_NOTIFICATION_DISPLAY_STATUS = '/notifications/setNotificationDisplayStatus';
+    public const RENDER_NOTIFICATIONS_MODAL      = '/notifications/renderNotificationsModal';
 
     // SEARCH CONTROLLER
     public const FRIENDS_SEARCH = '/search';

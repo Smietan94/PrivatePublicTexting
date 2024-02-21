@@ -1,4 +1,5 @@
 import { Controller }  from "@hotwired/stimulus";
+import { processFetchPOSTInit } from "../js/service/basicStuffService";
 
 export default class extends Controller {
     static values = {
@@ -21,16 +22,13 @@ export default class extends Controller {
 
         console.log(topics)
 
-        const response = await fetch(this.url1Value, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({data: {
+        const response = await fetch(
+            this.url1Value,
+            processFetchPOSTInit({data: {
                 'topics':      topics,
                 'scriptTagId': scriptTagId.value
             }})
-        });
+        );
 
         this.resultTarget.innerHTML = await response.text();
     }

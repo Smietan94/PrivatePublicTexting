@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 class NotificationController extends AbstractController
 {
@@ -256,6 +257,46 @@ class NotificationController extends AbstractController
     )]
     public function reloadNotificationsModal(Request $request): Response
     {
+        return $this->render('_notificationsList.html.twig');
+    }
+
+    /**
+     * renderNotificationsModal
+     *
+     * @param  Request $request
+     * @return Response
+     */
+    #[Route(
+        RoutePath::RENDER_NOTIFICATIONS_MODAL,
+        name: RouteName::APP_RENDER_NOTIFICATIONS_MODAL
+    )]
+    public function renderNotificationsModal(Request $request): Response
+    {
         return $this->render('_notificationsModal.html.twig');
+    }
+
+    /**
+     * 
+     * setNotificationDisplayStatus
+     *
+     * @param  Request $request
+     * @return Response
+     */
+    #[Route(
+        RoutePath::SET_NOTIFICATION_DISPLAY_STATUS,
+        name: RouteName::APP_SET_NOTIFICATION_DISPLAY_STATUS
+    )]
+    public function setNotificationDisplayStatus(Request $request): Response
+    {
+        $jsonData = json_decode(
+            $request->getContent(),
+            true
+        );
+
+        $notification = $this->notificationRepository->setNotificationDisplayStatus((int) $jsonData['notificationId']);
+
+        return new JsonResponse([
+            'notificationType' => $notification->getNotificationType()
+        ]);
     }
 }

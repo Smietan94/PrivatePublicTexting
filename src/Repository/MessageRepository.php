@@ -31,35 +31,6 @@ class MessageRepository extends ServiceEntityRepository
     }
 
     /**
-     * getMessageQuery
-     *
-     * @param  Conversation $conversation
-     * @param  int          $conversationType
-     * @return Query
-     */
-    public function getMessageQuery(Conversation $conversation, int $conversationType): Query
-    {
-        $qb = $this->entityManager->createQueryBuilder();
-
-        $qb = $qb->select('m')
-            ->from(Message::class, 'm')
-            ->join('m.conversation', 'c')
-            ->andWhere($qb->expr()->eq('c', ':conversation'))
-            ->setParameter('conversation', $conversation);
-
-        foreach ($conversation->getConversationMembers()->toArray() as $loopIndex => $conversationMember) {
-            $qb = $qb->andWhere($qb->expr()->isMemberOf(":conversationMember{$loopIndex}", 'c.conversationMembers'))
-                ->setParameter("conversationMember{$loopIndex}", $conversationMember);
-        }
-
-        $qb->andWhere($qb->expr()->eq('c.conversationType', ':conversationType'))
-            ->orderBy('m.createdAt', 'DESC')
-            ->setParameter('conversationType', $conversationType);
-
-        return $qb->getQuery();
-    }
-
-    /**
      * storeMessage
      *
      * @param  Conversation $conversation

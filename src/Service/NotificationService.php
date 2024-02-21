@@ -187,7 +187,7 @@ class NotificationService
     public function processConversationMemberRemoveNotification(User $currentUser, User $removedUser, Conversation $conversation): void
     {
         $notifications    = [];
-        $format           = NotificationType::REMOVED_FROM_CONVERSATION->toString();
+        $format           = NotificationType::REMOVED_FROM_CONVERSATION->getMessage();
         $currentUserName  = $currentUser->getUsername();
         $removedUserName  = $removedUser->getUsername();
         $conversationName = $conversation->getName();
@@ -224,7 +224,7 @@ class NotificationService
     public function processNameChangeNotification(User $currentUser, Conversation $conversation, string $oldConversationName): void
     {
         $notifications       = [];
-        $format              = NotificationType::CONVERSATION_NAME_CHANGED->toString();
+        $format              = NotificationType::CONVERSATION_NAME_CHANGED->getMessage();
         $newConversationName = $conversation->getName();
         $currentUserName     = $currentUser->getUsername();
         $conversationId      = $conversation->getId();
@@ -259,7 +259,7 @@ class NotificationService
     public function processNewConversationMemberAdditionNotification(User $currentUser, array $newMembers, Conversation $conversation): void
     {
         $notifications       = [];
-        $format              = NotificationType::ADDED_TO_CONVERSATION->toString();
+        $format              = NotificationType::ADDED_TO_CONVERSATION->getMessage();
         $currentUserName     = $currentUser->getUsername();
         $conversationName    = $conversation->getName();
         $conversationId      = $conversation->getId();
@@ -345,11 +345,16 @@ class NotificationService
      * @param  User             $sender
      * @param  User             $receiver
      * @param  ?int             $conversationId
-     * @return Notification
+     * @return Notification|Notification[]
      */
-    public function processFriendStatusNotification(NotificationType $type, User $sender, User $receiver, ?int $conversatoinId = null): Notification
+    public function processFriendStatusNotification(NotificationType $type, User $sender, User $receiver, ?int $conversationId = null): Notification|array
     {
-        $format  = $type->toString();
+        $format  = $type->getMessage();
+
+        if ($type === NotificationType::FRIEND_REQUEST_ACCEPTED) {
+            return $this->processFriendAcceptNotification($type, [$sender, $receiver], $conversationId);
+        }
+
         $message = sprintf($format, $sender->getUsername());
 
         return $this->notificationRepository->storeNotification(
@@ -357,8 +362,38 @@ class NotificationService
             $sender,
             $receiver,
             $message,
-            $conversatoinId
+            $conversationId
         );
+    }
+
+    /**
+     * processFriendAcceptNotification
+     *
+     * @param  NotificationType $type
+     * @param  User[]           $friends
+     * @return Notification[]
+     */
+    public function processFriendAcceptNotification(NotificationType $type, array $friends, int $conversationId): array
+    {
+        $notifications = [];
+
+        foreach ($friends as $friend) {
+            $sender  = ($friends[0] === $friend) ? $friends[1]: $friends[0];
+            $message = sprintf($type->getMessage(), $sender->getUsername());
+
+            array_push(
+                $notifications,
+                $this->notificationRepository->storeNotification(
+                    $type->toInt(),
+                    $sender,
+                    $friend,
+                    $message,
+                    $conversationId
+                )
+            );
+        };
+
+        return $notifications;
     }
 
     /**
@@ -372,7 +407,7 @@ class NotificationService
     private function processConversationNotification(NotificationType $type, User $currentUser, Conversation $conversation): array
     {
         $notifications    = [];
-        $format           = $type->toString();
+        $format           = $type->getMessage();
         $currentUserName  = $currentUser->getUsername();
         $conversationName = $conversation->getName();
 

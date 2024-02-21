@@ -1,4 +1,6 @@
 import { Modal } from "bootstrap";
+import { PHP_ROUTE_PATH } from "../constants";
+import { handleNotificationTag } from "./notificationsService";
 
 function handleOffcanvasButtons(tooltipList) {
     const navbarOffcanvas  = document.getElementById('navbarSupportedContent');
@@ -36,20 +38,40 @@ function handleOffcanvasButtons(tooltipList) {
     }
 };
 
-function handleNotificationsModal() {
+async function handleNotificationsModal() {
+    let notificationsModalContainer = document.getElementById('notifications-modal-container');
+
+    let response = await fetch(
+        PHP_ROUTE_PATH.RENDER_NOTIFICATIONS_MODAL,
+        processFetchPOSTInit({data: true})
+    );
+
+    notificationsModalContainer.innerHTML = await response.text();
+
+    const notificationsModal           = notificationsModalContainer.querySelector('.modal');
     const toogleNotificationsModalATag = document.getElementById('toogle-notifications-modal');
-    const notificationsModal           = document.getElementById('notifications-modal');
 
-    if (toogleNotificationsModalATag && notificationsModal) {
-        let modal = new Modal(notificationsModal);
+    let modal = new Modal(notificationsModal);
 
-        toogleNotificationsModalATag.addEventListener('click', function () {
-            modal.show();
-        });
-    }
+    handleNotificationTag();
+
+    toogleNotificationsModalATag.addEventListener('click', function () {
+        modal.show();
+    });
+}
+
+function processFetchPOSTInit(data) {
+    return {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    };
 }
 
 export {
     handleOffcanvasButtons,
-    handleNotificationsModal
+    handleNotificationsModal,
+    processFetchPOSTInit
 };

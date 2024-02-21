@@ -52,6 +52,8 @@ const PHP_ROUTE_PATH = {
     SET_ACTIVITY_STATUS             : '/setActivityStatus',
     GET_UNSEEN_NOTIFICATIONS_NUMBER : '/notifications/getUnseenNotificationsNumber',
     RELOAD_NOTIFICATIONS_MODAL      : '/notifications/reloadNotificationsModal',
+    SET_NOTIFICATION_DISPLAY_STATUS : '/notifications/setNotificationDisplayStatus',
+    RENDER_NOTIFICATIONS_MODAL      : '/notifications/renderNotificationsModal',
 
     // SEARCH CONTROLLER
     FRIENDS_SEARCH : '/search',
@@ -111,6 +113,8 @@ const PHP_ROUTE_NAME = {
     APP_SET_ACTIVITY_STATUS              : 'app_set_activity_status',
     APP_GET_UNSEEN_NOTIFICATIONS_NUMBER  : 'app_get_unseen_notifications_number',
     APP_RELOAD_NOTIFICATIONS_MODAL       : 'app_reload_notifications_modal',
+    APP_SET_NOTIFICATION_DISPLAY_STATUS  : 'app_set_notification_display_status',
+    APP_RENDER_NOTIFICATIONS_MODAL       : 'app_render_notifications_modal',
 
     // SEARCH CONTROLLER
     APP_SEARCH_USERS : 'app_search_users',
@@ -120,12 +124,29 @@ const PHP_ROUTE_NAME = {
 };
 
 const ACTIVITY_STATUS = {
-    ACTIVE   : 0,
-    INACTIVE : 2,
+    ACTIVE    : 0,
+    LOGGEDOUT : 1,
+    INACTIVE  : 2,
+    SUSPENDED : 3,
+    BANNED    : 4,
+};
+
+const NOTIFICATION_TYPE = {
+    CONVERSATION_GROUP_CREATED : 0,
+    REMOVED_FROM_CONVERSATION  : 1,
+    LEFT_THE_CONVERSATION      : 2,
+    REMOVED_CONVERSATION       : 3,
+    ADDED_TO_CONVERSATION      : 4,
+    CONVERSATION_NAME_CHANGED  : 5,
+    FRIEND_REQUEST_RECEIVED    : 6,
+    FRIEND_REQUEST_DENIED      : 7,
+    FRIEND_REQUEST_ACCEPTED    : 8,
+    REMOVED_FROM_FRIENDS_LIST  : 9
 };
 
 export {
     PHP_ROUTE_PATH,
     PHP_ROUTE_NAME,
-    ACTIVITY_STATUS
+    ACTIVITY_STATUS,
+    NOTIFICATION_TYPE
 };

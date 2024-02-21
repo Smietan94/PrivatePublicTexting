@@ -97,24 +97,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     /**
-     * getFriendsQuery
-     *
-     * @param  User $user
-     * @return Query
-     */
-    public function getFriendsQuery(User $user): Query
-    {
-        return $this->entityManager->createQueryBuilder()
-            ->select('partial u.{id, lastSeen, username, status}')
-            ->from(User::class, 'u')
-            ->leftJoin('u.friends', 'f')
-            ->andWhere(':user MEMBER OF u.friends')
-            ->orderBy('u.username', 'ASC')
-            ->setParameter('user', $user)
-            ->getQuery();
-    }
-
-    /**
      * checkPassword
      *
      * @param  array $data
@@ -204,6 +186,15 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                 'username'   => $username
             ]);
     }
+
+    // public function getUserReceivedNotificationsQueryBuilder(User $currentUser): array
+    // {
+    //     $qb = $this->entityManager->createQueryBuilder();
+
+    //     $qb->select('partial u.{receivedNotifications}')
+    //         ->from(User::class, 'u')
+    //         ->andWhere($qb->expr()->eq('u', ':currentUser'))
+    // }
 
     /**
      * getNotConversationMemberFriends

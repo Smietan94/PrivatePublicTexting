@@ -79,6 +79,24 @@ class NotificationRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * setNotificationDisplayStatus
+     *
+     * @param  int $notificationId
+     * @return Notification
+     */
+    public function setNotificationDisplayStatus(int $notificationId): Notification
+    {
+        $notification = $this->find($notificationId);
+
+        $notification->setDisplayed(NotificationStatus::DISPLAYED->toBool());
+        $notification->setUpdatedAt(new \DateTime());
+
+        $this->entityManager->flush();
+
+        return $notification;
+    }
+
 //    /**
 //     * @return Notification[] Returns an array of Notification objects
 //     */

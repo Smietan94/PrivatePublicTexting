@@ -179,8 +179,7 @@ class ChatController extends AbstractController
             'searchForm'       => $searchForm->createView(),
             'pager'            => isset($conversation) ? $this->chatService->getMsgPager(
                 (int) $request->query->get('page', 1),
-                $conversation,
-                ConversationType::SOLO->toInt()
+                $conversation
             ) : null
         ]);
     }

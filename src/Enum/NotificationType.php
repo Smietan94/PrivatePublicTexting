@@ -22,11 +22,11 @@ enum NotificationType: int
 
     /**
      * 
-     * toString
+     * getMessage
      *
      * @return string
      */
-    public function toString()
+    public function getMessage()
     {
         return match($this) {
             self::REMOVED_FROM_CONVERSATION => '%s removed %s from %s conversation',
@@ -36,7 +36,7 @@ enum NotificationType: int
             self::CONVERSATION_NAME_CHANGED => '%s changed %s conversation name to %s',
             self::FRIEND_REQUEST_RECEIVED   => '%s is sending You friends request',
             self::FRIEND_REQUEST_DENIED     => '%s denied Your friends request',
-            self::FRIEND_REQUEST_ACCEPTED   => '%s accepted Your friends request',
+            self::FRIEND_REQUEST_ACCEPTED   => 'You and %s are friends now',
             self::REMOVED_FROM_FRIENDS_LIST => '%s removed You from friends list',
             default                         => '%s created %s conversation'
         };

@@ -6,12 +6,16 @@ namespace App\Twig\Runtime;
 
 use App\Entity\Constants\Constant;
 use App\Entity\Constants\RouteName;
+use App\Entity\Notification;
+use App\Enum\NotificationType;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Extension\RuntimeExtensionInterface;
 
 class BasicStuffRuntime implements RuntimeExtensionInterface
 {
-    public function __construct()
-    {
+    public function __construct(
+        private UrlGeneratorInterface $urlGenerator,
+    ) {
         // Inject dependencies if needed
     }
 
@@ -52,5 +56,23 @@ class BasicStuffRuntime implements RuntimeExtensionInterface
         $reflection = new \ReflectionClass(Constant::class);
 
         return $reflection->getConstant(strtoupper($constName));
+    }
+
+    /**
+     * getHref
+     *
+     * @param  Notification $notification
+     * @return ?string
+     */
+    public function getHref(Notification $notification): ?string
+    {
+        $href           = NotificationType::tryFrom($notification->getNotificationType())->getRouteName();
+        $conversationId = $notification->getConversationId();
+        
+        return match (true) {
+            $href === '#'     => $href,
+            !!$conversationId => $this->urlGenerator->generate($href, ['conversationId' => $conversationId]),
+            default           => $this->urlGenerator->generate($href)
+        };
     }
 }

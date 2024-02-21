@@ -1,4 +1,5 @@
 import { PHP_ROUTE_PATH } from "../constants";
+import { processFetchPOSTInit } from "./basicStuffService";
 
 function startEventSource(url) {
     let eventSource = new EventSource(url, {
@@ -26,13 +27,10 @@ async function processMessage(conversationId) {
     const resultTarget = document.getElementById('messages');
 
     try {
-        const response = await fetch(`${PHP_ROUTE_PATH.HANDLE_MESSAGE}${conversationId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({data: true})
-        });
+        const response = await fetch(
+            `${PHP_ROUTE_PATH.HANDLE_MESSAGE}${conversationId}`,
+            processFetchPOSTInit({data: true})
+        );
 
         if (!response.ok) {
             throw new Error('Failed to send message to the server');

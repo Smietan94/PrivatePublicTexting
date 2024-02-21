@@ -59,6 +59,8 @@ class RouteName
     public const APP_SET_ACTIVITY_STATUS              = 'app_set_activity_status';
     public const APP_GET_UNSEEN_NOTIFICATIONS_NUMBER  = 'app_get_unseen_notifications_number';
     public const APP_RELOAD_NOTIFICATIONS_MODAL       = 'app_reload_notifications_modal';
+    public const APP_SET_NOTIFICATION_DISPLAY_STATUS  = 'app_set_notification_display_status';
+    public const APP_RENDER_NOTIFICATIONS_MODAL       = 'app_render_notifications_modal';
 
     // SEARCH CONTROLLER
     public const APP_SEARCH_USERS = 'app_search_users';

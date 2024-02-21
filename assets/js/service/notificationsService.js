@@ -1,5 +1,6 @@
-import { PHP_ROUTE_PATH, ACTIVITY_STATUS } from "../constants";
+import { PHP_ROUTE_PATH, ACTIVITY_STATUS, NOTIFICATION_TYPE } from "../constants";
 import { reloadFriendCardDiv, processRequestsList } from "./friendService";
+import { processFetchPOSTInit } from "./basicStuffService";
 
 function startActiveNotificationChannelEventSource(url) {
     let eventSource       = new EventSource(url, {
@@ -17,45 +18,53 @@ function startActiveNotificationChannelEventSource(url) {
 
         switch (true) {
             case !!data.messagePreview:
-                processMessagePreview(data.messagePreview);
+                processMessagePreview(data.messagePreview.conversationId);
+                break;
 
             case !!data.conversationId:
                 processGroupConversationLabel(data.conversationId);
+                break;
 
             case !!data.conversationNameChangeData:
                 processConversationNameChange(data.conversationNameChangeData);
+                break;
 
             case !!data.removedUserData:
                 processConversationMemberRemoval(data.removedUserData);
+                break;
 
             case !!data.newConversationData:
                 processGroupConversationLabel(
                     data.newConversationData.conversationId,
                     data.newConversationData.isConversationUpdate
                 );
+                break;
 
             case !!data.removedConversationId:
                 processConversationRemove(data.removedConversationId);
+                break;
 
             case !!(data.friendRemoveData || data.acceptedFriendRequestId):
                 if (window.location.pathname == PHP_ROUTE_PATH.FRIENDS) {
                     reloadFriendCardDiv();
                 }
+                break;
 
             case !!data.receivedFriendRequestId:
                 if (window.location.pathname == PHP_ROUTE_PATH.FRIENDS_REQUEST) {
                     processRequestsList('received-requests-list', PHP_ROUTE_PATH.RECEIVED_FRIENDS_REQUESTS);
                 }
+                break;
 
             case !!(data.deniedFriendRequestId || data.acceptedFriendRequestId):
                 if (window.location.pathname == PHP_ROUTE_PATH.FRIENDS_REQUEST) {
                     processRequestsList('sent-requests-list', PHP_ROUTE_PATH.SENT_FRIENDS_REQUESTS);
                 }
-
-            default:
-                updateNotificationsNumber();
-                updateNotificationsModal();
+                break;
         }
+
+        updateNotificationsNumber();
+        updateNotificationsModal();
     }
 
     eventSource.onerror = event => {
@@ -77,7 +86,7 @@ function startMessagePreviewEventSource(url) {
         const data = JSON.parse(event.data);
 
         if (data.messagePreview) {
-            processMessagePreview(data.messagePreview);
+            processMessagePreview(data.messagePreview.conversationId);
         }
     }
 
@@ -93,13 +102,10 @@ function startConversationHelperEventSource(url) {
 }
 
 async function processConversationMemberRemoval(data) {
-    let response = await fetch(PHP_ROUTE_PATH.REDIRECT_REMOVED_USER, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({data: data})
-    });
+    let response = await fetch(
+        PHP_ROUTE_PATH.REDIRECT_REMOVED_USER,
+        processFetchPOSTInit({data: data})
+    );
 
     let responseData = await response.json();
 
@@ -117,23 +123,17 @@ async function processConversationMemberRemoval(data) {
 }
 
 async function setActivityStatus(activityStatusCode) {
-    await fetch(PHP_ROUTE_PATH.SET_ACTIVITY_STATUS, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({userActivityStatusCode: activityStatusCode})
-    });
+    await fetch(
+        PHP_ROUTE_PATH.SET_ACTIVITY_STATUS,
+        processFetchPOSTInit({userActivityStatusCode: activityStatusCode})
+    );
 }
 
 async function processConversationRemove(conversationId) {
-    let response = await fetch(PHP_ROUTE_PATH.PROCESS_CONVERSATION_REMOVE, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({removedConversationId: conversationId})
-    });
+    await fetch(
+        PHP_ROUTE_PATH.PROCESS_CONVERSATION_REMOVE,
+        processFetchPOSTInit({removedConversationId: conversationId})
+    );
 
     if (document.getElementById(`conversation-${ conversationId }-name`)) {
         window.location.href = PHP_ROUTE_PATH.GROUPS;
@@ -148,13 +148,10 @@ async function processGroupConversationLabel(convId, isConversationUpdate = fals
 
     if (groupConversationsList) {
         try {
-            const response = await fetch(PHP_ROUTE_PATH.PROCESS_CONVERSATION_LABEL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({conversationId: convId})
-            });
+            const response = await fetch(
+                PHP_ROUTE_PATH.PROCESS_CONVERSATION_LABEL,
+                processFetchPOSTInit({conversationId: convId})
+            );
 
             if (!response.ok) {
                 throw new Error('Failed to process message preview');
@@ -176,18 +173,15 @@ async function processGroupConversationLabel(convId, isConversationUpdate = fals
     }
 }
 
-async function processMessagePreview(data) {
-    let messagePreviewElement = document.getElementById(`conversation-${ data.conversationId }-last-message`);
+async function processMessagePreview(conversationId) {
+    let messagePreviewElement = document.getElementById(`conversation-${ conversationId }-last-message`);
 
     if (messagePreviewElement) {
         try {
-            const response = await fetch(PHP_ROUTE_PATH.MESSAGE_PREVIEW, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({conversationId: data.conversationId})
-            });
+            const response = await fetch(
+                PHP_ROUTE_PATH.MESSAGE_PREVIEW,
+                processFetchPOSTInit({conversationId: conversationId})
+            );
 
             if (!response.ok) {
                 throw new Error('Failed to process message preview');
@@ -195,7 +189,7 @@ async function processMessagePreview(data) {
 
             messagePreviewElement.innerHTML = await response.text();
 
-            sortConversationLabels(data.conversationId);
+            sortConversationLabels(conversationId);
 
         } catch(error) {
             console.log('Error during processing message preview', error);
@@ -206,29 +200,24 @@ async function processMessagePreview(data) {
 async function updateNotificationsNumber() {
     let navDropDown = document.getElementById('nav-drop-down');
 
-    let response = await fetch(PHP_ROUTE_PATH.GET_UNSEEN_NOTIFICATIONS_NUMBER, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({data: true})
-    });
+    let response = await fetch(
+        PHP_ROUTE_PATH.GET_UNSEEN_NOTIFICATIONS_NUMBER,
+        processFetchPOSTInit({data: true})
+    );
 
     navDropDown.innerHTML = await response.text();
 }
 
 async function updateNotificationsModal() {
     let notificationsModalContainer = document.getElementById('notifications-modal-container');
+    let notificationsList           = notificationsModalContainer.querySelector('.list-group');
 
-    let response = await fetch(PHP_ROUTE_PATH.RELOAD_NOTIFICATIONS_MODAL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({data: true})
-    });
+    let response = await fetch(
+        PHP_ROUTE_PATH.RELOAD_NOTIFICATIONS_MODAL,
+        processFetchPOSTInit({data: true})
+    );
 
-    notificationsModalContainer.innerHTML = await response.text();
+    notificationsList.innerHTML = await response.text();
 }
 
 async function updateConversationMembersList(convId) {
@@ -236,13 +225,10 @@ async function updateConversationMembersList(convId) {
 
     if (conversationMembersList) {
         try {
-            let response = await fetch(PHP_ROUTE_PATH.UPDATE_MEMBERS_LIST, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({conversationId: convId})
-            });
+            let response = await fetch(
+                PHP_ROUTE_PATH.UPDATE_MEMBERS_LIST,
+                processFetchPOSTInit({conversationId: convId})
+            );
 
             if (!response.ok) {
                 throw new Error('Failed to update conversation members list');
@@ -254,6 +240,33 @@ async function updateConversationMembersList(convId) {
             console.log('Error during updating conversation members list', error);
         }
     }
+}
+
+function setNotificationDisplayStatus(notificationTag) {
+    const updateModal = notificationTag => {
+        if (notificationTag.getAttribute('href') === '#') {
+                updateNotificationsModal();
+                updateNotificationsNumber();
+        }
+    }
+
+    if (notificationTag) {
+        notificationTag.addEventListener('click', async function() {
+            await fetch(
+                PHP_ROUTE_PATH.SET_NOTIFICATION_DISPLAY_STATUS,
+                processFetchPOSTInit({notificationId: notificationTag.getAttribute('value')})
+            );
+
+            setTimeout(() => {updateModal(notificationTag)}, 500);
+        });
+    }
+}
+
+function handleNotificationTag() {
+    let notifications = document.querySelectorAll('.notifications-list-item');
+    notifications.forEach(notificationTag => {
+        setNotificationDisplayStatus(notificationTag);
+    });
 }
 
 function processConversationNameChange(data) {
@@ -331,5 +344,6 @@ export {
     startMessagePreviewEventSource,
     startActiveNotificationChannelEventSource,
     startConversationHelperEventSource,
-    getNewMemberPreviewScriptTag
+    getNewMemberPreviewScriptTag,
+    handleNotificationTag
 };

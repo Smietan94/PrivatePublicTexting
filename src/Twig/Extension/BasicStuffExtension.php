@@ -25,7 +25,8 @@ class BasicStuffExtension extends AbstractExtension
     {
         return [
             new TwigFunction('getRouteName', [BasicStuffRuntime::class, 'getRouteName']),
-            new TwigFunction('getConstant', [BasicStuffRuntime::class, 'getConstant'])
+            new TwigFunction('getConstant', [BasicStuffRuntime::class, 'getConstant']),
+            new TwigFunction('getHref', [BasicStuffRuntime::class, 'getHref'])
         ];
     }
 }

@@ -236,8 +236,7 @@ class ChatGroupsController extends AbstractController
             'conversation'     => $groupConversation ?? null,
             'pager'            => $this->chatService->getMsgPager(
                 (int) $request->query->get('page', 1),
-                $groupConversation,
-                ConversationType::GROUP->toInt()
+                $groupConversation
             ) ?? null,
             'messageForm'  => $messageForm->createView(),
             'searchForm'   => $searchForm->createView(),

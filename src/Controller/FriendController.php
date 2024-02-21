@@ -10,7 +10,7 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\FriendsService;
 use Doctrine\ORM\EntityManagerInterface;
-use Pagerfanta\Doctrine\ORM\QueryAdapter;
+use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -106,9 +106,8 @@ class FriendController extends AbstractController
      */
     public function processFriendsList(Request $request, string $path): Response
     {
-        // collecting paginated query
-        $queryBuilder = $this->userRepository->getFriendsQuery($this->currentUser);
-        $adapter      = new QueryAdapter($queryBuilder);
+        $currentUser = $this->currentUser;
+        $adapter      = new ArrayAdapter($currentUser->getFriends()->toArray());
         $pagerfanta   = Pagerfanta::createForCurrentPageWithMaxPerPage(
             $adapter,
             (int) $request->query->get('page', 1),
@@ -117,7 +116,7 @@ class FriendController extends AbstractController
 
         return $this->render($path, [
             'pager'        => $pagerfanta,
-            'friendsSince' => $this->friendsService->getHowLongFriends($this->currentUser), // collecting date of accepting friend request
+            'friendsSince' => $this->friendsService->getHowLongFriends($currentUser), // collecting date of accepting friend request
         ]);
     }
 

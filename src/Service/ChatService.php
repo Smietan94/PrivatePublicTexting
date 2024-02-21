@@ -15,7 +15,7 @@ use App\Form\RemoveConversationType;
 use App\Form\SearchFormType;
 use App\Repository\MessageRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Pagerfanta\Doctrine\ORM\QueryAdapter;
+use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Pagerfanta;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
@@ -35,18 +35,11 @@ class ChatService
      *
      * @param  int          $page
      * @param  Conversation $conversation
-     * @param  int          $conversationType
      * @return Pagerfanta
      */
-    public function getMsgPager(int $page, Conversation $conversation, int $conversationType): Pagerfanta
+    public function getMsgPager(int $page, Conversation $conversation): Pagerfanta
     {
-        // gets query which prepering all messages from conversation
-        $query = $this->messageRepository->getMessageQuery(
-            $conversation,
-            $conversationType
-        );
-
-        $adapter = new QueryAdapter($query);
+        $adapter = new ArrayAdapter($conversation->getMessages()->toArray());
 
         return Pagerfanta::createForCurrentPageWithMaxPerPage(
             $adapter,
