@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Entity\Constants\Constant;
 use App\Entity\Conversation;
 use App\Entity\User;
 use App\Enum\NotificationType;
@@ -44,7 +45,7 @@ class ChatService
         return Pagerfanta::createForCurrentPageWithMaxPerPage(
             $adapter,
             $page,
-            10
+            Constant::MAX_MESSAGES_PER_PAGE
         );
     }
 

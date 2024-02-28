@@ -1,4 +1,4 @@
-import { PHP_ROUTE_PATH } from "../constants";
+import { PHP_ROUTE_PATH }       from "../constants";
 import { processFetchPOSTInit } from "./basicStuffService";
 
 function startEventSource(url) {

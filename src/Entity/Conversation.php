@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\OrderBy;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: ConversationRepository::class)]
@@ -29,6 +30,7 @@ class Conversation
     private Collection $conversationMembers;
 
     #[ORM\OneToMany(mappedBy: 'conversation', targetEntity: Message::class)]
+    #[OrderBy(['createdAt' => 'DESC'])]
     private Collection $messages;
 
     #[ORM\Column(nullable: false)]

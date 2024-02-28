@@ -12,6 +12,10 @@ use App\Entity\User;
 use App\Enum\NotificationType;
 use App\Repository\NotificationRepository;
 use App\Twig\Runtime\ConversationMemberRuntime;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
+use Pagerfanta\Adapter\ArrayAdapter;
+use Pagerfanta\Pagerfanta;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
 
@@ -22,6 +26,26 @@ class NotificationService
         private HubInterface              $hub,
         private NotificationRepository    $notificationRepository
     ) {
+    }
+
+    /**
+     * getNotificationsPager
+     *
+     * @param  int  $page
+     * @param  User $currentUser
+     * @return Pagerfanta
+     */
+    public function getNotificationsPager(int $page, User $currentUser): Pagerfanta
+    {
+        $arrToSort = new ArrayCollection($currentUser->getReceivedNotifications()->toArray());
+        $criteria = new Criteria();
+        $adapter = new ArrayAdapter($arrToSort->matching($criteria->orderBy(['displayed' => Criteria::ASC, 'createdAt' => Criteria::ASC]))->toArray());
+
+        return Pagerfanta::createForCurrentPageWithMaxPerPage(
+            $adapter,
+            $page,
+            Constant::MAX_NOTIFICATIONS_PER_PAGE
+        );
     }
 
     /**

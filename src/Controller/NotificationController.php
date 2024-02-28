@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Constants\Constant;
 use App\Entity\Constants\RouteName;
 use App\Entity\Constants\RoutePath;
 use App\Entity\User;
@@ -11,23 +12,26 @@ use App\Repository\ConversationRepository;
 use App\Repository\NotificationRepository;
 use App\Repository\UserRepository;
 use App\Service\ChatService;
+use App\Service\NotificationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 class NotificationController extends AbstractController
 {
     private User $currentUser;
 
     public function __construct(
+        private RequestStack           $requestStack,
         private Security               $security,
         private UserRepository         $userRepository,
         private ConversationRepository $conversationRepository,
         private NotificationRepository $notificationRepository,
+        private NotificationService    $notificationService,
         private ChatService            $chatService
     ) {
         // collecting current user
@@ -257,7 +261,7 @@ class NotificationController extends AbstractController
     )]
     public function reloadNotificationsModal(Request $request): Response
     {
-        return $this->render('_notificationsList.html.twig');
+        return $this->processNotificationsModal($request, '_notificationsList.html.twig');
     }
 
     /**
@@ -272,7 +276,14 @@ class NotificationController extends AbstractController
     )]
     public function renderNotificationsModal(Request $request): Response
     {
-        return $this->render('_notificationsModal.html.twig');
+        $dateOrderConstant = Constant::NOTIFICATIONS_ORDER_BY_DATE;
+        $session           = $this->requestStack->getSession();
+
+        if (!$session->get($dateOrderConstant)) {
+            $session->set($dateOrderConstant, 'DESC');
+        }
+
+        return $this->processNotificationsModal($request, '_notificationsModal.html.twig');
     }
 
     /**
@@ -297,6 +308,23 @@ class NotificationController extends AbstractController
 
         return new JsonResponse([
             'notificationType' => $notification->getNotificationType()
+        ]);
+    }
+
+    /**
+     * processNotificationsModal
+     *
+     * @param  Request $request
+     * @param  string  $fileName
+     * @return Response
+     */
+    private function processNotificationsModal(Request $request, string $fileName): Response
+    {
+        return $this->render($fileName, [
+            'notifications' => $this->notificationService->getNotificationsPager(
+                (int) $request->query->get('page', 1),
+                $this->currentUser
+            )
         ]);
     }
 }

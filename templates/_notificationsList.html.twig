@@ -1,15 +1,24 @@
-
-{% for notification in app.user.receivedNotifications %}
-    <a href="{{ getHref(notification) }}"
-    class="list-group-item list-group-item-action notifications-list-item
-    {% if not notification.displayed %}active{% endif %}"
-    aria-current="true"
-    value="{{ notification.id }}">
-        <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1">{{ notification.message }}</h5>
-        </div>
-        <p class="mb-1">
-            <small>{{ notification.createdAt|ago }}</small>
-        </p>
-    </a>
-{% endfor %}
+{% if notifications %}
+    <turbo-frame id="mix-notifications-list-{{ notifications.currentPage }}" target="_top">
+        {% for notification in notifications %}
+            {% set href = getHref(notification) %}
+            <a href="{{ href }}"
+            class="list-group-item list-group-item-action notifications-list-item
+            {% if not notification.displayed %}active{% endif %}"
+            aria-current="true"
+            value="{{ notification.id }}"
+            data-set-displayed="{{ notification.displayed }}"
+            target="_top">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ notification.message }}</h5>
+                </div>
+                <p class="mb-1">
+                    <small>{{ notification.createdAt|ago }}</small>
+                </p>
+            </a>
+        {% endfor %}
+        {% if notifications.hasNextPage %}
+            <turbo-frame id="mix-notifications-list-{{ notifications.nextPage }}" name="mix-notifications-list" src="{{ pagerfanta_page_url(notifications, notifications.nextPage) }}" loading="lazy"></turbo-frame>
+        {% endif %}
+    </turbo-frame>
+{% endif %}

@@ -1,5 +1,5 @@
-import { Modal } from "bootstrap";
-import { PHP_ROUTE_PATH } from "../constants";
+import { Modal }                 from "bootstrap";
+import { PHP_ROUTE_PATH }        from "../constants";
 import { handleNotificationTag } from "./notificationsService";
 
 function handleOffcanvasButtons(tooltipList) {
@@ -41,23 +41,25 @@ function handleOffcanvasButtons(tooltipList) {
 async function handleNotificationsModal() {
     let notificationsModalContainer = document.getElementById('notifications-modal-container');
 
-    let response = await fetch(
-        PHP_ROUTE_PATH.RENDER_NOTIFICATIONS_MODAL,
-        processFetchPOSTInit({data: true})
-    );
+    if (notificationsModalContainer) {
+        let response = await fetch(
+            PHP_ROUTE_PATH.RENDER_NOTIFICATIONS_MODAL,
+            processFetchPOSTInit({data: true})
+        );
 
-    notificationsModalContainer.innerHTML = await response.text();
+        notificationsModalContainer.innerHTML = await response.text();
 
-    const notificationsModal           = notificationsModalContainer.querySelector('.modal');
-    const toogleNotificationsModalATag = document.getElementById('toogle-notifications-modal');
+        const notificationsModal           = notificationsModalContainer.querySelector('.modal');
+        const toogleNotificationsModalATag = document.getElementById('toogle-notifications-modal');
 
-    let modal = new Modal(notificationsModal);
+        let modal = new Modal(notificationsModal);
 
-    handleNotificationTag();
+        handleNotificationTag();
 
-    toogleNotificationsModalATag.addEventListener('click', function () {
-        modal.show();
-    });
+        toogleNotificationsModalATag.addEventListener('click', function () {
+            modal.show();
+        });
+    }
 }
 
 function processFetchPOSTInit(data) {

@@ -24,7 +24,7 @@
 <div class="container container-body container-shadow m-auto mt-5 p-5 bg-dark ">
     <h2 class="fw-bold mb-2 text-light">Conversations</h2>
     <p class="text-white-50 mb-4">Choose a friend to talk</p>
-    <div class="row mx-2 mb-2"{{ stimulus_controller('conversation', {
+    <div class="row mx-2 mb-2" {{ stimulus_controller('conversation', {
         url: path(getRouteName('APP_CHAT_SEARCH'))
     }) }}>
         <div class="col-xl-4 col-lg-5 col-sm-12 bg-light rounded card messenger-window">
