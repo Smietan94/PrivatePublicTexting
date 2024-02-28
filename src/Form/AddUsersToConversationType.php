@@ -41,7 +41,6 @@ class AddUsersToConversationType extends AbstractType
 
         $conversation = $this->conversationRepository->find($conversationId);
 
-        // TODO submit
         $builder
             ->add('conversationId', HiddenType::class, [
                 'data' => $options['data']['conversationId']
@@ -73,6 +72,4 @@ class AddUsersToConversationType extends AbstractType
             'currentUserId'  => null
         ]);
     }
-
-    
 }

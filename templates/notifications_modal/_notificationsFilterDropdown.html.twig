@@ -1,0 +1,19 @@
+{% for type in notificationTypes %}
+    <li>
+        <div class="dropdown-item me-3">
+            <div class="form-check">
+                <input class="form-check-input"
+                {% if type.value in app.session.get(getConstant('NOTIFICATIONS_TYPES_TO_DISPLAY')) %}
+                    checked
+                {% endif %}
+                type="checkbox" value="{{ type.value }}"
+                id="type-{{ type.value }}"
+                data-action="notification#filterNotifications">
+                <label class="form-check-label" for="type-{{ type.value }}">
+                    {{ type.toString }}
+                </label>
+                </input>
+            </div>
+        </div>
+    </li>
+{% endfor %}

@@ -174,6 +174,11 @@ class ChatService
         return $this->formFactory->create(SearchFormType::class);
     }
 
+    /**
+     * createRemoveConversationForm
+     *
+     * @return FormInterface
+     */
     public function createRemoveConversationForm(): FormInterface
     {
         return $this->formFactory->create(RemoveConversationType::class);

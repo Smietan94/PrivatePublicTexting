@@ -10,12 +10,18 @@ use App\Entity\FriendRequest;
 use App\Entity\Notification;
 use App\Entity\User;
 use App\Enum\NotificationType;
+use App\Form\NotificationsFilterType;
 use App\Repository\NotificationRepository;
 use App\Twig\Runtime\ConversationMemberRuntime;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Expr\Comparison;
+use Doctrine\Common\Collections\Order;
 use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Pagerfanta;
+use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
 
@@ -24,28 +30,68 @@ class NotificationService
     public function __construct(
         private ConversationMemberRuntime $conversationProcessor,
         private HubInterface              $hub,
-        private NotificationRepository    $notificationRepository
+        private NotificationRepository    $notificationRepository,
+        private FormFactoryInterface      $formFactory,
     ) {
     }
 
     /**
      * getNotificationsPager
      *
-     * @param  int  $page
-     * @param  User $currentUser
-     * @return Pagerfanta
+     * @param  int    $page
+     * @param  User   $currentUser
+     * @param  string $order
+     * @param  array  $notificationsTpes
+     * @return ?Pagerfanta
      */
-    public function getNotificationsPager(int $page, User $currentUser): Pagerfanta
+    public function getNotificationsPager(int $page, User $currentUser, string $order, array $notificationsTypes): ?Pagerfanta
     {
-        $arrToSort = new ArrayCollection($currentUser->getReceivedNotifications()->toArray());
-        $criteria = new Criteria();
-        $adapter = new ArrayAdapter($arrToSort->matching($criteria->orderBy(['displayed' => Criteria::ASC, 'createdAt' => Criteria::ASC]))->toArray());
+        $sortedNotificationsList = $this->sortReceivedNotificationsCollection(
+            $currentUser->getReceivedNotifications(),
+            [
+                'order'             => $order,
+                'notificationTypes' => $notificationsTypes
+            ]
+        );
+
+        if (count($sortedNotificationsList) === 0) {
+            return null;
+        }
+
+        $adapter = new ArrayAdapter($sortedNotificationsList);
 
         return Pagerfanta::createForCurrentPageWithMaxPerPage(
             $adapter,
             $page,
             Constant::MAX_NOTIFICATIONS_PER_PAGE
         );
+    }
+
+    /**
+     * sortReceivedNotificationsCollection
+     *
+     * @param  Collection<int, Notification> $receivedNotifaction
+     * @param  array                         $params
+     * @return Notification[]
+     */
+    public function sortReceivedNotificationsCollection(Collection $receivedNotifaction, array $params): array
+    {
+        $arrToSort  = new ArrayCollection($receivedNotifaction->toArray());
+        $criteria   = new Criteria();
+        $order      = $params['order'];
+        $notifTypes = $params['notificationTypes'];
+
+        if (count($notifTypes) > 0) {
+            $expr     = new Comparison('notificationType', Comparison::IN, $notifTypes);
+            $criteria = $criteria->andWhere($expr);
+        }
+
+        $criteria = $criteria->orderBy([
+            'displayed' => Order::Ascending,
+            'createdAt' => $order,
+        ]);
+
+        return $arrToSort->matching($criteria)->toArray();
     }
 
     /**
@@ -418,6 +464,11 @@ class NotificationService
         };
 
         return $notifications;
+    }
+
+    public function createNotificationsFilterForm(): FormInterface
+    {
+        return $this->formFactory->create(NotificationsFilterType::class);
     }
 
     /**

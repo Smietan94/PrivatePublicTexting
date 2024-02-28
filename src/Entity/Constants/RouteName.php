@@ -50,17 +50,18 @@ class RouteName
     public const APP_CANCEL_FRIEND_REQUEST     = 'app_cancel_friend_request';
 
     // NOTIFICATIONS CONTROLLER
-    public const APP_CHAT_MESSAGE_PREVIEW             = 'app_chat_message_preview';
-    public const APP_CHAT_GROUP_CONVERSATION_LABEL    = 'app_chat_group_conversation_label';
-    public const APP_CHAT_PROCESS_EVENT_SOURCE_TAG    = 'app_chat_process_event_source_tag';
-    public const APP_CHAT_REDEIRECT_REMOVED_USER      = 'app_chat_redeirect_removed_user';
-    public const APP_CHAT_PEOCESS_CONVERSATION_REMOVE = 'app_chat_peocess_conversation_remove';
-    public const APP_CHAT_UPDATE_MEMBERS_LIST         = 'app_chat_update_members_list';
-    public const APP_SET_ACTIVITY_STATUS              = 'app_set_activity_status';
-    public const APP_GET_UNSEEN_NOTIFICATIONS_NUMBER  = 'app_get_unseen_notifications_number';
-    public const APP_RELOAD_NOTIFICATIONS_MODAL       = 'app_reload_notifications_modal';
-    public const APP_SET_NOTIFICATION_DISPLAY_STATUS  = 'app_set_notification_display_status';
-    public const APP_RENDER_NOTIFICATIONS_MODAL       = 'app_render_notifications_modal';
+    public const APP_CHAT_MESSAGE_PREVIEW              = 'app_chat_message_preview';
+    public const APP_CHAT_GROUP_CONVERSATION_LABEL     = 'app_chat_group_conversation_label';
+    public const APP_CHAT_PROCESS_EVENT_SOURCE_TAG     = 'app_chat_process_event_source_tag';
+    public const APP_CHAT_REDEIRECT_REMOVED_USER       = 'app_chat_redeirect_removed_user';
+    public const APP_CHAT_PEOCESS_CONVERSATION_REMOVE  = 'app_chat_peocess_conversation_remove';
+    public const APP_CHAT_UPDATE_MEMBERS_LIST          = 'app_chat_update_members_list';
+    public const APP_SET_ACTIVITY_STATUS               = 'app_set_activity_status';
+    public const APP_GET_UNSEEN_NOTIFICATIONS_NUMBER   = 'app_get_unseen_notifications_number';
+    public const APP_RELOAD_NOTIFICATIONS_MODAL        = 'app_reload_notifications_modal';
+    public const APP_SET_NOTIFICATION_DISPLAY_STATUS   = 'app_set_notification_display_status';
+    public const APP_RENDER_NOTIFICATIONS_MODAL        = 'app_render_notifications_modal';
+    public const APP_RELOAD_NOTIFICATIONS_FILTERS_LIST = 'app_reload_notifications_filters_list';
 
     // SEARCH CONTROLLER
     public const APP_SEARCH_USERS = 'app_search_users';

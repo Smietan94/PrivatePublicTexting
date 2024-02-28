@@ -21,4 +21,10 @@
             <turbo-frame id="mix-notifications-list-{{ notifications.nextPage }}" name="mix-notifications-list" src="{{ pagerfanta_page_url(notifications, notifications.nextPage) }}" loading="lazy"></turbo-frame>
         {% endif %}
     </turbo-frame>
+{% else %}
+    {% if app.user.receivedNotifications|length > 0 %}
+        <p>There is no notifications of this type.</p>
+    {% else %}
+        <p>There are no notifications yet.</p>
+    {% endif %}
 {% endif %}
