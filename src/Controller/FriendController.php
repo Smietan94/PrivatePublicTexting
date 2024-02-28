@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Constants\Constant;
 use App\Entity\Constants\RouteName;
 use App\Entity\Constants\RoutePath;
 use App\Entity\User;
@@ -111,7 +112,7 @@ class FriendController extends AbstractController
         $pagerfanta   = Pagerfanta::createForCurrentPageWithMaxPerPage(
             $adapter,
             (int) $request->query->get('page', 1),
-            6
+            Constant::MAX_FRIENDS_PER_PAGE
         );
 
         return $this->render($path, [

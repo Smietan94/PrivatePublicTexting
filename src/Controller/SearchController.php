@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Constants\RouteName;
 use App\Entity\Constants\RoutePath;
 use App\Entity\User;
 use App\Form\SearchFormType;
@@ -42,14 +43,15 @@ class SearchController extends AbstractController
      */
     #[Route(
         RoutePath::FRIENDS_SEARCH,
-        methods: ['GET'], name: 'app_search_users'
+        methods: ['GET'],
+        name: RouteName::APP_SEARCH_USERS
     )]
     public function index(Request $request): Response
     {
-        $searchTerm = $request->query->get('q');
-
         // checking if ajax call made
         if ($request->query->get('preview')) {
+            $searchTerm = $request->query->get('q');
+
             return $this->processSearch($searchTerm);
         }
 

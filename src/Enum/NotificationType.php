@@ -64,6 +64,27 @@ enum NotificationType: int
     }
 
     /**
+     * toString
+     *
+     * @return string
+     */
+    public function toString()
+    {
+        return match($this) {
+            self::REMOVED_FROM_CONVERSATION  => 'removes from cronversations',
+            self::LEFT_THE_CONVERSATION      => 'conversation lefts',
+            self::REMOVED_CONVERSATION       => 'conversation removes',
+            self::ADDED_TO_CONVERSATION      => 'adds to conversation',
+            self::CONVERSATION_NAME_CHANGED  => 'conversation name changes',
+            self::FRIEND_REQUEST_RECEIVED    => 'friend request receives',
+            self::FRIEND_REQUEST_DENIED      => 'friend request rejections',
+            self::FRIEND_REQUEST_ACCEPTED    => 'friend request accepts',
+            self::REMOVED_FROM_FRIENDS_LIST  => 'removes from friends list',
+            default                          => 'conversation group creation',
+        };
+    }
+
+    /**
      * toInt
      *
      * @return int

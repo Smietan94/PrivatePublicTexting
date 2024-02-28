@@ -1,6 +1,6 @@
-import { PHP_ROUTE_PATH, ACTIVITY_STATUS, NOTIFICATION_TYPE } from "../constants";
+import { PHP_ROUTE_PATH, ACTIVITY_STATUS }          from "../constants";
 import { reloadFriendCardDiv, processRequestsList } from "./friendService";
-import { processFetchPOSTInit } from "./basicStuffService";
+import { processFetchPOSTInit }                     from "./basicStuffService";
 
 function startActiveNotificationChannelEventSource(url) {
     let eventSource       = new EventSource(url, {
@@ -243,23 +243,28 @@ async function updateConversationMembersList(convId) {
 }
 
 function setNotificationDisplayStatus(notificationTag) {
+    if (notificationTag.dataset.listener === 'true' || notificationTag.getAttribute('data-set-displayed') === 1) {
+        return;
+    }
+
     const updateModal = notificationTag => {
-        if (notificationTag.getAttribute('href') === '#') {
-                updateNotificationsModal();
-                updateNotificationsNumber();
-        }
+        setTimeout(() => {
+            updateNotificationsModal();
+            updateNotificationsNumber();
+            setTimeout(() => handleNotificationTag(), 500);
+        }, 500);
     }
 
-    if (notificationTag) {
-        notificationTag.addEventListener('click', async function() {
-            await fetch(
-                PHP_ROUTE_PATH.SET_NOTIFICATION_DISPLAY_STATUS,
-                processFetchPOSTInit({notificationId: notificationTag.getAttribute('value')})
-            );
+    notificationTag.addEventListener('click', async function() {
+        await fetch(
+            PHP_ROUTE_PATH.SET_NOTIFICATION_DISPLAY_STATUS,
+            processFetchPOSTInit({notificationId: notificationTag.getAttribute('value')})
+        );
 
-            setTimeout(() => {updateModal(notificationTag)}, 500);
-        });
-    }
+        updateModal(notificationTag);
+    });
+
+    notificationTag.dataset.listener = 'true';
 }
 
 function handleNotificationTag() {

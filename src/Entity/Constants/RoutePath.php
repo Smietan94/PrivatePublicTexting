@@ -50,17 +50,18 @@ class RoutePath
     public const CANCEL_FRIEND_REQUEST     = '/friendRequests/cancel';
 
     // NOTIFICATION CONTROLLER
-    public const MESSAGE_PREVIEW                 = '/chats/messagePreview';
-    public const PROCESS_CONVERSATION_LABEL      = '/chats/processConversationLabel';
-    public const PROCESS_EVENT_SOURCE_SCRIPT_TAG = '/chats/groups/processEventSourceScriptTag';
-    public const REDIRECT_REMOVED_USER           = '/chats/redirectRemovedUser';
-    public const PROCESS_CONVERSATION_REMOVE     = '/chats/processConversationRemove';
-    public const UPDATE_MEMBERS_LIST             = '/chats/groups/updateMembersList';
-    public const SET_ACTIVITY_STATUS             = '/setActivityStatus';
-    public const GET_UNSEEN_NOTIFICATIONS_NUMBER = '/notifications/getUnseenNotificationsNumber';
-    public const RELOAD_NOTIFICATIONS_MODAL      = '/notifications/reloadNotificationsModal';
-    public const SET_NOTIFICATION_DISPLAY_STATUS = '/notifications/setNotificationDisplayStatus';
-    public const RENDER_NOTIFICATIONS_MODAL      = '/notifications/renderNotificationsModal';
+    public const MESSAGE_PREVIEW                   = '/chats/messagePreview';
+    public const PROCESS_CONVERSATION_LABEL        = '/chats/processConversationLabel';
+    public const PROCESS_EVENT_SOURCE_SCRIPT_TAG   = '/chats/groups/processEventSourceScriptTag';
+    public const REDIRECT_REMOVED_USER             = '/chats/redirectRemovedUser';
+    public const PROCESS_CONVERSATION_REMOVE       = '/chats/processConversationRemove';
+    public const UPDATE_MEMBERS_LIST               = '/chats/groups/updateMembersList';
+    public const SET_ACTIVITY_STATUS               = '/setActivityStatus';
+    public const GET_UNSEEN_NOTIFICATIONS_NUMBER   = '/notifications/getUnseenNotificationsNumber';
+    public const RELOAD_NOTIFICATIONS_MODAL        = '/notifications/reloadNotificationsModal';
+    public const SET_NOTIFICATION_DISPLAY_STATUS   = '/notifications/setNotificationDisplayStatus';
+    public const RENDER_NOTIFICATIONS_MODAL        = '/notifications/renderNotificationsModal';
+    public const RELOAD_NOTIFICATIONS_FILTERS_LIST = '/notifications/reloadNotificatoinsFiltersList';
 
     // SEARCH CONTROLLER
     public const FRIENDS_SEARCH = '/search';

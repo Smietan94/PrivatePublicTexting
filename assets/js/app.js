@@ -10,11 +10,25 @@ import '../styles/app.scss';
 // start the Stimulus application
 import '../bootstrap';
 
-import { Tooltip } from "bootstrap";
-import { startActiveNotificationChannelEventSource, startMessagePreviewEventSource, startConversationHelperEventSource, getNewMemberPreviewScriptTag, handleNotificationTag } from './service/notificationsService';
-import { startEventSource, manageEventSource, confirmMemberRemove, processEnterSendMessage } from './service/chatService';
+import { Tooltip }      from "bootstrap";
 import { removeFriend } from './service/friendService';
-import { handleOffcanvasButtons, handleNotificationsModal } from './service/basicStuffService';
+import { 
+    startActiveNotificationChannelEventSource,
+    startMessagePreviewEventSource,
+    startConversationHelperEventSource,
+    getNewMemberPreviewScriptTag,
+    handleNotificationTag
+} from './service/notificationsService';
+import { 
+    startEventSource,
+    manageEventSource,
+    confirmMemberRemove,
+    processEnterSendMessage
+} from './service/chatService';
+import { 
+    handleOffcanvasButtons,
+    handleNotificationsModal
+} from './service/basicStuffService';
 
 require('bootstrap');
 
@@ -161,6 +175,7 @@ document.addEventListener('DOMContentLoaded', function () {
             removeFriend(rmFriendBtn);
         });
 
-        processEnterSendMessage(); 
+        processEnterSendMessage();
+        handleNotificationTag();
     });
 });

@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\OrderBy;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -54,6 +55,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $receivedFriendHistory;
 
     #[ORM\ManyToMany(targetEntity: self::class)]
+    #[OrderBy(['username' => 'ASC'])]
     private Collection $friends;
 
     #[ORM\ManyToMany(targetEntity: Conversation::class, mappedBy: 'conversationMembers')]
@@ -69,6 +71,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $sentNotifications;
 
     #[ORM\OneToMany(mappedBy: 'receiver', targetEntity: Notification::class, orphanRemoval: true)]
+    #[OrderBy(['displayed' => 'ASC', 'createdAt' => 'DESC'])]
     private Collection $receivedNotifications;
 
     public function __construct()

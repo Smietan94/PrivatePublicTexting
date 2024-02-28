@@ -1,5 +1,6 @@
-import { Controller }  from "@hotwired/stimulus";
+import { Controller }           from "@hotwired/stimulus";
 import { processFetchPOSTInit } from "../js/service/basicStuffService";
+import { TOPIC }                from "../js/constants";
 
 export default class extends Controller {
     static values = {
@@ -16,11 +17,9 @@ export default class extends Controller {
 
         for (const option of event.currentTarget.options) {
             if (option.selected) {
-                topics.push(`notifications${ option.value }`);
+                topics.push(`${TOPIC.NOTIFICATIONS}${option.value}`);
             }
         }
-
-        console.log(topics)
 
         const response = await fetch(
             this.url1Value,
@@ -44,7 +43,7 @@ export default class extends Controller {
         });
 
         const respone = await fetch(`${this.urlValue}?${params.toString()}`);
-        console.log(`${this.urlValue}?${params.toString()}`);
+
         this.conversationsListTarget.innerHTML = await respone.text();
     }
 

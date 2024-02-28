@@ -4,30 +4,36 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Constants\Constant;
 use App\Entity\Constants\RouteName;
 use App\Entity\Constants\RoutePath;
 use App\Entity\User;
+use App\Enum\NotificationType;
 use App\Repository\ConversationRepository;
 use App\Repository\NotificationRepository;
 use App\Repository\UserRepository;
 use App\Service\ChatService;
+use App\Service\NotificationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 class NotificationController extends AbstractController
 {
     private User $currentUser;
 
     public function __construct(
+        private RequestStack           $requestStack,
         private Security               $security,
         private UserRepository         $userRepository,
         private ConversationRepository $conversationRepository,
         private NotificationRepository $notificationRepository,
+        private NotificationService    $notificationService,
         private ChatService            $chatService
     ) {
         // collecting current user
@@ -257,7 +263,10 @@ class NotificationController extends AbstractController
     )]
     public function reloadNotificationsModal(Request $request): Response
     {
-        return $this->render('_notificationsList.html.twig');
+        return $this->processNotificationsModal(
+            $request,
+            'notifications_modal/_notificationsList.html.twig'
+        );
     }
 
     /**
@@ -272,7 +281,11 @@ class NotificationController extends AbstractController
     )]
     public function renderNotificationsModal(Request $request): Response
     {
-        return $this->render('_notificationsModal.html.twig');
+        return $this->processNotificationsModal(
+            $request,
+            'notifications_modal/_notificationsModal.html.twig',
+            true
+        );
     }
 
     /**
@@ -298,5 +311,121 @@ class NotificationController extends AbstractController
         return new JsonResponse([
             'notificationType' => $notification->getNotificationType()
         ]);
+    }
+
+    /**
+     * reloadNotificationsFiltersList
+     *
+     * @param  Request $request
+     * @return Response
+     */
+    #[Route(
+        RoutePath::RELOAD_NOTIFICATIONS_FILTERS_LIST,
+        name: RouteName::APP_RELOAD_NOTIFICATIONS_FILTERS_LIST
+    )]
+    public function reloadNotificationsFiltersList(Request $request): Response
+    {
+        return $this->render('notifications_modal/_notificationsFilterDropdown.html.twig', [
+            'notificationTypes' => NotificationType::cases()
+        ]);
+    }
+
+    /**
+     * processNotificationsModal
+     *
+     * @param  Request $request
+     * @param  string  $fileName
+     * @param  bool    $render
+     * @return Response
+     */
+    private function processNotificationsModal(Request $request, string $fileName, bool $render=false): Response
+    {
+        $session = $this->requestStack->getSession();
+
+        $this->handleSortByDate($request, $session);
+        $this->handleNotificationFilter($request, $session);
+        $this->resetFilters($request, $session);
+        $this->setSessionArgumentsIfNotSat($session);
+
+        return $this->render($fileName, [
+            'notificationTypes' => $render ? NotificationType::cases(): null,
+            'notifications'     => $this->notificationService->getNotificationsPager(
+                (int) $request->query->get('page', 1),
+                $this->currentUser,
+                $session->get(Constant::NOTIFICATIONS_ORDER_BY_DATE),
+                $session->get(Constant::NOTIFICATIONS_TYPES_TO_DISPLAY)
+            )
+        ]);
+    }
+
+    /**
+     * resetFilters
+     *
+     * @param  Request $request
+     * @param  Session $session
+     * @return void
+     */
+    private function resetFilters(Request $request, Session $session)
+    {
+        if ($request->query->get('resetNotificationsFilters')) {
+            $session->set(Constant::NOTIFICATIONS_ORDER_BY_DATE, 'DESC');
+            $session->set(Constant::NOTIFICATIONS_TYPES_TO_DISPLAY, []);
+        }
+    }
+
+    /**
+     * setSessionArgumentsIfNotSat
+     *
+     * @param  Session $session
+     * @return void
+     */
+    private function setSessionArgumentsIfNotSat(Session $session)
+    {
+        if (!$session->get(Constant::NOTIFICATIONS_ORDER_BY_DATE)) {
+            $session->set(Constant::NOTIFICATIONS_ORDER_BY_DATE, 'DESC');
+        }
+
+        if (!$session->get(Constant::NOTIFICATIONS_TYPES_TO_DISPLAY)) {
+            $session->set(Constant::NOTIFICATIONS_TYPES_TO_DISPLAY, []);
+        }
+    }
+
+    /**
+     * handleSortByDate
+     *
+     * @param  Request $request
+     * @param  Session $session
+     * @return void
+     */
+    private function handleSortByDate(Request $request, Session $session)
+    {
+        if ($request->query->get('orderByDate')) {
+            $order = $request->query->get('order');
+            $session->set(Constant::NOTIFICATIONS_ORDER_BY_DATE, $order);
+        }
+    }
+
+    /**
+     * handleNotificationFilter
+     *
+     * @param  Request $request
+     * @param  Session $session
+     * @return void
+     */
+    private function handleNotificationFilter(Request $request, Session $session)
+    {
+        if ($request->query->get('notificationTypeFilter')) {
+            $notificationType   = (int) $request->query->get('notificationType');
+            $notificationsTypes = $session->get(Constant::NOTIFICATIONS_TYPES_TO_DISPLAY);
+
+            if (in_array($notificationType, $notificationsTypes)) {
+                $notificationTypeToUnset = array_search($notificationType, $notificationsTypes);
+                unset($notificationsTypes[$notificationTypeToUnset]);
+            } else {
+                array_push($notificationsTypes, $notificationType);
+            }
+
+            $session->set(Constant::NOTIFICATIONS_TYPES_TO_DISPLAY, $notificationsTypes);
+        }
     }
 }

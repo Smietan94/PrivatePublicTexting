@@ -1,5 +1,5 @@
 import { manageEventSource } from "./chatService";
-import { PHP_ROUTE_PATH } from "../constants";
+import { PHP_ROUTE_PATH }    from "../constants";
 
 let friendRemoveEventSource = null;
 
