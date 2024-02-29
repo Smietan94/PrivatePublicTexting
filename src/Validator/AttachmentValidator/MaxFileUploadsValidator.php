@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Validator\AttachmentValidator;
 
+use App\Entity\Constants\Constant;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
@@ -24,7 +25,7 @@ class MaxFileUploadsValidator extends ConstraintValidator
             return;
         }
 
-        if (count($files) > 12) {
+        if (count($files) > Constant::MAX_FILE_UPLOADS) {
             $this->context->buildViolation($constraint->message)
                 ->addViolation();
         }

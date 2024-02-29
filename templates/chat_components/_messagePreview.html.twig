@@ -1,6 +1,6 @@
 {% if data.senderId == app.user.id %}
-    You:
+You:
 {% else %}
-    {{ data.senderId|userName }}:
+{{ data.senderId|userName }}:
 {% endif %}
 {{ data.message }}{% if data.message | length >= 20 %}(...){% endif %}

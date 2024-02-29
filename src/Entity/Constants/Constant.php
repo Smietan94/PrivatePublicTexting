@@ -9,6 +9,10 @@ class Constant
     // DEFATULT CHAT FILE STORAGE
     public const CHAT_FILES_STORAGE_PATH = '/conversation_attachments/conversation%d/';
 
+    // FILE
+    public const MAX_FILE_UPLOADS = 12;
+    public const MAX_UPLOAD_SIZE  = 20;
+
     // MERCURE TOPICS
     public const NOTIFICATIONS      = 'notifications-%d';
     public const CONVERSATION_PRIV  = 'conversation.priv-%d';

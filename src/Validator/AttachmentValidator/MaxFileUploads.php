@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Validator\AttachmentValidator;
 
+use App\Entity\Constants\Constant;
 use Symfony\Component\Validator\Constraint;
 
 /**
@@ -18,5 +19,5 @@ class MaxFileUploads extends Constraint
      * Any public properties become valid options for the annotation.
      * Then, use these in your validator class.
      */
-    public $message = 'Too much files, max file uploads = 12';
+    public $message = 'Too much files, max file uploads = {{ Constant::MAX_FILE_UPLOADS }}';
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Validator\AttachmentValidator;
 
+use App\Entity\Constants\Constant;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
@@ -20,7 +21,7 @@ class UploadSizeValidator extends ConstraintValidator
     {
         /* @var App\Validator\FileSize $constraint */
         $uploadSize    = 0;
-        $maxUploadSize = 20 * 1024 * 1024;
+        $maxUploadSize = Constant::MAX_UPLOAD_SIZE * 1024 * 1024;
 
         if (null === $files || '' === $files) {
             return;

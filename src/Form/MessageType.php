@@ -12,7 +12,6 @@ use App\Validator\FileExtension;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -42,7 +41,7 @@ class MessageType extends AbstractType
             ->add('attachment', FileType::class, [
                 'attr' => [
                     'class' => 'form-control messenger-input',
-                    'style' => 'display:none'
+                    'style' => 'visibility:hidden; position:absolute'
                 ],
                 'error_bubbling' => true,
                 'required'       => false,

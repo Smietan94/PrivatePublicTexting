@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Validator\AttachmentValidator;
 
+use App\Entity\Constants\Constant;
 use Symfony\Component\Validator\Constraint;
 
 /**
@@ -18,5 +19,5 @@ class UploadSize extends Constraint
      * Any public properties become valid options for the annotation.
      * Then, use these in your validator class.
      */
-    public $message = 'Upload is too large. Max upload size is 20Mb';
+    public $message = 'Upload is too large. Max upload size is {{ Constant::MAX_UPLOAD_SIZE }}Mb';
 }

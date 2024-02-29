@@ -1,11 +1,11 @@
 <div class="row px-3 pt-1">
     {% for attachment in message.messageAttachments %}
-        <div class="col-6 px-0">
-            <img
-                src="{{ path(getRouteName('APP_GET_SENT_IMG'), {attachmentId: attachment.id}) }}" 
-                alt="{{ attachment.filename }}"
-                class="img-thumbnail img-fluid"
-            >
-        </div>
+    <div class="col-xl-4 col-lg-6 col-sm-12 nopadding">
+        <a href="#">
+            <img alt="{{ attachment.filename }}"
+            src="{{ path(getRouteName('APP_GET_SENT_IMG'), {attachmentId: attachment.id}) }}"
+            class="img-thumbnail img-fluid img-attachment">
+        </a>
+    </div>
     {% endfor %}
 </div>

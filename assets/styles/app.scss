@@ -198,4 +198,41 @@ footer {
     min-height: 40rem;
 }
 
+.img-preview {
+    float: left;
+    width:  4rem;
+    height: 4rem;
+    object-fit: cover;
+}
+
+.img-preview-height {
+    height: 4rem;
+}
+
+.img-attachment {
+    float: left;
+    width:  7rem;
+    height: 7rem;
+    object-fit: cover;
+}
+
+.nopadding {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.btn-noborder {
+    border: none !important;
+}
+
+.btn-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bi-resized {
+    width: 16px !important;
+    height: 16px !important;
+}
 /* https://colormagic.app/palette/iWzC4fi6j6e9gv3J2b1j */

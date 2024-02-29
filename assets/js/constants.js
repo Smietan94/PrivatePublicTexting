@@ -152,10 +152,16 @@ const TOPIC = {
     CONVERSATION_GROUP: 'conversation.group-', // {conversationId}
 };
 
+const FILE_UPLOAD = {
+    MAX_FILE_UPLOADS: 12,
+    MAX_UPLOAD_SIZE:  20,
+}
+
 export {
     PHP_ROUTE_PATH,
     PHP_ROUTE_NAME,
     ACTIVITY_STATUS,
     NOTIFICATION_TYPE,
-    TOPIC
+    TOPIC,
+    FILE_UPLOAD
 };
