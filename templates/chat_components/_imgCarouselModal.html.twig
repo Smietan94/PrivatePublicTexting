@@ -1,0 +1,46 @@
+
+
+<div class="modal fade" id="img-carousel-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-fullscreen modal-dialog">
+            <div class="modal-content bg-dark text-light" data-bs-theme="dark">
+                <div class="modal-header border-dark">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Images</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div id="carouselExampleIndicators" class="modal-body carousel slide border-dark carousel-display-flex">
+                    <div class="carousel-inner carousel-display-flex" data-messanger-target="imgOutput">
+
+                        {% for attachment in attachments %}
+                        {% if attachmentId == attachment.id %}
+                        {% set filename = attachment.filename %}
+                            {% include 'chat_components/_carouselImg.html.twig' %}
+                        {% endif %}
+                        {% endfor %}
+
+                    </div>
+                </div>
+                <div class="modal-footer border-dark mb-5">
+
+                    <div class="mx-auto">
+                        <turbo-frame id="mix-carousel-imgs-list">
+                            {% for attachment in attachments %}
+                            {% set loopIndex = loop.index - 1 %}
+                            <button type="button" data-bs-target="#carouselExampleIndicators"
+                            data-action="messanger#getImg"
+                            data-bs-slide-to="{{ loopIndex }}" class="btn nopadding mb-2
+                            {% if attachmentId == attachment.id %}active{% endif %}"
+                            aria-current="true"
+                            value="{{ attachment.id }}">
+                                <img src="{{ path(getRouteName('APP_GET_RESIZED_IMG'), {attachmentId: attachment.id}) }}"
+                                class="img-thumbnail img-fluid img-preview d-block"
+                                alt="{{ attachment.filename }}" loading="lazy">
+                            </button>
+                            {% endfor %}
+                            {{ pagerfanta(attachments) }}
+                        </turbo-frame>
+                    </div>
+
+                </div>
+            </div>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-import { Controller } from '@hotwired/stimulus';
+import { Controller }  from '@hotwired/stimulus';
 import { FILE_UPLOAD } from '../js/constants';
 
 export default class extends Controller {

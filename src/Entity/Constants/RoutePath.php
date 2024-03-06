@@ -33,7 +33,10 @@ class RoutePath
     public const HANDLE_MESSAGE = '/chats/handleMessage/{conversationId}';
 
     // FILE CONTROLLER
-    public const GET_IMG = '/getImg/{attachmentId}';
+    public const GET_IMG             = '/getImg/{attachmentId}';
+    public const HANDLE_IMG_CAROUSEL = '/getImg/handleImgCarousel/{conversationId}';
+    public const GET_RESIZED_IMG     = '/getImg/getResizedImg/{attachmentId}';
+    public const PROCESS_GET_IMG_TAG = '/getImg/processGetImgTag';
 
     // FRIEND CONTROLLER
     public const FRIENDS             = '/friends';

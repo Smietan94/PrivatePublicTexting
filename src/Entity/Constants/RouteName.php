@@ -33,7 +33,10 @@ class RouteName
     public const APP_HANDLE_MESSAGE = 'app_handle_message';
 
     // FILE CONTROLLER
-    public const APP_GET_SENT_IMG = 'get_sent_img_app';
+    public const APP_GET_SENT_IMG        = 'app_get_sent_img';
+    public const APP_HANDLE_IMG_CAROUSEL = 'app_handle_img_carousel';
+    public const APP_GET_RESIZED_IMG     = 'app_get_resized_img';
+    public const APP_PROCESS_GET_IMG_TAG = 'app_process_get_img_tag';
 
     // FRIEND CONTROLLER
     public const APP_FRIENDS_LIST        = 'app_friends_list';

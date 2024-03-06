@@ -17,6 +17,7 @@
     <body>
         {% set currentUserId      = app.user.id %}
         {% set notificationsTopic = getConstant('NOTIFICATIONS')|format(currentUserId) %}
+
         <div class="container-shadow bg-dark">
             <div class="container pt-4 pb-2">
                 <nav class="navbar navbar-expand-lg navbar-dark">

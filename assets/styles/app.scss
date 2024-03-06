@@ -15,6 +15,8 @@ body {
     background-attachment: fixed;
     background-size: cover;
     font-family: 'Roboto Mono', monospace;
+
+    scrollbar-color: #{$light} #{$light};
 }
 
 footer {
@@ -209,6 +211,20 @@ footer {
     height: 4rem;
 }
 
+.img-carousel {
+    max-width: 100%;
+    width: 500px;
+    max-height: 45rem;
+    object-fit: contain;
+}
+
+.img-carousel-preview {
+    float: left;
+    max-width:  4rem;
+    max-height: 4rem;
+    object-fit: cover;
+}
+
 .img-attachment {
     float: left;
     width:  7rem;
@@ -235,4 +251,23 @@ footer {
     width: 16px !important;
     height: 16px !important;
 }
+
+.scroller-notifications {
+    scrollbar-color: #fff #fff;
+}
+
+.carousel-display-flex {
+    display: flex !important;
+}
+
+.modal-footer-max-height {
+    max-height: 6rem;
+}
+
+.pagination {
+    justify-content: center;
+    display: flex;
+    margin-top: 1rem;
+}
+
 /* https://colormagic.app/palette/iWzC4fi6j6e9gv3J2b1j */

@@ -26,7 +26,10 @@ const PHP_ROUTE_PATH = {
     HANDLE_MESSAGE: '/chats/handleMessage/', // {conversationId}
 
     // FILE CONTROLLER
-    GET_IMG: '/getImg/', // {attachmentId}
+    GET_IMG:             '/getImg/', // {attachmentId}
+    HANDLE_IMG_CAROUSEL: '/getImg/handleImgCarousel/', // {conversationId}
+    GET_RESIZED_IMG:     '/getImg/getResizedImg/', // {attachmentId}
+    PROCESS_GET_IMG_TAG: '/getImg/processGetImgTag',
 
     // FRIEND CONTROLLER
     FRIENDS:             '/friends',
@@ -88,7 +91,10 @@ const PHP_ROUTE_NAME = {
     APP_HANDLE_MESSAGE: 'app_handle_message',
 
     // FILE CONTROLLER
-    APP_GET_SENT_IMG: 'get_sent_img_app',
+    APP_GET_SENT_IMG:        'app_get_sent_img',
+    APP_HANDLE_IMG_CAROUSEL: 'app_handle_img_carousel',
+    APP_GET_RESIZED_IMG:     'app_get_resized_img',
+    APP_PROCESS_GET_IMG_TAG: 'app_process_get_img_tag',
 
     // FRIEND CONTROLLER
     APP_FRIENDS_LIST:        'app_friends_list',

@@ -1,7 +1,7 @@
 import { Controller }            from '@hotwired/stimulus';
 import { PHP_ROUTE_PATH }        from '../js/constants';
 import { handleNotificationTag } from '../js/service/notificationsService';
-import { processFetchPOSTInit } from '../js/service/basicStuffService';
+import { processFetchPOSTInit }  from '../js/service/basicStuffService';
 
 export default class extends Controller {
     static values = {

@@ -11,6 +11,7 @@
         "doctrine/doctrine-bundle": "^2.2",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.16",
+        "imagine/imagine": "^1.2",
         "knplabs/knp-time-bundle": "^2.1",
         "lcobucci/jwt": "^5.1",
         "league/flysystem-bundle": "^3.3",

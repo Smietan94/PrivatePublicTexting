@@ -83,7 +83,8 @@ class ChatComponentController extends AbstractController
 
         // returning data to current user view
         return $this->render('chat_components/_message.html.twig', [
-            'pager' => $this->chatService->getMsgPager(
+            'conversation' => ['id' => $conversationId],
+            'pager'       => $this->chatService->getMsgPager(
                 (int) $request->query->get('page', 1),
                 $conversation,
                 $conversation->getConversationType()

@@ -1,6 +1,8 @@
 {% if pager %}
 <turbo-frame id="mix-message-list-{{ pager.currentPage }}">
-    <div class="row">
+    <div class="row" {{ stimulus_controller('messanger', {
+        imgCarouselModalUrl: path(getRouteName('APP_HANDLE_IMG_CAROUSEL'), {conversationId: conversation.id})
+    }) }}>
         {% if pager.hasNextPage %}
         <turbo-frame id="mix-message-list-{{ pager.nextPage }}" name="mix-message-list" src="{{ pagerfanta_page_url(pager, pager.nextPage) }}" loading="lazy"></turbo-frame>
         {% endif %}
@@ -37,6 +39,7 @@
             {% endif %}
             {% set prevMsg = message %}
         {% endfor %}
+        <div data-messanger-target="imgCarouselModal"></div>
     </div>
 </turbo-frame>
 {% endif %}

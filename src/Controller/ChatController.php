@@ -14,6 +14,7 @@ use App\Repository\ConversationRepository;
 use App\Repository\MessageRepository;
 use App\Repository\UserRepository;
 use App\Service\ChatService;
+use App\Service\FileService;
 use App\Service\MessageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -39,7 +40,7 @@ class ChatController extends AbstractController
         private FormFactoryInterface   $formFactory,
         private ChatService            $chatService,
         private MessageService         $messageService,
-        private EntityManagerInterface $entityManager,
+        private EntityManagerInterface $entityManager
     ) {
         $username          = $this->security->getUser()->getUserIdentifier();
         $this->currentUser = $this->userRepository->findOneBy(['username' => $username]);
