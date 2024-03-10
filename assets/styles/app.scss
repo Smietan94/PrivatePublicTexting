@@ -16,7 +16,7 @@ body {
     background-size: cover;
     font-family: 'Roboto Mono', monospace;
 
-    scrollbar-color: #{$light} #{$light};
+    scrollbar-color: #{$primary} #{$light};
 }
 
 footer {
@@ -253,7 +253,7 @@ footer {
 }
 
 .scroller-notifications {
-    scrollbar-color: #fff #fff;
+    scrollbar-color: #{$dark} #fff;
 }
 
 .carousel-display-flex {

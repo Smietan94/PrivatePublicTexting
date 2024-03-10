@@ -14,22 +14,17 @@ use Doctrine\Common\Collections\Expr\Comparison;
 use Imagine\Gd\Imagine;
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
-use League\Flysystem\FilesystemOperator;
 use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Pagerfanta;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 class FileService
 {
     private Imagine            $imagine;
-    private FilesystemOperator $storage;
 
     public function __construct(
-        FilesystemOperator                  $defaultStorage,
         private MessageAttachmentRepository $messageAttachmentRepository,
     ) {
         $this->imagine = new Imagine();
-        $this->storage = $defaultStorage;
     }
 
     /**
@@ -42,7 +37,7 @@ class FileService
     {
         $filename = sprintf(Constant::FILE_STORAGE_PATH, $img->getPath());
 
-        list($iwidth, $iheight) = getimagesize($filename);
+        [$iwidth, $iheight] = getimagesize($filename);
 
         $ratio  = $iwidth / $iheight;
         $width  = Constant::MAX_RESIZED_WIDTH;
@@ -55,6 +50,7 @@ class FileService
         }
 
         $img = $this->imagine->open($filename);
+
         return $img->resize(new Box($width, $height));
     }
 

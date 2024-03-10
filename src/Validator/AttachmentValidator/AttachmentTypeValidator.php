@@ -27,8 +27,8 @@ class AttachmentTypeValidator extends ConstraintValidator
         $fileTypes = [
             'image/jpeg',
             'image/png',
-            'text/plain',
-            'application/pdf',
+            // 'text/plain',
+            // 'application/pdf',
         ];
 
         foreach ($files as $file) {

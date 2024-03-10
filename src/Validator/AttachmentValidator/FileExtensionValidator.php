@@ -28,8 +28,8 @@ class FileExtensionValidator extends ConstraintValidator
             'jpg',
             'jpeg',
             'png',
-            'txt',
-            'pdf'
+            // 'txt',
+            // 'pdf'
         ];
 
         foreach ($files as $file) {

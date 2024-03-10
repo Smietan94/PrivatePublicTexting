@@ -35,8 +35,8 @@ class MessageAttachmentService
             $pathFormat = match ($file->getClientMimeType()) {
                 'image/jpeg'      => $basePath . 'images/%s',
                 'image/png'       => $basePath . 'images/%s',
-                'text/plain'      => $basePath . 'text_files/%s',
-                'application/pdf' => $basePath . 'pdfs/%s'
+                // 'text/plain'      => $basePath . 'text_files/%s',
+                // 'application/pdf' => $basePath . 'pdfs/%s'
             };
             $fileName = $this->generateAttachmentName($senderId, $file->getClientOriginalExtension());
             $path     = sprintf($pathFormat, $fileName);

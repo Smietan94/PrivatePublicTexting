@@ -6,34 +6,33 @@ namespace App\Tests\Unit\Service;
 
 use App\Entity\Conversation;
 use App\Entity\User;
+use App\Enum\NotificationType;
 use App\Repository\MessageRepository;
 use App\Service\ChatService;
+use App\Service\NotificationService;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
-use League\Flysystem\Filesystem;
 use Pagerfanta\Pagerfanta;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ChatServiceTest extends TestCase
 {
     public function chatServiceProvider(): array
     {
         // Mock MessageRepository, FormFactoryInterface, HubInterface, EntityManagerInterface
-        $messageRepositoryMock = $this->createMock(MessageRepository::class);
-        $formFactoryMock       = $this->createMock(FormFactoryInterface::class);
-        $entityManagerMock     = $this->createMock(EntityManagerInterface::class);
-        $validatorMock         = $this->createMock(ValidatorInterface::class);
-        $defaultStorageMock    = $this->createMock(Filesystem::class);
+        $messageRepositoryMock   = $this->createMock(MessageRepository::class);
+        $formFactoryMock         = $this->createMock(FormFactoryInterface::class);
+        $entityManagerMock       = $this->createMock(EntityManagerInterface::class);
+        $notificationServiceMock = $this->createMock(NotificationService::class);
 
         // Create an instance of ChatService with the mocks
         $chatService = new ChatService(
             $messageRepositoryMock,
             $formFactoryMock,
             $entityManagerMock,
-            $validatorMock,
-            $defaultStorageMock
+            $notificationServiceMock
         );
 
         return [[
@@ -66,11 +65,28 @@ class ChatServiceTest extends TestCase
     {
         // Mock Conversation and User
         $conversation = new Conversation();
-        $memberToRm   = new User();
+        $currentUser  = $this->createMock(User::class);
+        $memberToRm   = $this->createMock(User::class);
+        $conversation->addConversationMember($currentUser);
         $conversation->addConversationMember($memberToRm);
 
+        $memberToRm
+            ->expects($this->once())
+            ->method('getId')
+            ->willReturn(2137);
+
+        $memberToRm
+            ->expects($this->once())
+            ->method('getConversations')
+            ->willReturn(new ArrayCollection([$conversation]));
+
         // Call the method to be tested
-        $result = $chatService->removeMember($conversation, $memberToRm);
+        $result = $chatService->removeMember(
+            NotificationType::REMOVED_FROM_CONVERSATION,
+            $conversation,
+            $memberToRm,
+            $currentUser
+        );
 
         // Assert that the result is true (user was removed)
         $this->assertTrue($result);
@@ -82,9 +98,18 @@ class ChatServiceTest extends TestCase
     public function testChangeConversationName(ChatService $chatService): void
     {
         // Mock Conversation and User
-        $conversation = new Conversation();
-        $user         = new User();
-        $conversation->addConversationMember($user);
+        $conversation = $this->createMock(Conversation::class);
+        $user         = $this->createMock(User::class);
+
+        $conversation
+            ->expects($this->once())
+            ->method('getName')
+            ->willReturn('Old conversation name');
+
+        $user
+            ->expects($this->once())
+            ->method('getConversations')
+            ->willReturn(new ArrayCollection([$conversation]));
 
         // Call the method to be tested
         $result = $chatService->changeConversationName($conversation, 'New Name', $user);

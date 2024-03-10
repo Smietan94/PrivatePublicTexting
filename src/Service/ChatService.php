@@ -100,7 +100,7 @@ class ChatService
 
             match ($type) {
                 NotificationType::REMOVED_FROM_CONVERSATION => $this->notificationService->processConversationMemberRemoveNotification(
-                    $currentUser, // if currentUser is null that means
+                    $currentUser,
                     $memberToRm,
                     $conversation
                 ),

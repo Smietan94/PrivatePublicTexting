@@ -8,7 +8,6 @@ export default class extends Controller {
     static targets = ['imgCarouselModal', 'imgOutput'];
 
     async handleImgCarouselModal(event) {
-        console.log('afwfwf');
         const attachmentId = event.currentTarget.value;
 
         let response = await fetch(
@@ -25,14 +24,7 @@ export default class extends Controller {
     }
 
     async getImg(event) {
-        let btnList   = document.getElementById('mix-carousel-imgs-list');
-        let activeBtn = btnList.querySelector('.nopadding.active');
-
-        if (activeBtn) {
-            activeBtn.classList.remove('active');
-        }
-
-        event.currentTarget.classList.add('active');
+        this.processActiveImgButton(event);
 
         const attachmentId = event.currentTarget.value;
 
@@ -42,5 +34,16 @@ export default class extends Controller {
         );
 
         this.imgOutputTarget.innerHTML = await response.text();
+    }
+
+    processActiveImgButton(event) {
+        let btnList   = document.getElementById('mix-carousel-imgs-list');
+        let activeBtn = btnList.querySelector('.nopadding.active');
+
+        if (activeBtn) {
+            activeBtn.classList.remove('active');
+        }
+
+        event.currentTarget.classList.add('active');
     }
 }

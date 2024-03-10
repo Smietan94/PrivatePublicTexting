@@ -202,15 +202,17 @@ class MessageService
      * mercureUpdater
      *
      * @param  string       $topic
-     * @param  Conversation $conversationId
+     * @param  Conversation $conversation
      * @return void
      */
     public function messageMercureUpdater(string $topic, Conversation $conversation): void
     {
+        $conversationId = $conversation->getId();
+
         $update = new Update(
-            sprintf($topic, $conversation->getId()),
+            sprintf($topic, $conversationId),
             json_encode([
-                'conversationId' => $conversation->getId()
+                'conversationId' => $conversationId
             ]),
             true
         );

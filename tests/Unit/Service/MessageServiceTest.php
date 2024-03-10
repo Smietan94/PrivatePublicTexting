@@ -15,6 +15,7 @@ use App\Repository\UserRepository;
 use App\Service\MessageAttachmentService;
 use App\Service\MessageService;
 use App\Service\NotificationService;
+use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -280,10 +281,10 @@ class MessageServiceTest extends TestCase
             ->expects($this->once())
             ->method('getData')
             ->willReturn([
-                'friends' => array_map(
+                'friends' => new ArrayCollection(array_map(
                     fn() => new User(),
                     range(0, 3)
-                ),
+                )),
                 'conversationName' => 'KlusiasFriends',
                 'senderId'         => 2137,
                 'message'          => 'siema siema'

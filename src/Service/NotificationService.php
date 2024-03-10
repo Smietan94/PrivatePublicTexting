@@ -18,6 +18,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Collections\Order;
+use Exception;
 use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Pagerfanta;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -249,12 +250,12 @@ class NotificationService
     /**
      * processConversationMemberRemoveNotification
      *
-     * @param  User         $currentUser
-     * @param  User         $removedUser
-     * @param  Conversation $conversation
-     * @return void
+     * @param  User          $currentUser
+     * @param  User          $removedUser
+     * @param  Conversation  $conversation
+     * @return Notification[]
      */
-    public function processConversationMemberRemoveNotification(User $currentUser, User $removedUser, Conversation $conversation): void
+    public function processConversationMemberRemoveNotification(User $currentUser, User $removedUser, Conversation $conversation): array
     {
         $notifications    = [];
         $format           = NotificationType::REMOVED_FROM_CONVERSATION->getMessage();
@@ -281,22 +282,24 @@ class NotificationService
                 )
             );
         }
+
+        return $notifications;
     }
 
     /**
      * processNameChangeNotification
      *
-     * @param  User         $currentUser
-     * @param  Conversation $conversation
-     * @param  string       $oldConversationName
-     * @return void
+     * @param  User          $currentUser
+     * @param  Conversation  $conversation
+     * @param  string        $oldConversationName
+     * @return Notification[]
      */
-    public function processNameChangeNotification(User $currentUser, Conversation $conversation, string $oldConversationName): void
+    public function processNameChangeNotification(User $currentUser, Conversation $conversation, string $oldConversationName): array
     {
         $notifications       = [];
         $format              = NotificationType::CONVERSATION_NAME_CHANGED->getMessage();
-        $newConversationName = $conversation->getName();
         $currentUserName     = $currentUser->getUsername();
+        $newConversationName = $conversation->getName();
         $conversationId      = $conversation->getId();
 
         foreach ($conversation->getConversationMembers() as $receiver) {
@@ -316,36 +319,37 @@ class NotificationService
                 )
             );
         }
+
+        return $notifications;
     }
 
     /**
      * processNewConversationMemberAdditionNotification
      *
-     * @param  User         $currentUser
-     * @param  User[]       $newMembers
-     * @param  Conversation $conversation
-     * @return void
+     * @param  User          $currentUser
+     * @param  User[]        $newMembers
+     * @param  Conversation  $conversation
+     * @return Notification[]
      */
-    public function processNewConversationMemberAdditionNotification(User $currentUser, array $newMembers, Conversation $conversation): void
+    public function processNewConversationMemberAdditionNotification(User $currentUser, array $newMembers, Conversation $conversation): array
     {
         $notifications       = [];
-        $format              = NotificationType::ADDED_TO_CONVERSATION->getMessage();
         $currentUserName     = $currentUser->getUsername();
         $conversationName    = $conversation->getName();
         $conversationId      = $conversation->getId();
         $newMembersUsernames = array_map(fn ($user) => $user->getUsername(), $newMembers);
         $processedUsernames  = $this->processNewMembersNames($newMembersUsernames);
+        $conversationMembers = $conversation->getConversationMembers();
 
-        foreach ($conversation->getConversationMembers() as $receiver) {
-            if (!in_array($receiver, $newMembers)) {
-                $message = match (true) {
-                    $receiver === $currentUser => sprintf($format, 'You', $processedUsernames, $conversationName),
-                    default                    => sprintf($format, $currentUserName, $processedUsernames, $conversationName)
-                };
-            } else {
-                $usernames = $this->processNewMembersUsernamesWhenIsReceiver($newMembersUsernames, $receiver->getUsername());
-                $message   = sprintf($format, $currentUserName, $usernames, $conversationName);
-            }
+        foreach ($conversationMembers as $receiver) {
+            $message = $this->processMessageForMemberAdditionNotification(
+                $receiver,
+                $currentUser,
+                $newMembersUsernames,
+                $currentUserName,
+                $conversationName,
+                $processedUsernames
+            );
 
             array_push(
                 $notifications,
@@ -358,6 +362,8 @@ class NotificationService
                 )
             );
         }
+
+        return $notifications;
     }
 
     /**
@@ -419,7 +425,11 @@ class NotificationService
      */
     public function processFriendStatusNotification(NotificationType $type, User $sender, User $receiver, ?int $conversationId = null): Notification|array
     {
-        $format  = $type->getMessage();
+        $format = $type->getMessage();
+
+        if (!in_array($type, [NotificationType::FRIEND_REQUEST_ACCEPTED, NotificationType::FRIEND_REQUEST_DENIED, NotificationType::FRIEND_REQUEST_RECEIVED])) {
+            throw new Exception(sprintf('%s is invalid notification type.', $type->toString()), 400);
+        }
 
         if ($type === NotificationType::FRIEND_REQUEST_ACCEPTED) {
             return $this->processFriendAcceptNotification($type, [$sender, $receiver], $conversationId);
@@ -443,7 +453,7 @@ class NotificationService
      * @param  User[]           $friends
      * @return Notification[]
      */
-    public function processFriendAcceptNotification(NotificationType $type, array $friends, int $conversationId): array
+    private function processFriendAcceptNotification(NotificationType $type, array $friends, int $conversationId): array
     {
         $notifications = [];
 
@@ -517,7 +527,7 @@ class NotificationService
      * publishMercureUpdate
      *
      * @param  string|string[] $topics
-     * @param  array    $data
+     * @param  array           $data
      * @return void
      */
     private function publishMercureUpdate(string|array $topics, array $data): void
@@ -580,5 +590,42 @@ class NotificationService
         }
 
         return $newMembersUsernames[0];
+    }
+
+    /**
+     * processMessageForMemberAdditionNotification
+     * 
+     * @param User     $receiver
+     * @param User     $currentUser
+     * @param User[]   $newMembers
+     * @param string[] $newMembersUsernames
+     * @param string   $currentUserName
+     * @param string   $conversationName
+     * @param string   $processedUsernames
+     *
+     * @return string
+     */
+    private function processMessageForMemberAdditionNotification(
+        User   $receiver,
+        User   $currentUser,
+        array  $newMembersUsernames,
+        string $currentUserName,
+        string $conversationName,
+        string $processedUsernames,
+    ): string {
+        $format           = NotificationType::ADDED_TO_CONVERSATION->getMessage();
+        $receiverUsername = $receiver->getUsername();
+
+        if (!in_array($receiverUsername, $newMembersUsernames)) {
+            $message = match (true) {
+                $receiver === $currentUser => sprintf($format, 'You', $processedUsernames, $conversationName),
+                default                    => sprintf($format, $currentUserName, $processedUsernames, $conversationName)
+            };
+        } else {
+            $usernames = $this->processNewMembersUsernamesWhenIsReceiver($newMembersUsernames, $receiverUsername);
+            $message   = sprintf($format, $currentUserName, $usernames, $conversationName);
+        }
+
+        return $message;
     }
 }

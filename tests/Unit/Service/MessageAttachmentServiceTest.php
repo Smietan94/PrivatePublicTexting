@@ -56,12 +56,12 @@ class MessageAttachmentServiceTest extends TestCase
         $uploadedFile2
             ->expects($this->once())
             ->method('getClientMimeType')
-            ->willReturn('application/pdf');
+            ->willReturn('image/jpeg');
 
         $uploadedFile2
             ->expects($this->once())
             ->method('getClientOriginalExtension')
-            ->willReturn('pdf');
+            ->willReturn('jpg');
 
         $uploadedFile2
             ->expects($this->once())

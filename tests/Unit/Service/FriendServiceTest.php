@@ -10,6 +10,7 @@ use App\Enum\FriendStatus;
 use App\Repository\FriendHistoryRepository;
 use App\Repository\UserRepository;
 use App\Service\FriendsService;
+use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -21,12 +22,14 @@ class FriendServiceTest extends TestCase
         $userRepositoryMock          = $this->createMock(UserRepository::class);
         $friendHistoryRepositoryMock = $this->createMock(FriendHistoryRepository::class);
         $entityManagerMock           = $this->createMock(EntityManagerInterface::class);
+        $notificationServiceMock     = $this->createMock(NotificationService::class);
 
         return [[
             'FriendsService' => new FriendsService(
                 $userRepositoryMock,
                 $friendHistoryRepositoryMock,
-                $entityManagerMock
+                $entityManagerMock,
+                $notificationServiceMock
             ),
         ]];
     }
@@ -36,7 +39,8 @@ class FriendServiceTest extends TestCase
         return [[
             'userRepositoryMock'          => $this->createMock(UserRepository::class),
             'friendHistoryRepositoryMock' => $this->createMock(FriendHistoryRepository::class),
-            'entityManagerMock'           => $this->createMock(EntityManagerInterface::class)
+            'entityManagerMock'           => $this->createMock(EntityManagerInterface::class),
+            'notificationServiceMock'     => $this->createMock(NotificationService::class)
         ]];
     }
 
@@ -44,17 +48,19 @@ class FriendServiceTest extends TestCase
      * @dataProvider FriendsServiceDependencyProvider
      */
     public function testRemoveFriend(
-        UserRepository|MockObject $userRepositoryMock,
+        UserRepository|MockObject          $userRepositoryMock,
         FriendHistoryRepository|MockObject $friendHistoryRepositoryMock,
-        EntityManagerInterface|MockObject $entityManagerMock
+        EntityManagerInterface|MockObject  $entityManagerMock,
+        NotificationService                $notificationServiceMock
     ): void {
-        $user = new User();
-        $friend = new User();
-        $friendHistory = new FriendHistory();
+        $user           = new User();
+        $friend         = new User();
+        $friendHistory  = new FriendHistory();
         $friendsService = new FriendsService(
             $userRepositoryMock,
             $friendHistoryRepositoryMock,
-            $entityManagerMock
+            $entityManagerMock,
+            $notificationServiceMock
         );
 
         $this->assertFalse($user->getFriends()->contains($friend));

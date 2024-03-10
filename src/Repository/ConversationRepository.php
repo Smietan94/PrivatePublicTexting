@@ -35,11 +35,11 @@ class ConversationRepository extends ServiceEntityRepository
     /**
      * getFriendConversation
      *
-     * @param  User $user
+     * @param  User $currentUser
      * @param  User $friend
      * @return Conversation
      */
-    public function getFriendConversation(User $user, User $friend): ?Conversation
+    public function getFriendConversation(User $currentUser, User $friend): ?Conversation
     {
         $qb               = $this->entityManager->createQueryBuilder();
         $conversationType = ConversationType::SOLO->toInt();
@@ -56,7 +56,7 @@ class ConversationRepository extends ServiceEntityRepository
                 $qb->expr()->eq('c.status', ':status')
             ))
             ->setParameters([
-                'user'             => $user,
+                'user'             => $currentUser,
                 'friend'           => $friend,
                 'conversationType' => $conversationType,
                 'status'           => ConversationStatus::ACTIVE->toInt()
