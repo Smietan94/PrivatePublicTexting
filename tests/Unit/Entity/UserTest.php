@@ -7,6 +7,7 @@ namespace App\Tests\Unit\Entity;
 use App\Entity\Conversation;
 use App\Entity\FriendHistory;
 use App\Entity\FriendRequest;
+use App\Entity\Notification;
 use App\Entity\User;
 use App\Enum\UserStatus;
 use PHPUnit\Framework\TestCase;
@@ -15,11 +16,9 @@ class UserTest extends TestCase
 {
     public function userStatusProvider()
     {
-        yield [UserStatus::ACTIVE->toInt()];
-        yield [UserStatus::LOGGEDOUT->toInt()];
-        yield [UserStatus::INACTIVE->toInt()];
-        yield [UserStatus::SUSPENDED->toInt()];
-        yield [UserStatus::BANNED->toInt()];
+        foreach(UserStatus::cases() as $satus) {
+            yield [$satus->toInt()];
+        }
     }
 
     public function testSetAndGetPassword(): void
@@ -209,5 +208,31 @@ class UserTest extends TestCase
         $this->assertInstanceOf(\DateTimeInterface::class, $user->getCreatedAt());
         $this->assertInstanceOf(\DateTimeInterface::class, $user->getUpdatedAt());
         $this->assertInstanceOf(\DateTimeInterface::class, $user->getLastSeen());
+    }
+
+    public function testAddAndGetReceivedNotification(): void
+    {
+        $currentUser   = new User();
+        $notification1 = new Notification();
+        $notification2 = new Notification();
+
+        $currentUser->addReceivedNotification($notification1);
+        $currentUser->addReceivedNotification($notification2);
+
+        $this->assertSame(count($currentUser->getReceivedNotifications()), 2);
+        $this->assertContainsOnlyInstancesOf(Notification::class, $currentUser->getReceivedNotifications());
+    }
+
+    public function testAddAndGetSentNotification(): void
+    {
+        $currentUser   = new User();
+        $notification1 = new Notification();
+        $notification2 = new Notification();
+
+        $currentUser->addSentNotification($notification1);
+        $currentUser->addSentNotification($notification2);
+
+        $this->assertSame(count($currentUser->getSentNotifications()), 2);
+        $this->assertContainsOnlyInstancesOf(Notification::class, $currentUser->getSentNotifications());
     }
 }

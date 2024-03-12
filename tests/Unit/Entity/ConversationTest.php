@@ -7,6 +7,7 @@ namespace App\Tests\Unit\Entity;
 use App\Entity\Conversation;
 use App\Entity\Message;
 use App\Entity\User;
+use App\Enum\ConversationStatus;
 use App\Enum\ConversationType;
 use PHPUnit\Framework\TestCase;
 
@@ -117,8 +118,58 @@ class ConversationTest extends TestCase
 
         $conversation->setCreatedAt(new \DateTime());
         $conversation->setUpdatedAt(new \DateTime());
+        $conversation->setDeletedAt(new \DateTime());
 
         $this->assertInstanceOf(\DateTimeInterface::class, $conversation->getCreatedAt());
         $this->assertInstanceOf(\DateTimeInterface::class, $conversation->getUpdatedAt());
+        $this->assertInstanceOf(\DateTimeInterface::class, $conversation->getDeletedAt());
+    }
+
+    public function testCandAddAndOverrideLastMessage(): void
+    {
+        $conversation = new Conversation();
+        $message1     = new Message();
+        $message2     = new Message();
+        $message1text = 'text1';
+        $message2text = 'text2';
+
+        $message1->setMessage($message1text);
+        $message2->setMessage($message2text);
+
+        foreach ([$message1text => $message1, $message2text => $message2] as $text => $message) {
+            $conversation->setLastMessage($message);
+    
+            $this->assertSame($conversation->getLastMessage(), $message);
+            $this->assertSame($conversation->getLastMessage()->getMessage(), $message->getMessage());
+            $this->assertSame($text, $conversation->getLastMessage()->getMessage());
+            $this->assertSame($text, $message->getMessage());
+        }
+    }
+
+    /**
+     * @dataProvider groupConversationDataProvider
+     */
+    public function testCanSetConversationStatus(string $name, int $type, array $members): void
+    {
+        $conversation1 = new Conversation();
+        $conversation2 = new Conversation();
+        foreach([$conversation1, $conversation2] as $conversation) {
+            $conversation->setConversationType($type);
+            $conversation->setStatus(ConversationStatus::ACTIVE->toInt());
+        }
+        foreach($members as $member) {
+            $conversation1->addConversationMember($member);
+            $conversation2->addConversationMember($member);
+            $this->assertSame(count($member->getConversations()), 2);
+        }
+
+        $conversation2->setStatus(ConversationStatus::DELETED->toInt());
+
+        foreach($members as $member) {
+            $this->assertSame(count(array_filter(array_map(
+                fn ($conversation) => $conversation->getStatus() === ConversationStatus::ACTIVE->toInt() ? $conversation : null,
+                $member->getConversations()->toArray()
+            ))), 1);
+        }
     }
 }

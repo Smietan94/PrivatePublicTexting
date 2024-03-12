@@ -22,7 +22,7 @@ class NotificationsExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('function_name', [NotificationsExtensionRuntime::class, 'doSomething']),
+            new TwigFunction('getNotificationTypeString', [NotificationsExtensionRuntime::class, 'getNotificationTypeString']),
         ];
     }
 }

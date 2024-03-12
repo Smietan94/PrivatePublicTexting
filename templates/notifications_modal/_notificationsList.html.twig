@@ -9,6 +9,7 @@
             value="{{ notification.id }}"
             data-set-displayed="{{ notification.displayed }}"
             target="_top">
+                <small>{{ getNotificationTypeString(notification.notificationType) }}</small>
                 <div class="d-flex w-100 justify-content-between">
                     <h5 class="mb-1">{{ notification.message }}</h5>
                 </div>

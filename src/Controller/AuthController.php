@@ -50,6 +50,7 @@ class AuthController extends AbstractController
     /**
      * login
      *
+     * @param  Request            $request
      * @param  AutheticationUtils $authenticationUtils
      * @return Response
      */
@@ -58,7 +59,7 @@ class AuthController extends AbstractController
         name: RouteName::APP_LOGIN
     )]
     #[IsGranted('PUBLIC_ACCESS')]
-    public function login(AuthenticationUtils $authenticationUtils): Response
+    public function login(Request $request, AuthenticationUtils $authenticationUtils): Response
     {
         try {
             if ($this->security->isGranted('ROLE_USER')) {

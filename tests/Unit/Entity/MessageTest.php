@@ -6,6 +6,7 @@ namespace App\Tests\Unit\Entity;
 
 use App\Entity\Conversation;
 use App\Entity\Message;
+use App\Entity\MessageAttachment;
 use PHPUnit\Framework\TestCase;
 
 class MessageTest extends TestCase
@@ -17,7 +18,7 @@ class MessageTest extends TestCase
         $this->assertNull($message->getMessage());
 
         $message->setMessage('Hello, world!');
-        $this->assertEquals('Hello, world!', $message->getMessage());
+        $this->assertSame('Hello, world!', $message->getMessage());
     }
 
     public function testSetAndGetSenderId(): void
@@ -53,5 +54,19 @@ class MessageTest extends TestCase
 
         $this->assertInstanceOf(\DateTimeInterface::class, $message->getCreatedAt());
         $this->assertInstanceOf(\DateTimeInterface::class, $message->getUpdatedAt());
+    }
+
+    public function testAddAndGetMessageAttachment(): void
+    {
+        $message            = new Message();
+        $messageAttachment1 = new MessageAttachment();
+        $messageAttachment2 = new MessageAttachment();
+
+        $message->setAttachment(true);
+        $message->addMessageAttachment($messageAttachment1);
+        $message->addMessageAttachment($messageAttachment2);
+
+        $this->assertTrue($message->isAttachment());
+        $this->assertSame(count($message->getMessageAttachments()), 2);
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Form;
 
+use App\Validator\Password;
 use App\Validator\UniqueEmail;
 use App\Validator\UniqueUserName;
 use Symfony\Component\Form\AbstractType;
@@ -53,7 +54,15 @@ class RegisterFormType extends AbstractType
                     new UniqueEmail()
                 ]
             ])
-            ->add('password', PasswordType::class, $default_styling)
+            ->add('password', PasswordType::class, $default_styling + [
+                'constraints' => [
+                    new Password(),
+                    new Length([
+                        'min' => 8,
+                        'minMessage' => 'Your password should be at least {{ limit }} characters.'
+                    ])
+                ]
+            ])
             ->add('confirm_password', PasswordType::class, $default_styling)
             ->add('submit', SubmitType::class, [
                 'attr'  => [

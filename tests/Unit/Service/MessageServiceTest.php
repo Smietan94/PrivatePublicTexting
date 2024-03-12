@@ -311,7 +311,7 @@ class MessageServiceTest extends TestCase
         $this->assertArrayHasKey('messages', $result);
         $this->assertArrayHasKey('conversationId', $result);
         $this->assertArrayNotHasKey(1, $result);
-        $this->assertEquals(21, $result['conversationId']);
+        $this->assertSame(21, $result['conversationId']);
     }
 
     /**

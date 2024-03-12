@@ -342,9 +342,12 @@ class NotificationController extends AbstractController
     {
         $session = $this->requestStack->getSession();
 
-        $this->handleSortByDate($request, $session);
-        $this->handleNotificationFilter($request, $session);
-        $this->resetFilters($request, $session);
+        if (!$request->query->get('page')) {
+            $this->handleSortByDate($request, $session);
+            $this->handleNotificationFilter($request, $session);
+            $this->resetFilters($request, $session);
+        }
+
         $this->setSessionArgumentsIfNotSat($session);
 
         return $this->render($fileName, [

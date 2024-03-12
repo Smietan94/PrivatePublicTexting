@@ -48,7 +48,7 @@ class FriendRequestTest extends TestCase
         $this->assertNull($friendRequest->getStatus());
 
         $friendRequest->setStatus($status);
-        $this->assertEquals($status, $friendRequest->getStatus());
+        $this->assertSame($status, $friendRequest->getStatus());
     }
 
     public function testTimestamps(): void

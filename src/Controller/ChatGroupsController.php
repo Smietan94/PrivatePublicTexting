@@ -18,6 +18,7 @@ use App\Repository\UserRepository;
 use App\Service\ChatService;
 use App\Service\MessageAttachmentService;
 use App\Service\MessageService;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -199,6 +200,10 @@ class ChatGroupsController extends AbstractController
     {
         $conversationId = $request->get('remove_conversation')['conversationId'];
         $conversation   = $this->conversationRepository->find($conversationId);
+
+        if ($conversation->getConversationType() === ConversationType::SOLO->toInt()) {
+            throw new Exception('You can\'t delete solo conversation');
+        }
 
         if (in_array($conversation, $this->currentUser->getConversations()->toArray())) {
             $this->conversationRepository->conversationSoftDelete($this->currentUser, $conversation);

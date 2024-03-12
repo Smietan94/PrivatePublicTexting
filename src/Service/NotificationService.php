@@ -48,12 +48,11 @@ class NotificationService
     public function getNotificationsPager(int $page, User $currentUser, string $order, array $notificationsTypes): ?Pagerfanta
     {
         $sortedNotificationsList = $this->sortReceivedNotificationsCollection(
-            $currentUser->getReceivedNotifications(),
-            [
-                'order'             => $order,
-                'notificationTypes' => $notificationsTypes
-            ]
-        );
+            $currentUser->getReceivedNotifications(), [
+            'order'             => $order,
+            'notificationTypes' => $notificationsTypes
+        ]);
+
 
         if (count($sortedNotificationsList) === 0) {
             return null;

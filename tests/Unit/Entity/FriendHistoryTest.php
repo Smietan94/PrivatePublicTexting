@@ -48,7 +48,7 @@ class FriendHistoryTest extends TestCase
         $this->assertNull($friendHistory->getStatus());
 
         $friendHistory->setStatus($status);
-        $this->assertEquals($status, $friendHistory->getStatus());
+        $this->assertSame($status, $friendHistory->getStatus());
     }
 
     public function testTimestamps(): void

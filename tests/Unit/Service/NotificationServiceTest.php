@@ -383,7 +383,7 @@ class NotificationServiceTest extends TestCase
         );
 
         $this->assertIsArray($result);
-        $this->assertEquals(2, count($result));
+        $this->assertSame(2, count($result));
         $this->assertContainsOnlyInstancesOf(Notification::class, $result);
     }
 
