@@ -34,11 +34,11 @@
                 {% set activeConversationId = conversation.id %}
             {% endif %}
             <div class="card-header py-3">
-                {% include "chat_components/_searchConversationForm.html.twig" %}
+                {% include 'chat/chat_components/_searchConversationForm.html.twig' %}
             </div>
             <div name="group-conversations-list" id="conversations-list" data-conversation-target="conversationsList" class="card-body list-group-scroll mt-2 ps-3 pe-4 py-2">
                 {% if conversations %}
-                    {% include 'chat_groups/_searchConversationResults.html.twig' %}
+                    {% include 'chat/chat_groups/_searchConversationResults.html.twig' %}
                 {% else %}
                     You have no chat groups yet...
                 {% endif %}
@@ -54,12 +54,12 @@
             {% if conversations | length == 0 %}
                 <h5 class="mb-1">No Groups</h5>
             {% elseif createGroupForm is defined %}
-                {% include 'chat_groups/_createGroupConversationForm.html.twig' %}
+                {% include 'chat/chat_groups/_createGroupConversationForm.html.twig' %}
             {% else %}
-                {% include 'chat_groups/_conversation.html.twig'  %}
-                {% include 'chat_groups/_participantsListModal.html.twig' %}
-                {% include 'chat_groups/_conversationNameFormModal.html.twig' %}
-                {% include 'chat_groups/_conversationNewMembersModal.html.twig' %}
+                {% include 'chat/chat_groups/_conversation.html.twig'  %}
+                {% include 'chat/chat_groups/_participantsListModal.html.twig' %}
+                {% include 'chat/chat_groups/_conversationNameFormModal.html.twig' %}
+                {% include 'chat/chat_groups/_conversationNewMembersModal.html.twig' %}
             {% endif %}
         </div>
     </div>

@@ -23,12 +23,12 @@
     </div>
     <div class="card-body messenger-card list-group-msg-scroll">
         <div id="messages">
-            {% include 'chat_components/_message.html.twig' %}
+            {% include 'chat/chat_components/_message.html.twig' %}
         </div>
     </div>
         <turbo-frame id="message_form">
             <div class="card-footer messenger-card">
-                {% include 'chat_components/_messageForm.html.twig' %}
+                {% include 'chat/chat_components/_messageForm.html.twig' %}
             </div>
         </turbo-frame>
 {% else %}

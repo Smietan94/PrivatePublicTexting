@@ -5,6 +5,7 @@
     href="#"
     aria-expand="false"
     data-bs-toggle="dropdown"
+    data-bs-auto-close="false"
     aria-expanded="false">
         <i class="bi bi-person-lines-fill bi-user-icon me-2"></i>
         <span>
@@ -37,9 +38,24 @@
                 friend requests
             </a>
         </li>
+
         <li>
-            <a class="dropdown-item" href="#">settings</a>
+            <div class="dropdown">
+                <a class="btn-secondary dropdown-toggle dropdown-item"
+                href="#" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                    settings
+                </a>
+
+                <ul class="dropdown-menu dropdown-menu-end dropstart bg-light">
+                    <li><a class="dropdown-item" href="#" role="button">Change Password</a></li>
+                    <li><a id="toogle-change-username-modal" class="dropdown-item" href="#" role="button">Change Username</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" role="button">DELETE ACCOUNT</a></li>
+                </ul>
+            </div>
         </li>
+
         <li><hr class="dropdown-divider"></li>
         <li>
             <form action="{{ path(getRouteName('APP_LOGOUT')) }}" method="post">

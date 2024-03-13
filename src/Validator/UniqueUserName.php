@@ -18,5 +18,5 @@ class UniqueUserName extends Constraint
      * Any public properties become valid options for the annotation.
      * Then, use these in your validator class.
      */
-    public $message = 'User: "{{ value }}" already exists.';
+    public $message = 'Username: "{{ value }}" already in use.';
 }

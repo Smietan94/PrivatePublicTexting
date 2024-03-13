@@ -235,7 +235,7 @@ class ChatGroupsController extends AbstractController
         // creating forms
         [$messageForm, $searchForm, $addUsersForm] = $this->createChatForms($request, $groupConversation);
 
-        return $this->render('chat_groups/index.html.twig', [
+        return $this->render('chat/chat_groups/index.html.twig', [
             'conversationType' => ConversationType::GROUP->toInt(),
             'conversations'    => $groupConversations,
             'conversation'     => $groupConversation ?? null,

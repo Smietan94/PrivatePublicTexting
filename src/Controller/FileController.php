@@ -90,7 +90,7 @@ class FileController extends AbstractController
 
         $filename = $this->messageAttachmentRepository->find($attachmentId)->getFileName();
 
-        return $this->render('chat_components/_carouselImg.html.twig', [
+        return $this->render('chat/chat_components/_carouselImg.html.twig', [
             'attachmentId' => $attachmentId,
             'filename'     => $filename
         ]);
@@ -144,7 +144,7 @@ class FileController extends AbstractController
         $attachmentId = isset($jsonData['attachmentId']) ? (int) $jsonData['attachmentId']: null;
 
         // get page number where attachment is
-        return $this->render('chat_components/_imgCarouselModal.html.twig', [
+        return $this->render('chat/chat_components/_imgCarouselModal.html.twig', [
             'attachmentId' => $attachmentId,
             'attachments'  => $this->fileService->getAttachmentsPager(
                 (int) $request->query->get('page', 1),

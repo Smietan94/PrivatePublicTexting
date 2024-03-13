@@ -61,7 +61,7 @@ class NotificationController extends AbstractController
         $conversation = $this->conversationRepository->find((int) $jsonData['conversationId']);
         $lastMessage  = $conversation->getLastMessage();
 
-        return $this->render('chat_components/_messagePreview.html.twig', [
+        return $this->render('chat/chat_components/_messagePreview.html.twig', [
             'data' => [
                 'senderId' => $lastMessage->getSenderId(),
                 'message'  => substr($lastMessage->getMessage(), 0, 20)
@@ -90,7 +90,7 @@ class NotificationController extends AbstractController
         $conversation   = $this->conversationRepository->find($converastionId);
         $lastMessage    = $conversation->getLastMessage();
 
-        return $this->render('chat_groups/_conversationLabel.html.twig', [
+        return $this->render('chat/chat_groups/_conversationLabel.html.twig', [
             'data' => [
                 'conversationId'   => $converastionId,
                 'conversationName' => $conversation->getName(),
@@ -118,7 +118,7 @@ class NotificationController extends AbstractController
             true
         );
 
-        return $this->render('chat_components/_mercureEventSourceScriptTag.html.twig', [
+        return $this->render('chat/chat_components/_mercureEventSourceScriptTag.html.twig', [
             'createdGroupTopics' => $jsonData['data']
         ]);
     }
@@ -205,7 +205,7 @@ class NotificationController extends AbstractController
             $conversation->getConversationMembers()->toArray()
         );
 
-        return $this->render('chat_groups/_conversationMembersList.html.twig', [
+        return $this->render('chat/chat_groups/_conversationMembersList.html.twig', [
             'conversation'      => $conversation,
             'removeMemberForms' => $removeMemberForms,
             'currentUserId'     => $this->currentUser->getId()
@@ -265,7 +265,7 @@ class NotificationController extends AbstractController
     {
         return $this->processNotificationsModal(
             $request,
-            'notifications_modal/_notificationsList.html.twig'
+            '_notificationsList.html.twig'
         );
     }
 
@@ -283,7 +283,7 @@ class NotificationController extends AbstractController
     {
         return $this->processNotificationsModal(
             $request,
-            'notifications_modal/_notificationsModal.html.twig',
+            '_notificationsModal.html.twig',
             true
         );
     }
@@ -350,7 +350,7 @@ class NotificationController extends AbstractController
 
         $this->setSessionArgumentsIfNotSat($session);
 
-        return $this->render($fileName, [
+        return $this->render(sprintf('nav_dropdown/notifications_modal/%s', $fileName), [
             'notificationTypes' => $render ? NotificationType::cases(): null,
             'notifications'     => $this->notificationService->getNotificationsPager(
                 (int) $request->query->get('page', 1),

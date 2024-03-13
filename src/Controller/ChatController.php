@@ -172,7 +172,7 @@ class ChatController extends AbstractController
         $searchForm  = $this->chatService->createSearchForm();
         $messageForm = $this->processMessageForm($conversation, $request);
 
-        return $this->render('chat/index.html.twig', [
+        return $this->render('chat/chat_solo/index.html.twig', [
             'conversationType' => ConversationType::SOLO->toInt(),
             'conversation'     => $conversation,
             'conversations'    => $conversations,

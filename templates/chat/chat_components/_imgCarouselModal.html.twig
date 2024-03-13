@@ -13,7 +13,7 @@
                         {% for attachment in attachments %}
                         {% if attachmentId == attachment.id %}
                         {% set filename = attachment.filename %}
-                            {% include 'chat_components/_carouselImg.html.twig' %}
+                            {% include 'chat/chat_components/_carouselImg.html.twig' %}
                         {% endif %}
                         {% endfor %}
 

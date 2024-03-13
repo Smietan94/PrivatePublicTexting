@@ -119,7 +119,7 @@
                                     </a>
                                 </li>
                                 <li id="nav-drop-down" class="nav-item my-auto dropdown me-1">
-                                    {% include '_navDropDown.html.twig' %}
+                                    {% include 'nav_dropdown/_navDropDown.html.twig' %}
                                 </li>
                             </ul>
                         </div>
@@ -129,7 +129,7 @@
         </div>
         <div id="notifications-modal-container">
         </div>
-        {% include '_flashes.html.twig' %}
+        {% include 'flash_messages/_flashes.html.twig' %}
         {% block body %}{% endblock %}
 
         {% if topics is not defined %}

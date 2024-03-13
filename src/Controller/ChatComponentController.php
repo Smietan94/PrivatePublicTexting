@@ -56,11 +56,11 @@ class ChatComponentController extends AbstractController
         );
 
         $templatePrefix = match ($conversationType) {
-            ConversationType::SOLO->toInt()  => 'chat',
+            ConversationType::SOLO->toInt()  => 'chat_solo',
             ConversationType::GROUP->toInt() => 'chat_groups'
         };
 
-        return $this->render(sprintf('%s/_searchConversationResults.html.twig', $templatePrefix), [
+        return $this->render(sprintf('chat/%s/_searchConversationResults.html.twig', $templatePrefix), [
             'conversations'        => $conversations,
             'activeConversationId' => $request->query->get('convId')
         ]);
@@ -82,7 +82,7 @@ class ChatComponentController extends AbstractController
         $conversation = $this->conversationRepository->find($conversationId);
 
         // returning data to current user view
-        return $this->render('chat_components/_message.html.twig', [
+        return $this->render('chat/chat_components/_message.html.twig', [
             'conversation' => ['id' => $conversationId],
             'pager'       => $this->chatService->getMsgPager(
                 (int) $request->query->get('page', 1),

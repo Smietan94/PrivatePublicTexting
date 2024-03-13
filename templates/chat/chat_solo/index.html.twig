@@ -30,11 +30,11 @@
         <div class="col-xl-4 col-lg-5 col-sm-12 bg-light rounded card messenger-window">
             {% set activeConversationId = conversation.id %}
             <div class="card-header py-3">
-                {% include "chat_components/_searchConversationForm.html.twig" %}
+                {% include 'chat/chat_components/_searchConversationForm.html.twig' %}
             </div>
             <div id="conversations-list" data-conversation-target="conversationsList" class="card-body list-group-scroll mt-2 ps-3 pe-4 py-2">
                 {% if conversations %}
-                    {% include 'chat/_searchConversationResults.html.twig' %}
+                    {% include 'chat/chat_solo/_searchConversationResults.html.twig' %}
                 {% else %}
                     You have no friends... :---/////
                 {% endif %}
@@ -42,7 +42,7 @@
         </div>
         <div class="card col-xl-8 col-lg-7 col-sm-12 bg-light rounded messenger-window">
             {% if conversations %}
-                {{ include('chat/_conversation.html.twig') }}
+                {{ include('chat/chat_solo/_conversation.html.twig') }}
             {% endif %}
         </div>
     </div>

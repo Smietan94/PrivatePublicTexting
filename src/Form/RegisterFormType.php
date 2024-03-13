@@ -30,7 +30,7 @@ class RegisterFormType extends AbstractType
      * @return void
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
-    {   
+    {
         $default_styling = [
             'attr'       => ['class' => 'form-control form-control-lg'],
             'label_attr' => ['class' => 'form-label text-light']

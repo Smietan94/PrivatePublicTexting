@@ -12,7 +12,7 @@
             <div class="col-6">
                 <div class="border rounded-4 mb-2 bg-primary text-light p-3">
                     {% if message.attachment == true %}
-                        {% include 'chat_components/_attachment.html.twig' %}
+                        {% include 'chat/chat_components/_attachment.html.twig' %}
                     {% endif %}
                     <p class="text-start mx-2 message">{{ message.message }}</p>
                     <small class="text-start mx-2">{{ message.createdAt | date('d M, Y H:i') }}</small>
@@ -29,7 +29,7 @@
                 {% endif %}
                 <div class="border rounded-4 mb-2 bg-secondary p-3">
                     {% if message.attachment == true %}
-                    {% include 'chat_components/_attachment.html.twig' %}
+                    {% include 'chat/chat_components/_attachment.html.twig' %}
                     {% endif %}
                     <p class="text-start mx-2 message">{{ message.message }}</p>
                     <small class="text-start mx-2">{{ message.createdAt | date('d M, Y H:i') }}</small>
