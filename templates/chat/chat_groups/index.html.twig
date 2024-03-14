@@ -56,10 +56,10 @@
             {% elseif createGroupForm is defined %}
                 {% include 'chat/chat_groups/_createGroupConversationForm.html.twig' %}
             {% else %}
-                {% include 'chat/chat_groups/_conversation.html.twig'  %}
-                {% include 'chat/chat_groups/_participantsListModal.html.twig' %}
-                {% include 'chat/chat_groups/_conversationNameFormModal.html.twig' %}
-                {% include 'chat/chat_groups/_conversationNewMembersModal.html.twig' %}
+                {% include 'chat/chat_groups/_conversation.html.twig' %}
+                {% include 'chat/chat_groups/conversation_dropdown/_participantsListModal.html.twig' %}
+                {% include 'chat/chat_groups/conversation_dropdown/_conversationNameFormModal.html.twig' %}
+                {% include 'chat/chat_groups/conversation_dropdown/_conversationNewMembersModal.html.twig' %}
             {% endif %}
         </div>
     </div>

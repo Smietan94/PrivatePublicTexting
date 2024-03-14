@@ -9,7 +9,6 @@ use App\Entity\User;
 use App\Enum\UserStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
@@ -81,6 +80,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->entityManager->flush();
 
         return $user;
+    }
+
+    public function saveUpdates(User $currentUser): User
+    {
+        $this->entityManager->flush();
+        return $currentUser;
     }
 
     /**

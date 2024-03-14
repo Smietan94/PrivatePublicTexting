@@ -13,12 +13,9 @@ class FriendRequestTest extends TestCase
 {
     public function friendStatusProvider()
     {
-        yield [FriendStatus::PENDING->toInt()];
-        yield [FriendStatus::ACCEPTED->toInt()];
-        yield [FriendStatus::REJECTED->toInt()];
-        yield [FriendStatus::CANCELLED->toInt()];
-        yield [FriendStatus::EXPIRED->toInt()];
-        yield [FriendStatus::DELETED->toInt()];
+        foreach (FriendStatus::cases() as $friendStatus) {
+            yield [$friendStatus->toInt()];
+        }
     }
 
     public function testSetAndGetRequestingAndRequestedUser(): void

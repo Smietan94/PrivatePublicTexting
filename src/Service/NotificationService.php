@@ -10,6 +10,7 @@ use App\Entity\FriendRequest;
 use App\Entity\Notification;
 use App\Entity\User;
 use App\Enum\NotificationType;
+use App\Exception\InvalidNotificationTypeException;
 use App\Form\NotificationsFilterType;
 use App\Repository\NotificationRepository;
 use App\Twig\Runtime\ConversationMemberRuntime;
@@ -18,7 +19,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Collections\Order;
-use Exception;
 use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Pagerfanta;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -427,7 +427,7 @@ class NotificationService
         $format = $type->getMessage();
 
         if (!in_array($type, [NotificationType::FRIEND_REQUEST_ACCEPTED, NotificationType::FRIEND_REQUEST_DENIED, NotificationType::FRIEND_REQUEST_RECEIVED])) {
-            throw new Exception(sprintf('%s is invalid notification type.', $type->toString()), 400);
+            throw new InvalidNotificationTypeException(sprintf('%s is invalid notification type.', $type->toString()), 400);
         }
 
         if ($type === NotificationType::FRIEND_REQUEST_ACCEPTED) {

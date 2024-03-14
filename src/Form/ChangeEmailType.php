@@ -2,26 +2,28 @@
 
 namespace App\Form;
 
-use App\Validator\UniqueUserName;
+use App\Validator\UniqueEmail;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Email;
 
-class ChangeUsernameType extends AbstractType
+class ChangeEmailType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('new_username', TextType::class, [
+            ->add('new_email', TextType::class, [
                 'attr'        => ['class' => 'form-control'],
                 'label_attr'  => ['class' => 'form-label text-light'],
                 'constraints' => [
-                    new UniqueUserName()
+                    new Email(),
+                    new UniqueEmail()
                 ]
             ])
-            ->add('update_username', SubmitType::class, ['attr' => [
+            ->add('update_email', SubmitType::class, ['attr' => [
                 'class' => 'btn btn-primary w-100'
             ]])
         ;

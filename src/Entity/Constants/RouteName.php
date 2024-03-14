@@ -68,4 +68,10 @@ class RouteName
 
     // SEARCH CONTROLLER
     public const APP_SEARCH_USERS = 'app_search_users';
+
+    // SETTINGS CONTROLLER
+    public const APP_SETTINGS_CHANGE_EMAIL    = 'app_settings_change_email';
+    public const APP_SETTINGS_CHANGE_USERNAME = 'app_settings_change_username';
+    public const APP_SETTINGS_CHANGE_PASSWORD = 'app_settings_change_password';
+    public const APP_SETTINGS_DELETE_ACCOUNT  = 'app_settings_delete_account';
 }

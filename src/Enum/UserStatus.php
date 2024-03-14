@@ -11,6 +11,7 @@ enum UserStatus: int
     case INACTIVE  = 2;
     case SUSPENDED = 3;
     case BANNED    = 4;
+    case DELETED   = 5;
 
     /**
      * toString
@@ -24,6 +25,7 @@ enum UserStatus: int
             self::INACTIVE  => 'inactive',
             self::SUSPENDED => 'suspended',
             self::BANNED    => 'banned',
+            self::DELETED   => 'deleted',
             default         => 'active'
         };
     }
@@ -40,6 +42,7 @@ enum UserStatus: int
             self::INACTIVE  => 2,
             self::SUSPENDED => 3,
             self::BANNED    => 4,
+            self::DELETED   => 5,
             default         => 0
         };
     }

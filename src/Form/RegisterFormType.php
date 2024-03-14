@@ -63,7 +63,15 @@ class RegisterFormType extends AbstractType
                     ])
                 ]
             ])
-            ->add('confirm_password', PasswordType::class, $default_styling)
+            ->add('confirm_password', PasswordType::class, $default_styling + [
+                'constraints' => [
+                    new Password(),
+                    new Length([
+                        'min' => 8,
+                        'minMessage' => 'Your password should be at least {{ limit }} characters.'
+                    ])
+                ]
+            ])
             ->add('submit', SubmitType::class, [
                 'attr'  => [
                     'class' => 'btn btn-outline-light btn-lg px-5'

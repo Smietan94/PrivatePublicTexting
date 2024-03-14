@@ -6,11 +6,15 @@ namespace App\Security;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Doctrine\Security\User\EntityUserProvider;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
+use Symfony\Component\Security\Core\Exception\UserNotFoundException;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
 
-class UserProvider extends EntityUserProvider
+// class UserProvider extends EntityUserProvider
+class UserProvider implements UserProviderInterface, PasswordUpgraderInterface
 {
     public function __construct(
         private EntityManagerInterface $entityManager
@@ -27,6 +31,10 @@ class UserProvider extends EntityUserProvider
             ->getQuery()
             ->getOneOrNullResult();
 
+        if ($user === null) {
+            throw new UserNotFoundException();
+        }
+
         return $user;
     }
 
@@ -36,11 +44,18 @@ class UserProvider extends EntityUserProvider
             throw new UnsupportedUserException(sprintf('Invalid user class "%s".', get_class($user)));
         }
 
+        $user = $this->loadUserByIdentifier($user->getEmail());
+
         return $user;
     }
 
     public function supportsClass(string $class): bool
     {
         return $class === User::class;
+    }
+
+    public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
+    {
+        
     }
 }

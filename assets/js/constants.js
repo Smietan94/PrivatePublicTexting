@@ -61,6 +61,12 @@ const PHP_ROUTE_PATH = {
 
     // SEARCH CONTROLLER
     FRIENDS_SEARCH: '/search',
+
+    // SETTINGS CONTROLLER
+    SETTINGS_CHANGE_EMAIL:    '/settings/changeEmail',
+    SETTINGS_CHANGE_USERNAME: '/settings/changeUsername',
+    SETTINGS_CHANGE_PASSWORD: '/settings/changePassword',
+    SETTINGS_DELETE_ACCOUNT:  '/settings/deleteAccount',
 };
 
 const PHP_ROUTE_NAME = {
@@ -126,6 +132,12 @@ const PHP_ROUTE_NAME = {
 
     // SEARCH CONTROLLER
     APP_SEARCH_USERS: 'app_search_users',
+
+    // SETTINGS CONTROLLER
+    APP_SETTINGS_CHANGE_EMAIL:    'app_settings_change_email',
+    APP_SETTINGS_CHANGE_USERNAME: 'app_settings_change_username',
+    APP_SETTINGS_CHANGE_PASSWORD: 'app_settings_change_password',
+    APP_SETTINGS_DELETE_ACCOUNT:  'app_settings_delete_account',
 
     // ADDITIONAL PATHS
     EMPTY_PATH: '#',

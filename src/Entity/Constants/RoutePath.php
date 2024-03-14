@@ -69,6 +69,12 @@ class RoutePath
     // SEARCH CONTROLLER
     public const FRIENDS_SEARCH = '/search';
 
+    // SETTINGS CONTROLLER
+    public const SETTINGS_CHANGE_EMAIL    = '/settings/changeEmail';
+    public const SETTINGS_CHANGE_USERNAME = '/settings/changeUsername';
+    public const SETTINGS_CHANGE_PASSWORD = '/settings/changePassword';
+    public const SETTINGS_DELETE_ACCOUNT  = '/settings/deleteAccount';
+
     // ADDITIONAL PATHS
     public const EMPTY_PATH = '#';
 }

@@ -8,11 +8,11 @@ use App\Entity\Conversation;
 use App\Entity\Notification;
 use App\Entity\User;
 use App\Enum\NotificationType;
+use App\Exception\InvalidNotificationTypeException;
 use App\Repository\NotificationRepository;
 use App\Service\NotificationService;
 use App\Twig\Runtime\ConversationMemberRuntime;
 use Doctrine\Common\Collections\ArrayCollection;
-use Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Mercure\HubInterface;
@@ -417,8 +417,7 @@ class NotificationServiceTest extends TestCase
         $receiver         = $this->createMock(User::class);
         $conversationId   = 2137;
 
-        $this->expectException(Exception::class);
-        $this->expectExceptionCode(400);
+        $this->expectException(InvalidNotificationTypeException::class);
 
         $result = $notificationService->processFriendStatusNotification(
             $notificationType,
