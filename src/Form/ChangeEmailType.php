@@ -16,7 +16,7 @@ class ChangeEmailType extends AbstractType
     {
         $builder
             ->add('new_email', TextType::class, [
-                'attr'        => ['class' => 'form-control'],
+                'attr'        => ['class' => 'form-control mb-3'],
                 'label_attr'  => ['class' => 'form-label text-light'],
                 'constraints' => [
                     new Email(),

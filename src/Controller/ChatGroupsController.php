@@ -68,7 +68,8 @@ class ChatGroupsController extends AbstractController
         if (count($groupConversations) == 0) {
             $createGroupForm = $this->formFactory->create(CreateGroupConversationType::class);
             $this->addFlash('warning', 'You have no chat groups yet');
-            return $this->render('chat_groups/noConversations.html.twig', [
+
+            return $this->render('chat/chat_groups/noConversations.html.twig', [
                 'createGroupForm' => $createGroupForm->createView(),
             ]);
         }
@@ -108,6 +109,7 @@ class ChatGroupsController extends AbstractController
         // checks if user part of conversation group
         if (!$this->chatService->checkIfUserIsMemberOfConversation($groupConversation, $this->currentUser)) {
             $this->addFlash('warning', 'Invalid conversation');
+
             return $this->redirectToRoute(RouteName::APP_CHAT_GROUPS);
         }
 
@@ -147,7 +149,7 @@ class ChatGroupsController extends AbstractController
             return $this->redirectToRoute(RouteName::APP_CHAT_GROUP_CREATE);
         }
 
-        return $this->render('chat_groups/index.html.twig', [
+        return $this->render('chat/chat_groups/index.html.twig', [
             'conversationType' => ConversationType::GROUP->toInt(),
             'conversations'    => $groupConversations,
             'createGroupForm'  => $createGroupForm->createView(),
@@ -209,6 +211,7 @@ class ChatGroupsController extends AbstractController
             $this->conversationRepository->conversationSoftDelete($this->currentUser, $conversation);
 
             $this->addFlash('success', 'Conversation successfully deleted');
+
         } else {
             $this->addFlash('danger', 'You are not member of this conversation');
         }

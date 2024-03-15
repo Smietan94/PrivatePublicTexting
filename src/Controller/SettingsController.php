@@ -9,7 +9,9 @@ use App\Entity\Constants\RoutePath;
 use App\Entity\User;
 use App\Exception\MethodDoesNotExistException;
 use App\Form\ChangeEmailType;
+use App\Form\ChangePasswordType;
 use App\Form\ChangeUsernameType;
+use App\Form\DeleteAccountType;
 use App\Repository\UserRepository;
 use App\Service\SettingsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -87,6 +89,56 @@ class SettingsController extends AbstractController
     }
 
     /**
+     * changePassword
+     *
+     * @param  Request $request
+     * @return Response
+     */
+    #[Route(
+        RoutePath::SETTINGS_CHANGE_PASSWORD,
+        name: RouteName::APP_SETTINGS_CHANGE_PASSWORD
+    )]
+    public function changePassword(Request $request): Response
+    {
+        $form = $this->settingsService->createSettingsForm(
+            ChangePasswordType::class,
+            $this->generateUrl(RouteName::APP_SETTINGS_CHANGE_PASSWORD)
+        );
+
+        return $this->handleCredentialsUpdate(
+            $request,
+            $form,
+            '_changePasswordFormModal.html.twig',
+            'updatePassword'
+        );
+    }
+
+    /**
+     * deleteAccount
+     *
+     * @param  Request $request
+     * @return Response
+     */
+    #[Route(
+        RoutePath::SETTINGS_DELETE_ACCOUNT,
+        name: RouteName::APP_SETTINGS_DELETE_ACCOUNT
+    )]
+    public function deleteAccount(Request $request): Response
+    {
+        $form = $this->settingsService->createSettingsForm(
+            DeleteAccountType::class,
+            $this->generateUrl(RouteName::APP_SETTINGS_DELETE_ACCOUNT)
+        );
+
+        return $this->handleCredentialsUpdate(
+            $request,
+            $form,
+            '_deleteAccountFormModal.html.twig',
+            'processUserSoftDelete'
+        );
+    }
+
+    /**
      * handleCredentialsUpdate
      *
      * @param  Request       $request
@@ -95,11 +147,23 @@ class SettingsController extends AbstractController
      * @param  string        $method
      * @return Response
      */
-    private function handleCredentialsUpdate(Request $request, FormInterface $form, string $filename, string $method): Response
+    private function handleCredentialsUpdate(Request $request, FormInterface $form, string $filename, string $method): ?Response
     {
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
+
+            if (isset($data['new_password']) && $data['new_password'] !== $data['confirm_password']) {
+                $this->addFlash('warning', 'Passwords are not the same!');
+
+                return $this->redirectToRoute(RouteName::APP_HOME);
+            }
+
+            if (isset($data['user_id']) && !($this->currentUser->getId() === (int) $data['user_id'])) {
+                $this->addFlash('warning', 'Invalid user data');
+
+                return $this->redirectToRoute(RouteName::APP_HOME);
+            }
 
             // check if method exists if not throw exception
             if (!method_exists(SettingsService::class, $method)) {

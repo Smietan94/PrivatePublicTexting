@@ -32,4 +32,8 @@ class Constant
     // RESIZED IMG CONSTS
     public const MAX_RESIZED_WIDTH  = 200;
     public const MAX_RESIZED_HEIGHT = 150;
+
+    // USER
+    public const DELETED_USER_NAME_FORMAT  = 'chat_user_%s';
+    public const DELETED_USER_EMAIL_FORMAT = 'chat_user_email_(%s)_%s';
 }

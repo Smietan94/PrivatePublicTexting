@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Security;
 
 use App\Entity\User;
+use App\Enum\UserStatus;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
@@ -27,7 +28,11 @@ class UserProvider implements UserProviderInterface, PasswordUpgraderInterface
             ->getRepository(User::class)
             ->createQueryBuilder('u')
             ->where('LOWER(u.email) = :email')
-            ->setParameter('email', strtolower($email))
+            ->andWhere('u.status != :status')
+            ->setParameters([
+                'email'  => strtolower($email),
+                'status' => UserStatus::DELETED->toInt()
+            ])
             ->getQuery()
             ->getOneOrNullResult();
 

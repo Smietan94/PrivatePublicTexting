@@ -61,26 +61,42 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
      */
     public function store(array $data): User
     {
-        $user           = new User();
-        $hashedPassword = $this->passwordHasher->hashPassword(
-            $user,
-            $data['password']
-        );
+        $user = new User();
 
         $user->setEmail($data['email']);
         $user->setUsername($data['user_name']);
         $user->setName($data['name']);
-        $user->setPassword($hashedPassword);
         $user->setStatus(UserStatus::ACTIVE->toInt());
         $user->setLastSeen(new \DateTime());
 
-        $this->upgradePassword($user, $hashedPassword);
+        $this->upgradePassword(
+            $user,
+            $data['password']
+        );
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
         return $user;
     }
+
+    /**
+     * upgradePassword
+     *
+     * @param  User   $user
+     * @param  string $newPassword
+     * @return void
+     */
+    public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newPassword): void
+    {
+        $newHashedPassword = $this->passwordHasher->hashPassword(
+            $user,
+            $newPassword
+        );
+
+        $user->setPassword($newHashedPassword);
+    }
+
 
     public function saveUpdates(User $currentUser): User
     {
@@ -192,15 +208,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ]);
     }
 
-    // public function getUserReceivedNotificationsQueryBuilder(User $currentUser): array
-    // {
-    //     $qb = $this->entityManager->createQueryBuilder();
-
-    //     $qb->select('partial u.{receivedNotifications}')
-    //         ->from(User::class, 'u')
-    //         ->andWhere($qb->expr()->eq('u', ':currentUser'))
-    // }
-
     /**
      * getNotConversationMemberFriends
      *
@@ -223,10 +230,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ])
             ->getQuery()
             ->getResult();
-    }
-
-    public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
-    {
     }
 
 //    /**

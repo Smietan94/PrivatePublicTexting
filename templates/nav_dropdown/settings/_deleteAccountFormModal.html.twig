@@ -1,15 +1,22 @@
 <div class="modal fade rounded-5" id="delete-account-form-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content" >
+            {{ form_start(form) }}
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Are You sure about this?</h1>
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Are You sure You want to delete Your account?</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                <div class="row">
+                    <div class="col-6">
+                        {{ form_widget(form.user_id, {'value': app.user.id}) }}
+                        {{ form_widget(form.delete_account, {'label': 'YES...'}) }}
+                    </div>
+                    <div class="col-6"><button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">NO!!!</button></div>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
+            {{ form_end(form) }}
         </div>
     </div>
 </div>
