@@ -1,6 +1,7 @@
 import { PHP_ROUTE_PATH }       from "../constants";
 import { processFetchPOSTInit } from "./basicStuffService";
 
+// handles starting mercure event source
 function startEventSource(url) {
     let eventSource = new EventSource(url, {
         withCredentials: true
@@ -17,12 +18,14 @@ function startEventSource(url) {
     return eventSource;
 }
 
+// checks if event source already exists by topics comparison
 function checkLastEventSource(topic, activeEventSource) {
     let activeTopic = activeEventSource.url.split("?")[1];
 
     return activeTopic == topic;
 }
 
+// renders message in messages list
 async function processMessage(conversationId) {
     const resultTarget = document.getElementById('messages');
 
@@ -43,6 +46,7 @@ async function processMessage(conversationId) {
     }
 }
 
+// handles conversation member remove
 function confirmMemberRemove(button, event) {
     var memberId     = button.getAttribute('data-member-id');
     var username     = document.querySelector(`.username_${ memberId }`).innerHTML;
@@ -54,6 +58,7 @@ function confirmMemberRemove(button, event) {
     }
 }
 
+// starting event source or closing old and creating new one if fail eventsource check
 function manageEventSource(eventSourceFunction, eventSource, topic, url) {
     if (!eventSource) {
         eventSource = eventSourceFunction(url);
@@ -65,8 +70,10 @@ function manageEventSource(eventSourceFunction, eventSource, topic, url) {
     return eventSource;
 }
 
+// handles sending message by enter
 function processEnterSendMessage() {
-    let messageFormTextarea = document.querySelector('textarea[name="message[message]"]');
+    // let messageFormTextarea = document.querySelector('textarea[name="message[message]"]');
+    let messageFormTextarea = document.getElementById('message-textarea');
 
     if (messageFormTextarea) {
         messageFormTextarea.addEventListener(
@@ -76,14 +83,16 @@ function processEnterSendMessage() {
     }
 }
 
+// validates message form and sumbitting it with enter btn
 function msgFormTextareaEventListenerFunction(event) {
     const isTextAWhitespaceString = str => !str.replace(/\s/g, '').length
-    let messageFormTextarea       = document.querySelector('textarea[name="message[message]"]');
+    let messageFormTextarea       = document.getElementById('message-textarea');
 
     messageFormTextarea.setCustomValidity('');
     if (event.keyCode == 13 && !event.shiftKey) {
         event.preventDefault();
-        let messageForm = document.querySelector('form[name="message"]');
+        // let messageForm = document.querySelector('form[name="message"]');
+        let messageForm = document.getElementById('message-form');
         if (isTextAWhitespaceString(messageFormTextarea.value)) {
             messageFormTextarea.setCustomValidity('fill in this field.');
         } else {

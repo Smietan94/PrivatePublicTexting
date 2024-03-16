@@ -63,8 +63,7 @@ class MessageType extends AbstractType
             ]])
             ->add('sendMessage', SubmitType::class, [
                 'attr' => [
-                    'class' => 'btn btn-primary px-4',
-                    'id' => 'send-msg-button'
+                    'class' => 'btn btn-primary px-4'
                 ],
                 'label' =>'
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">

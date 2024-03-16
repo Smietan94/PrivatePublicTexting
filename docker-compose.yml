@@ -6,9 +6,10 @@ services:
       context: ""
       dockerfile: Dockerfile
       args:
-        USER_ID: '${WWWUSER:-1000}'
-        GROUP_ID: '${WWWGROUP:-1000}'
-        USER: '${USER:-whoami}'
+        USER_ID: '${WWWUSER}'
+        GROUP_ID: '${WWWGROUP}'
+        # USER: '${USER:-whoami}'
+        USER: '${USER}'
     container_name: PrivatePublicTexting-app
     restart: always
     working_dir: /var/www/
@@ -31,12 +32,12 @@ services:
 ###> doctrine/doctrine-bundle ###
   database:
     container_name: PrivatePublicTexting-db
-    image: postgres:${POSTGRES_VERSION:-15}-alpine
+    image: postgres:${POSTGRES_VERSION}-alpine
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-app}
+      POSTGRES_DB: ${POSTGRES_DB}
       # You should definitely change the password in production
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-root}
-      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
     volumes:
       - database_data:/var/lib/postgresql/data:rw
       # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
@@ -49,8 +50,8 @@ services:
     restart: unless-stopped
     environment:
       SERVER_NAME: ':80'
-      MERCURE_PUBLISHER_JWT_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZXJjdXJlIjp7InB1Ymxpc2giOlsiKiJdfX0.aPRnF9ln5n7LZ1eO79coKGuVnKb_Ex9kpIcyeE6hNIM'
-      MERCURE_SUBSCRIBER_JWT_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZXJjdXJlIjp7InB1Ymxpc2giOlsiKiJdfX0.aPRnF9ln5n7LZ1eO79coKGuVnKb_Ex9kpIcyeE6hNIM'
+      MERCURE_PUBLISHER_JWT_KEY: ${MERCURE_JWT_SECRET_DEVELOPMENT}
+      MERCURE_SUBSCRIBER_JWT_KEY: ${MERCURE_JWT_SECRET_DEVELOPMENT}
       # Set the URL of your Symfony project (without trailing slash!) as value of the cors_origins directive
       MERCURE_EXTRA_DIRECTIVES: |
         cors_origins http://127.0.0.1:8000

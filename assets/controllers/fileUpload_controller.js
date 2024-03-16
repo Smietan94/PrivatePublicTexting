@@ -4,6 +4,7 @@ import { FILE_UPLOAD } from '../js/constants';
 export default class extends Controller {
     static targets = ['output'];
 
+    // updloaded imgs previews handling
     handleFilePreview(event) {
         let messageFormTextarea = document.querySelector('textarea[name="message[message]"]');
         messageFormTextarea.setCustomValidity('');
@@ -18,6 +19,7 @@ export default class extends Controller {
         }
     }
 
+    // renders uploaded files previews
     processFilesPreview(files) {
         let previewsContainer = document.getElementById('updated-files-previews-container');
 
@@ -46,6 +48,7 @@ export default class extends Controller {
         });
     }
 
+    // removing unwanted attachment
     deleteUnwantedAttachment(event) {
         let previewIndex = event.currentTarget.value;
         let fileInput    = document.getElementById('message_attachment');

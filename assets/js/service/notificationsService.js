@@ -1,18 +1,21 @@
 import { PHP_ROUTE_PATH, ACTIVITY_STATUS }          from "../constants";
 import { reloadFriendCardDiv, processRequestsList } from "./friendService";
-import { handleNotificationsModal, processFetchPOSTInit }                     from "./basicStuffService";
+import { processFetchPOSTInit }                     from "./basicStuffService";
 
+// start main notification event source its receives events and act by it
 function startActiveNotificationChannelEventSource(url) {
-    let eventSource       = new EventSource(url, {
+    let eventSource = new EventSource(url, {
         withCredentials: true
     });
 
     console.log('Active notification channel event source started');
 
+    // after logging in sets activity status
     eventSource.onopen = event => {
         setActivityStatus(ACTIVITY_STATUS.ACTIVE);
     }
 
+    // on message check action type
     eventSource.onmessage = event => {
         const data = JSON.parse(event.data);
 
@@ -63,10 +66,12 @@ function startActiveNotificationChannelEventSource(url) {
                 break;
         }
 
+        // updating notifications
         updateNotificationsNumber();
         updateNotificationsModal();
     }
 
+    // on error set activity status and reloading page
     eventSource.onerror = event => {
         setActivityStatus(ACTIVITY_STATUS.INACTIVE);
         processPageReload();
@@ -75,6 +80,7 @@ function startActiveNotificationChannelEventSource(url) {
     return eventSource;
 }
 
+// event source responsible for upfating message preview
 function startMessagePreviewEventSource(url) {
     let eventSource = new EventSource(url, {
         withCredentials: true
@@ -93,6 +99,7 @@ function startMessagePreviewEventSource(url) {
     return eventSource;
 }
 
+// starts event source for added conversation members
 function startConversationHelperEventSource(url) {
     let eventSource = new EventSource(url, {
         withCredentials: true
@@ -101,6 +108,7 @@ function startConversationHelperEventSource(url) {
     return eventSource;
 }
 
+// handles conversation members removal
 async function processConversationMemberRemoval(data) {
     let response = await fetch(
         PHP_ROUTE_PATH.REDIRECT_REMOVED_USER,
@@ -109,14 +117,18 @@ async function processConversationMemberRemoval(data) {
 
     let responseData = await response.json();
 
+    // checks if user currently on conversation page
     if (document.getElementById(`conversation-${ data.conversationId }-name`)) {
+        // if current user is deleted from conversation it is redirect to groups page
         if (responseData.currentUserId == responseData.removedUserId) {
             window.location.href = PHP_ROUTE_PATH.GROUPS;
 
         } else {
+            // if no deleted user then remove btn is removed
             removeUserRemoveButton(responseData.removedUserId);
         }
 
+    // if user in another conversation lebel is removed
     } else if (responseData.currentUserId == responseData.removedUserId) {
         removeConversationLabel(responseData.conversationId);
     }
@@ -129,20 +141,24 @@ async function setActivityStatus(activityStatusCode) {
     );
 }
 
+// process removing conversation
 async function processConversationRemove(conversationId) {
     await fetch(
         PHP_ROUTE_PATH.PROCESS_CONVERSATION_REMOVE,
         processFetchPOSTInit({removedConversationId: conversationId})
     );
 
+    // if member on conversation then redirect to groups page
     if (document.getElementById(`conversation-${ conversationId }-name`)) {
         window.location.href = PHP_ROUTE_PATH.GROUPS;
 
+    // if not then label remove
     } else if (document.getElementsByName('group-conversations-list')) {
         removeConversationLabel(conversationId);
     }
 }
 
+// updates conversations list if current user added to conversastion, else members list update
 async function processGroupConversationLabel(convId, isConversationUpdate = false) {
     let groupConversationsList = document.getElementsByName('group-conversations-list')[0];
 
@@ -173,6 +189,7 @@ async function processGroupConversationLabel(convId, isConversationUpdate = fals
     }
 }
 
+// real time conversation label update
 async function processMessagePreview(conversationId) {
     let messagePreviewElement = document.getElementById(`conversation-${ conversationId }-last-message`);
 
@@ -197,6 +214,7 @@ async function processMessagePreview(conversationId) {
     }
 }
 
+// reloading notifications number in nav dropdown
 async function updateNotificationsNumber() {
     let navDropDown = document.getElementById('nav-drop-down');
 
@@ -208,6 +226,7 @@ async function updateNotificationsNumber() {
     navDropDown.innerHTML = await response.text();
 }
 
+// reloading notifications modal
 async function updateNotificationsModal() {
     let notificationsModalContainer = document.getElementById('notifications-modal-container');
     let notificationsList           = notificationsModalContainer.querySelector('.list-group');
@@ -221,6 +240,7 @@ async function updateNotificationsModal() {
     setTimeout(() => handleNotificationTag(), 500);
 }
 
+// updating conversation members list
 async function updateConversationMembersList(convId) {
     let conversationMembersList = document.getElementById('conversation-members-list');
 
@@ -243,6 +263,7 @@ async function updateConversationMembersList(convId) {
     }
 }
 
+// setting notification display if its seen
 function setNotificationDisplayStatus(notificationTag) {
     if (notificationTag.dataset.listener === 'true' || notificationTag.getAttribute('data-set-displayed') === 1) {
         return;
@@ -267,6 +288,7 @@ function setNotificationDisplayStatus(notificationTag) {
     notificationTag.dataset.listener = 'true';
 }
 
+// handles all notifications
 function handleNotificationTag() {
     let notifications = document.querySelectorAll('.notifications-list-item');
     notifications.forEach(notificationTag => {
@@ -274,6 +296,7 @@ function handleNotificationTag() {
     });
 }
 
+// real time conversation name update
 function processConversationNameChange(data) {
     let conversationId   = data.conversationId;
     let conversationName = data.conversationName;
@@ -290,6 +313,7 @@ function processConversationNameChange(data) {
     }
 }
 
+// sort conversation labels from newest (order from newest message)
 function sortConversationLabels(conversationId) {
     let conversationsListDiv    = document.getElementById('conversations-list');
     let conversationLabelToMove = document.getElementById(`conversation-${ conversationId }`);

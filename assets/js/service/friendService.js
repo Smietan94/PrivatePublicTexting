@@ -3,11 +3,13 @@ import { PHP_ROUTE_PATH }    from "../constants";
 
 let friendRemoveEventSource = null;
 
+
 function removeFriend(rmFriendBtn) {
     if (rmFriendBtn.dataset.listener === 'true') {
         return;
     }
 
+    // creating event source to update removed friend
     const handleRemoveEventSource = function () {
         const friendRemoveScriptTag = document.getElementById(`mercure-friend-${ rmFriendBtn.value }-remove`);
 
@@ -50,6 +52,7 @@ function startFriendRemoveEventSource(url) {
     return eventSource;
 };
 
+// after removing friend, update theirs friend page
 async function reloadFriendCardDiv() {
     let friendsListDiv = document.getElementById('friends-list');
 
@@ -64,6 +67,7 @@ async function reloadFriendCardDiv() {
     friendsListDiv.innerHTML = await response.text();
 }
 
+// reloading requests page
 async function processRequestsList(elementId, url) {
     let friendsRequestsList = document.getElementById(elementId);
 
@@ -77,6 +81,7 @@ async function processRequestsList(elementId, url) {
 
     friendsRequestsList.innerHTML = await response.text();
 }
+
 
 function sortFriendsCards() {
     let friendsCardsListDiv = document.getElementById('friends-cards');

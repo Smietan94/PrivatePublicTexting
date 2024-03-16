@@ -10,6 +10,7 @@ export default class extends Controller {
 
     static targets = [ 'notificationsList' ];
 
+    // sort notifications in order by date
     async dateSortOrder(event) {
         const order = event.currentTarget.value;
 
@@ -28,6 +29,7 @@ export default class extends Controller {
         handleNotificationTag();
     }
 
+    // processing notifications by chosen filters
     async filterNotifications(event) {
         const notificationType = event.currentTarget.value;
         const params           = new URLSearchParams({
@@ -42,6 +44,7 @@ export default class extends Controller {
         handleNotificationTag();
     }
 
+    // reset notifications to deafault settings
     async resetNotificationsFilters(event) {
         const params = new URLSearchParams({
             resetNotificationsFilters: 1
@@ -54,6 +57,7 @@ export default class extends Controller {
         this.reloadNotificationsFiltersList();
     }
 
+    // resetting select form 
     async reloadNotificationsFiltersList() {
         let btn   = document.getElementById('set-date-order-btn');
         this.processDateOrderBtnIcon(btn, 'ASC');
@@ -69,6 +73,7 @@ export default class extends Controller {
         handleNotificationTag();
     }
 
+    // handles icon in sort by date button
     processDateOrderBtnIcon(btn, order) {
         let icon = btn.querySelector('i');
         console.log(order);

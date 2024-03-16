@@ -32,6 +32,7 @@ import {
 
 require('bootstrap');
 
+// setting event source variables to check them if event source established
 let activeNotificationChannel   = null;
 let activeMsgPreviewEventSource = null;
 let newGroupPreviewEventSource  = null;
@@ -40,6 +41,7 @@ let activeChatEventSource       = null;
 
 document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('turbo:load', function () {
+        console.log(2137);
         const scriptTag                    = document.getElementById('mercure-url');
         const selectNewMembers             = document.getElementById('add_users_to_conversation_users');
         const notificationChannelTag       = document.getElementById('mercure-notifications-url');
@@ -54,7 +56,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new Tooltip(tooltipTriggerEl));
 
         handleOffcanvasButtons(tooltipList);
-
         handleNotificationsModal();
 
         removeFriendsButtons.forEach(function(rmFriendBtn) {

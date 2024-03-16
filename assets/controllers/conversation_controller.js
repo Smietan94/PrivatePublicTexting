@@ -11,6 +11,7 @@ export default class extends Controller {
 
     static targets = ['result', 'groupConversationsList', 'conversationsList'];
 
+    // collecting topics to send updates for new conversation users
     async mercureEventSource(event) {
         let topics      = [];
         let scriptTagId = document.getElementById('mercureScriptTagId');
@@ -32,6 +33,7 @@ export default class extends Controller {
         this.resultTarget.innerHTML = await response.text();
     }
 
+    // searching conversations
     async searchConversation(event) {
         const conversationType   = document.getElementById('search_form_conversationType');
         const activeConversation = document.getElementById('search_form_activeConversation');
@@ -47,6 +49,7 @@ export default class extends Controller {
         this.conversationsListTarget.innerHTML = await respone.text();
     }
 
+    // creating new conversation
     async createGroup(event) {
         const respone = await fetch(`${this.url1Value}`);
         this.resultTarget.innerHTML = await respone.text();

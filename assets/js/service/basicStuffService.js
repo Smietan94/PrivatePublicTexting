@@ -2,13 +2,13 @@ import { Modal }                 from "bootstrap";
 import { PHP_ROUTE_PATH }        from "../constants";
 import { handleNotificationTag } from "./notificationsService";
 
+// handling rendering offcanvas
 function handleOffcanvasButtons(tooltipList) {
     const navbarOffcanvas  = document.getElementById('navbarSupportedContent');
     const navChats         = document.getElementById('nav-chats');
     const navGroupChats    = document.getElementById('nav-group-chats');
     const navFriends       = document.getElementById('nav-friends');
     const navSearchFriends = document.getElementById('nav-search-friends');
-
 
     const handleShowOffcanvas = () => navbarOffcanvas.addEventListener('show.bs.offcanvas', function () {
         navChats.innerHTML         = 'Chats';
@@ -38,6 +38,7 @@ function handleOffcanvasButtons(tooltipList) {
     }
 };
 
+// renders notifications modal
 async function handleNotificationsModal() {
     let notificationsModalContainer = document.getElementById('notifications-modal-container');
 
@@ -62,6 +63,7 @@ async function handleNotificationsModal() {
     }
 }
 
+// default ajax call headers
 function processFetchPOSTInit(data) {
     return {
         method: 'POST',

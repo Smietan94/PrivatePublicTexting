@@ -7,6 +7,7 @@ export default class extends Controller {
 
     static targets = ['result'];
 
+    // handles user search
     async onSearchInput(event) {
         const params = new URLSearchParams({
             q:       event.currentTarget.value,
