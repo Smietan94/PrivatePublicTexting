@@ -7,6 +7,7 @@ namespace App\Twig\Runtime;
 use App\Entity\Constants\Constant;
 use App\Entity\Conversation;
 use App\Entity\User;
+use App\Enum\UserStatus;
 use App\Repository\UserRepository;
 use Symfony\Bundle\SecurityBundle\Security;
 use Twig\Extension\RuntimeExtensionInterface;
@@ -54,5 +55,12 @@ class ConversationMemberRuntime implements RuntimeExtensionInterface
                 return sprintf(Constant::NOTIFICATIONS, $member->getId());
             }
         }, $members)));
+    }
+
+    public function friendIsDeleted(Conversation $conversation): bool
+    {
+        $receiver = $this->getReceiver($conversation);
+
+        return $receiver->getStatus() === UserStatus::DELETED->toInt();
     }
 }

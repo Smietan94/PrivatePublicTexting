@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Form;
 
 use App\Entity\User;
+use App\Enum\UserStatus;
 use App\Repository\UserRepository;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -50,11 +51,13 @@ class UserAutocompleteField extends AbstractType
                     ->select('partial u.{id, username}')
                     ->orderBy('u.username', 'ASC')
                     ->andWhere('u.username != :username')
+                    ->andWhere('u.status != :status')
                     ->andWhere(
                         $qb->expr()->isMemberOf(':user', 'u.friends')
                     )
                     ->setParameters([
                         'username' => $username,
+                        'status'   => UserStatus::DELETED->toInt(),
                         'user'     => $currentUser
                     ]);
             },

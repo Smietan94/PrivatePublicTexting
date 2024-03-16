@@ -1,6 +1,6 @@
 import { PHP_ROUTE_PATH, ACTIVITY_STATUS }          from "../constants";
 import { reloadFriendCardDiv, processRequestsList } from "./friendService";
-import { processFetchPOSTInit }                     from "./basicStuffService";
+import { handleNotificationsModal, processFetchPOSTInit }                     from "./basicStuffService";
 
 function startActiveNotificationChannelEventSource(url) {
     let eventSource       = new EventSource(url, {
@@ -218,6 +218,7 @@ async function updateNotificationsModal() {
     );
 
     notificationsList.innerHTML = await response.text();
+    setTimeout(() => handleNotificationTag(), 500);
 }
 
 async function updateConversationMembersList(convId) {
@@ -251,7 +252,6 @@ function setNotificationDisplayStatus(notificationTag) {
         setTimeout(() => {
             updateNotificationsModal();
             updateNotificationsNumber();
-            setTimeout(() => handleNotificationTag(), 500);
         }, 500);
     }
 

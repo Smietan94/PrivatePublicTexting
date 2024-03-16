@@ -12,21 +12,8 @@ export default class extends Controller {
 
     async dateSortOrder(event) {
         const order = event.currentTarget.value;
-        let   icon  = event.currentTarget.querySelector('i');
 
-        switch (true) {
-            case order == 'ASC':
-                event.currentTarget.value = 'DESC';
-                icon.classList.remove('bi-sort-up-alt');
-                icon.classList.add('bi-sort-down-alt');
-                break;
-
-            case order == 'DESC':
-                event.currentTarget.value = 'ASC';
-                icon.classList.remove('bi-sort-down-alt');
-                icon.classList.add('bi-sort-up-alt');
-                break;
-        }
+        this.processDateOrderBtnIcon(event.currentTarget, order);
 
         const newOrder = event.currentTarget.value;
         const params   = new URLSearchParams({
@@ -68,6 +55,9 @@ export default class extends Controller {
     }
 
     async reloadNotificationsFiltersList() {
+        let btn   = document.getElementById('set-date-order-btn');
+        this.processDateOrderBtnIcon(btn, 'ASC');
+
         let notificationsFiltersList = document.getElementById('notifications-filters-list');
 
         let response = await fetch(
@@ -77,5 +67,23 @@ export default class extends Controller {
 
         notificationsFiltersList.innerHTML = await response.text();
         handleNotificationTag();
+    }
+
+    processDateOrderBtnIcon(btn, order) {
+        let icon = btn.querySelector('i');
+        console.log(order);
+        switch (true) {
+            case order == 'ASC':
+                btn.value = 'DESC';
+                icon.classList.remove('bi-sort-up-alt');
+                icon.classList.add('bi-sort-down-alt');
+                break;
+
+            case order == 'DESC':
+                btn.value = 'ASC';
+                icon.classList.remove('bi-sort-down-alt');
+                icon.classList.add('bi-sort-up-alt');
+                break;
+        }
     }
 }

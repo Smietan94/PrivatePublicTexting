@@ -248,7 +248,7 @@ class NotificationController extends AbstractController
     )]
     public function getUnseenNotificationsNumber(Request $request): Response
     {
-        return $this->render('_navDropDown.html.twig');
+        return $this->render('nav_dropdown/_navDropDown.html.twig');
     }
 
     /**
@@ -325,7 +325,7 @@ class NotificationController extends AbstractController
     )]
     public function reloadNotificationsFiltersList(Request $request): Response
     {
-        return $this->render('notifications_modal/_notificationsFilterDropdown.html.twig', [
+        return $this->render('nav_dropdown/notifications_modal/_notificationsFilterDropdown.html.twig', [
             'notificationTypes' => NotificationType::cases()
         ]);
     }

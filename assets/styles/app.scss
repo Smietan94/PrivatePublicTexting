@@ -116,6 +116,24 @@ footer {
     box-shadow: 0px 0px 10px #{$primary}, inset 0px 0px 15px #{$primary};
 }
 
+.friends-list-container {
+    height: 50rem;
+    overflow: auto;
+    overflow-x: hidden;
+    scrollbar-color: #{$light} transparent !important;
+}
+
+.search-result-container {
+    height: 28rem;
+    overflow: auto;
+    scrollbar-color: #{$dark} transparent !important;
+}
+
+.form-control-no-focus:focus {
+    box-shadow: none !important;
+}
+
+.notifications-list-item-hover,
 .btn-start-conversation,
 .btn-friend-msg-list,
 .nav-hover-dropdown,
@@ -166,6 +184,14 @@ footer {
 .current-path-bordered {
     color: #{$light};
     box-shadow: 0px 0px 10px, inset 0px 0px 7px #{$light};
+}
+
+.notifications-list-item-hover:hover{
+    background-color: #{$dark};
+    color: #{$light};
+    box-shadow: 0px 0px 10px #{$dark};
+    -webkit-transition: all .4s;
+    transition: all .4s;
 }
 
 .current-conversation-border:hover,

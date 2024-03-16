@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Twig\Runtime;
 
+use App\Enum\UserStatus;
 use App\Repository\UserRepository;
 use Twig\Extension\RuntimeExtensionInterface;
 
@@ -14,8 +15,14 @@ class GetUsernameExtensionRuntime implements RuntimeExtensionInterface
     ) {
     }
 
-    public function userName($value)
+    public function userName(int $value)
     {
-        return $this->userRepository->find((int) $value)->getUsername();
+        $user = $this->userRepository->find($value);
+
+        if ($user->getStatus() === UserStatus::DELETED->toInt()) {
+            return 'Chat User';
+        } else {
+            return  $user->getUsername();
+        }
     }
 }

@@ -14,11 +14,11 @@
                     <div class="card-body row">
                         <div class="col">
                             <form action="{{ path(getRouteName('APP_FRIENDS_REMOVE')) }}" method="delete" id="remove-friend-{{ friend.id }}-form">
-                                <button type="submit" name="friendId" value="{{ friend.id }}" class="btn btn-dark btn-remove-friend" target="_top">Remove friend</button>
+                                <button type="submit" name="friendId" value="{{ friend.id }}" class="btn btn-secondary btn-remove-friend" target="_top">Remove friend</button>
                             </form>
                         </div>
                         <div class="col">
-                            <a href="{{ path(getRouteName('APP_CHAT'), {conversationId: friend|conversationId}) }}" class="btn btn-dark" target="_top">Send Message</a>
+                            <a href="{{ path(getRouteName('APP_CHAT'), {conversationId: friend|conversationId}) }}" class="btn btn-primary" target="_top">Send Message</a>
                         </div>
                     </div>
                     <script type="application/json" id="mercure-friend-{{ friend.id }}-remove">

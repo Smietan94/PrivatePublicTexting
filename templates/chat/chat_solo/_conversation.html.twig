@@ -7,8 +7,9 @@
                         {{ conversation.name }}
                     {% else %}
                         {% for member in conversation.conversationMembers %}
-                            {% if member.id != currentUserId %}
-                                {{ member.username }}
+                            {% set memberId = member.id %}
+                            {% if memberId != currentUserId %}
+                                {{ memberId|userName }}
                             {% endif %}
                         {% endfor %}
                     {% endif %}
@@ -28,7 +29,11 @@
     </div>
         <turbo-frame id="message_form">
             <div class="card-footer messenger-card">
-                {% include 'chat/chat_components/_messageForm.html.twig' %}
+                {% if friendIsDeleted(conversation) %}
+                    User does not exist
+                {% else %}
+                    {% include 'chat/chat_components/_messageForm.html.twig' %}
+                {% endif %}
             </div>
         </turbo-frame>
 {% else %}

@@ -1,5 +1,6 @@
-<div class="rounded-3 ">
+<div class="rounded-3 p-3 bg-light search-result-container">
     <ul class="list-group">
+    {% if users %}
         {% for user in users %}
             <li class="list-group-item bg-light">
                 <div class="row">
@@ -36,5 +37,8 @@
                 </div>
             </li>
         {% endfor %}
+    {% else %}
+        No results
+    {% endif %}
     </ul>
 </div>

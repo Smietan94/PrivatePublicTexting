@@ -3,7 +3,7 @@
         {% for notification in notifications %}
             {% set href = getHref(notification) %}
             <a href="{{ href }}"
-            class="list-group-item list-group-item-action notifications-list-item
+            class="rounded rounded-3 mb-2 border-dark border-top list-group-item list-group-item-action notifications-list-item notifications-list-item-hover
             {% if not notification.displayed %}active{% endif %}"
             aria-current="true"
             value="{{ notification.id }}"

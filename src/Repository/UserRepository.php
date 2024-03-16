@@ -202,9 +202,11 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                     $qB->expr()->like('LOWER(u.email)', ':searchTerm')
             ))
             ->andWhere('u.username != :username')
+            ->andWhere('u.status != :status')
             ->setParameters([
                 'searchTerm' => '%' . strtolower($searchTerm) . '%',
-                'username'   => $username
+                'username'   => $username,
+                'status'     => UserStatus::DELETED->toInt()
             ]);
     }
 
@@ -223,9 +225,11 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         return $qb->select('PARTIAL u.{id, username}')->from(User::class, 'u')
             ->andWhere(':user MEMBER OF u.friends')
+            ->andWhere('u.status != :status')
             ->andWhere(':conversation NOT MEMBER OF u.conversations')
             ->setParameters([
-                'user' => $currentUser,
+                'user'         => $currentUser,
+                'status'       => UserStatus::DELETED->toInt(),
                 'conversation' => $conversation
             ])
             ->getQuery()
