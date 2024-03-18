@@ -6,8 +6,8 @@ services:
       context: ""
       dockerfile: Dockerfile
       args:
-        USER_ID: '${WWWUSER}'
-        GROUP_ID: '${WWWGROUP}'
+        USER_ID: ${WWWUSER}
+        GROUP_ID: ${WWWGROUP}
         # USER: '${USER:-whoami}'
         USER: '${USER}'
     container_name: PrivatePublicTexting-app
