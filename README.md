@@ -12,8 +12,8 @@ This chat application is built with PHP 8 on the Symfony 6.4 framework. To estab
 2. Create a Docker container by running the following command in your terminal (remember! You use this command from your docker directory): _`docker-compose up -d --build`_
 3. Remember that configs in `.env ` are just variables use in development, before switching to production change them!!!
 4. Now open docker container _`docker exec -it PrivatePublicTexting-app bash`_
-4. Next install composer _`composer install`_
-5. You have to carry out migrations _`symfony console doctrine:migrations:migrate`_
+4. Install composer (and all dependecies) _`composer install`_
+5. Now You have to carry out migrations _`symfony console doctrine:migrations:migrate`_
 6. Last step is to take care of encore/webpack
     - exit docker container
     - install yarn _`yarn install`_

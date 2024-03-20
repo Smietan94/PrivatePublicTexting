@@ -70,7 +70,7 @@ class ChatGroupsController extends AbstractController
             $this->addFlash('warning', 'You have no chat groups yet');
 
             return $this->render('chat/chat_groups/noConversations.html.twig', [
-                'createGroupForm' => $createGroupForm->createView(),
+                'createGroupForm' => $createGroupForm,
             ]);
         }
 
@@ -152,8 +152,8 @@ class ChatGroupsController extends AbstractController
         return $this->render('chat/chat_groups/index.html.twig', [
             'conversationType' => ConversationType::GROUP->toInt(),
             'conversations'    => $groupConversations,
-            'createGroupForm'  => $createGroupForm->createView(),
-            'searchForm'       => $searchForm->createView()
+            'createGroupForm'  => $createGroupForm,
+            'searchForm'       => $searchForm
         ]);
     }
 
@@ -246,10 +246,10 @@ class ChatGroupsController extends AbstractController
                 (int) $request->query->get('page', 1),
                 $groupConversation
             ) ?? null,
-            'messageForm'  => $messageForm->createView(),
-            'searchForm'   => $searchForm->createView(),
-            'addUsersForm' => $addUsersForm->createView(),
-            'removeConversationForm'     => $this->chatService->createRemoveConversationForm()->createView(),
+            'messageForm'  => $messageForm,
+            'searchForm'   => $searchForm,
+            'addUsersForm' => $addUsersForm,
+            'removeConversationForm'     => $this->chatService->createRemoveConversationForm(),
             'changeConversationNameForm' => $this->chatService->getChangeConversationNameForm(),
             'removeMemberForms'          => $this->chatService->getRemoveConversationMemberForms(
                 $groupConversation->getConversationMembers()->toArray()

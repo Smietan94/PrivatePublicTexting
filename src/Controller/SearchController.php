@@ -43,7 +43,6 @@ class SearchController extends AbstractController
      */
     #[Route(
         RoutePath::FRIENDS_SEARCH,
-        methods: ['GET'],
         name: RouteName::APP_SEARCH_USERS
     )]
     public function index(Request $request): Response
@@ -56,8 +55,9 @@ class SearchController extends AbstractController
         }
 
         $form = $this->formFactory->create(SearchFormType::class);
+
         return $this->render('search/index.html.twig', [
-            'searchForm' => $form->createView(),
+            'searchForm' => $form,
         ]);
     }
 

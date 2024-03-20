@@ -6,9 +6,10 @@ export default class extends Controller {
 
     // updloaded imgs previews handling
     handleFilePreview(event) {
-        let messageFormTextarea = document.querySelector('textarea[name="message[message]"]');
+        let messageFormTextarea = document.getElementById('message-textarea');
         messageFormTextarea.setCustomValidity('');
         let files = event.currentTarget.files;
+        console.log(files);
         if (files) {
             if (files.length > FILE_UPLOAD.MAX_FILE_UPLOADS) {
                 messageFormTextarea.setCustomValidity(`Too much files, max file uploads = ${FILE_UPLOAD.MAX_FILE_UPLOADS}`);

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service;
 
-use App\Entity\Constants\Constant;
 use App\Entity\Message;
 use App\Entity\MessageAttachment;
 use App\Repository\MessageAttachmentRepository;
@@ -39,8 +38,15 @@ class FileServiceTest extends TestCase
     public function testReseizeImg(FileService $fileService): void
     {
         chdir(getcwd().'/public/');
+        $directory = '../var/storage/testFolder/';
+        // Check if the directory exists
+        if (!is_dir($directory)) {
+            // If not, create the directory
+            mkdir($directory);
+        }
+
         $image = imagecreatetruecolor(50, 50);
-        imagepng($image, '../var/storage/testFolder/fileName.png');
+        imagepng($image, $directory . 'fileName.png');
         $messageAttachment = $this->createMock(MessageAttachment::class);
 
         $messageAttachment
