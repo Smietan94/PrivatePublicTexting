@@ -20,13 +20,13 @@ final class Version20231205134819 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE messages ALTER attachment TYPE BOOLEAN');
+        $this->addSql('ALTER TABLE messages ALTER attachment TYPE BOOLEAN USING (attachment::boolean)');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE SCHEMA public');
-        $this->addSql('ALTER TABLE messages ALTER attachment TYPE INT');
+        $this->addSql('ALTER TABLE messages ALTER attachment TYPE INT USING (attachment::int)');
     }
 }
