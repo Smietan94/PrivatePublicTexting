@@ -8,7 +8,7 @@ use App\Validator\AttachmentValidator\AttachmentType;
 use App\Validator\AttachmentValidator\MaxFileUploads;
 use App\Validator\AttachmentValidator\UploadSize;
 use App\Validator\AttachmentValidator\FileName;
-use App\Validator\FileExtension;
+use App\Validator\AttachmentValidator\FileExtension;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
