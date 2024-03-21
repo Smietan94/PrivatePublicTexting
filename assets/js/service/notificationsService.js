@@ -64,53 +64,6 @@ function startActiveNotificationChannelEventSource(url) {
             }
         }
 
-        // switch (true) {
-        //     case !!data.messagePreview:
-        //         processMessagePreview(data.messagePreview.conversationId);
-        //         break;
-
-        //     case !!data.conversationId:
-        //         processGroupConversationLabel(data.conversationId);
-        //         break;
-
-        //     case !!data.conversationNameChangeData:
-        //         processConversationNameChange(data.conversationNameChangeData);
-        //         break;
-
-        //     case !!data.removedUserData:
-        //         processConversationMemberRemoval(data.removedUserData);
-        //         break;
-
-        //     case !!data.newConversationData:
-        //         processGroupConversationLabel(
-        //             data.newConversationData.conversationId,
-        //             data.newConversationData.isConversationUpdate
-        //         );
-        //         break;
-
-        //     case !!data.removedConversationId:
-        //         processConversationRemove(data.removedConversationId);
-        //         break;
-
-        //     case !!(data.friendRemoveData || data.acceptedFriendRequestId):
-        //         if (window.location.pathname == PHP_ROUTE_PATH.FRIENDS) {
-        //             reloadFriendCardDiv();
-        //         }
-        //         break;
-
-        //     case !!data.receivedFriendRequestId:
-        //         if (window.location.pathname == PHP_ROUTE_PATH.FRIENDS_REQUEST) {
-        //             processRequestsList('received-requests-list', PHP_ROUTE_PATH.RECEIVED_FRIENDS_REQUESTS);
-        //         }
-        //         break;
-
-        //     case !!(data.deniedFriendRequestId || data.acceptedFriendRequestId):
-        //         if (window.location.pathname == PHP_ROUTE_PATH.FRIENDS_REQUEST) {
-        //             processRequestsList('sent-requests-list', PHP_ROUTE_PATH.SENT_FRIENDS_REQUESTS);
-        //         }
-        //         break;
-        // }
-
         // updating notifications
         updateNotificationsNumber();
         updateNotificationsModal();
@@ -419,5 +372,7 @@ export {
     startActiveNotificationChannelEventSource,
     startConversationHelperEventSource,
     getNewMemberPreviewScriptTag,
-    handleNotificationTag
+    handleNotificationTag,
+    updateNotificationsNumber,
+    updateNotificationsModal,
 };

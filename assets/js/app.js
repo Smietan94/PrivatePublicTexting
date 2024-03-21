@@ -17,7 +17,9 @@ import {
     startMessagePreviewEventSource,
     startConversationHelperEventSource,
     getNewMemberPreviewScriptTag,
-    handleNotificationTag
+    handleNotificationTag,
+    updateNotificationsModal,
+    updateNotificationsNumber
 } from './service/notificationsService';
 import { 
     startEventSource,
@@ -167,6 +169,9 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         processEnterSendMessage();
+
+        updateNotificationsModal();
+        updateNotificationsNumber();
     });
 
     document.addEventListener('turbo:frame-render', function () {
@@ -178,5 +183,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         processEnterSendMessage();
         handleNotificationTag();
+
+        updateNotificationsModal();
+        updateNotificationsNumber();
     });
 });

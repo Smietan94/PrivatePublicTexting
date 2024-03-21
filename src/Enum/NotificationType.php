@@ -51,7 +51,7 @@ enum NotificationType: int
     {
         return match($this) {
             self::REMOVED_FROM_CONVERSATION => RoutePath::EMPTY_PATH,
-            self::LEFT_THE_CONVERSATION     => RouteName::APP_CHAT_GROUP,
+            self::LEFT_THE_CONVERSATION     => RoutePath::EMPTY_PATH,
             self::REMOVED_CONVERSATION      => RoutePath::EMPTY_PATH,
             self::ADDED_TO_CONVERSATION     => RouteName::APP_CHAT_GROUP,
             self::CONVERSATION_NAME_CHANGED => RouteName::APP_CHAT_GROUP,
