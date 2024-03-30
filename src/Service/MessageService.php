@@ -35,7 +35,7 @@ class MessageService
     }
 
     /**
-     * processMessage
+     * process message send
      *
      * @param  ?Conversation $conversation
      * @param  Request       $request
@@ -70,7 +70,6 @@ class MessageService
                 $conversation
             );
 
-            //TODO send message preview through notifications channel
             $this->notificationService->messagePreviewMercureUpdater($conversation);
 
             $result['success'] = true;
@@ -84,7 +83,7 @@ class MessageService
     }
 
     /**
-     * processGroupCreation
+     * process group create
      *
      * @param  Request $request
      * @param  User    $currentUser
@@ -132,7 +131,7 @@ class MessageService
     }
 
     /**
-     * processSuccedData
+     * process succed data
      *
      * @param  array        $data
      * @param  Conversation $conversation
@@ -178,7 +177,7 @@ class MessageService
     }
 
     /**
-     * messageFailure
+     * handle message failure
      *
      * @param  FormInterface $form
      * @param  array         $result
@@ -199,7 +198,7 @@ class MessageService
     }
 
     /**
-     * mercureUpdater
+     * mercure updater
      *
      * @param  string       $topic
      * @param  Conversation $conversation
@@ -222,7 +221,7 @@ class MessageService
     }
 
     /**
-     * processAttachments
+     * process message attachments
      *
      * @param  UploadedFile[] $dataAttachments
      * @param  string[]       $dataAttachmentPaths

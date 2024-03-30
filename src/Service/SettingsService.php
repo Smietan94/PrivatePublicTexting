@@ -27,7 +27,7 @@ class SettingsService
     }
 
     /**
-     * createChangeEmailForm
+     * create change email form
      *
      * @param  string $formType
      * @param  string $action
@@ -39,7 +39,7 @@ class SettingsService
     }
 
     /**
-     * updateEmail
+     * update email
      *
      * @param  User  $currentUser
      * @param  array $data
@@ -55,7 +55,7 @@ class SettingsService
     }
 
     /**
-     * updateUsername
+     * update username
      *
      * @param  User  $currentUser
      * @param  array $data
@@ -71,7 +71,7 @@ class SettingsService
     }
 
     /**
-     * updatePassword
+     * update password
      *
      * @param  User  $currentUser
      * @param  array $data
@@ -88,6 +88,13 @@ class SettingsService
         return $currentUser;
     }
 
+    /**
+     * process user soft delete
+     *
+     * @param  User  $currentUser
+     * @param  array $data
+     * @return User
+     */
     public function processUserSoftDelete(User $currentUser, array $data): User
     {
         $nameHelper  = (new \DateTime())->format('dmYHisu');
@@ -118,7 +125,7 @@ class SettingsService
 
         $session = new Session();
         $session->invalidate();
-        // przemyśleć jak to zaimplementować
+
         return $currentUser;
     }
 }

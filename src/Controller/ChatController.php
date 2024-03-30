@@ -47,7 +47,7 @@ class ChatController extends AbstractController
     }
 
     /**
-     * index
+     * main solo chat page
      *
      * @param  Request $request
      * @return Response
@@ -115,7 +115,7 @@ class ChatController extends AbstractController
     }
 
     /**
-     * startConversation
+     * handles new solo conversation
      *
      * @param  Request $request
      * @return Response
@@ -154,7 +154,7 @@ class ChatController extends AbstractController
     }
 
     /**
-     * processResponse
+     * process response for index and chat
      *
      * @param  Request        $request
      * @param  ?Conversation  $conversation
@@ -186,7 +186,7 @@ class ChatController extends AbstractController
     }
 
     /**
-     * checkIfFriends
+     * checks if in friends list
      *
      * @param  User $friend
      * @return bool
@@ -198,7 +198,7 @@ class ChatController extends AbstractController
     }
 
     /**
-     * checkIfConversationAlreadyExists
+     * chcecks if conversation already exists
      *
      * @param  User $friend
      * @return bool
@@ -215,7 +215,7 @@ class ChatController extends AbstractController
     }
 
     /**
-     * processMessage
+     * process message
      *
      * @param  Conversation $conversation
      * @param  Request      $request
@@ -237,7 +237,7 @@ class ChatController extends AbstractController
     }
 
     /**
-     * processFailedAttachmentUpload
+     * process any errors during file upload
      *
      * @param  string[] $messages
      * @return void
@@ -250,7 +250,7 @@ class ChatController extends AbstractController
     }
 
     /**
-     * checkIfUsersConversation
+     * checks if current user is member of conversation
      *
      * @param  Conversation $conversation
      * @return bool

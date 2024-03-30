@@ -32,7 +32,7 @@ class FriendRequestRepository extends ServiceEntityRepository
     }
 
     /**
-     * setNewFriendRequest
+     * saves new friend request in database
      *
      * @param  User $user
      * @param  User $requestedUser
@@ -64,7 +64,7 @@ class FriendRequestRepository extends ServiceEntityRepository
     }
 
     /**
-     * getFriendRequest
+     * get friend request
      *
      * @param  User $currentUser
      * @param  User $requestedUser

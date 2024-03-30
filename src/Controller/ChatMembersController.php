@@ -33,7 +33,7 @@ class ChatMembersController extends AbstractController
     }
 
     /**
-     * removeUserFromConversation
+     * handles removing user from conversation
      *
      * @param  Request $request
      * @return Response
@@ -71,7 +71,7 @@ class ChatMembersController extends AbstractController
     }
 
     /**
-     * leaveConversation
+     * handles conversation left by current user
      *
      * @param  Request $request
      * @return Response
@@ -98,7 +98,7 @@ class ChatMembersController extends AbstractController
     }
 
     /**
-     * addNewConversationMembers
+     * handles new conversation members
      *
      * @param  Request $request
      * @return Response

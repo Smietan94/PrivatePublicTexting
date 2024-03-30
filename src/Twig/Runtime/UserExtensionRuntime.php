@@ -13,7 +13,13 @@ class UserExtensionRuntime implements RuntimeExtensionInterface
         // Inject dependencies if needed
     }
 
-    public function getFriendsTopics(User $user)
+    /**
+     * get friends mercure topics
+     *
+     * @param  mixed $user
+     * @return string[]
+     */
+    public function getFriendsTopics(User $user): array
     {
         $friends = $user->getFriends()->toArray();
         return array_map(

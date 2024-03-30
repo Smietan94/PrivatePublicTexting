@@ -62,7 +62,7 @@ class SearchController extends AbstractController
     }
 
     /**
-     * processSearch
+     * process user search
      *
      * @param  string $searchTerm
      * @return Response

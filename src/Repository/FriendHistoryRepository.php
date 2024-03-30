@@ -31,7 +31,7 @@ class FriendHistoryRepository extends ServiceEntityRepository
     }
 
     /**
-     * getFriendHistory
+     * get friend history
      *
      * @param  User $currentUser
      * @param  User $friend

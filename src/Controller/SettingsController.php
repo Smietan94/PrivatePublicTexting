@@ -39,7 +39,7 @@ class SettingsController extends AbstractController
     }
 
     /**
-     * handleChangeEmail
+     * handles email change
      *
      * @param  Request $request
      * @return Response
@@ -64,7 +64,7 @@ class SettingsController extends AbstractController
     }
 
     /**
-     * handleUsernameChange
+     * handles username change
      *
      * @param  Request $request
      * @return Response
@@ -89,7 +89,7 @@ class SettingsController extends AbstractController
     }
 
     /**
-     * changePassword
+     * handles change password
      *
      * @param  Request $request
      * @return Response
@@ -114,7 +114,7 @@ class SettingsController extends AbstractController
     }
 
     /**
-     * deleteAccount
+     * handles account soft delete
      *
      * @param  Request $request
      * @return Response
@@ -139,7 +139,7 @@ class SettingsController extends AbstractController
     }
 
     /**
-     * handleCredentialsUpdate
+     * handles credetials update (renders flash message after succesfull update)
      *
      * @param  Request       $request
      * @param  FormInterface $form

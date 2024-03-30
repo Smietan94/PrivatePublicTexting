@@ -22,7 +22,7 @@ class FriendsService
     }
 
     /**
-     * getHowLongFriends
+     * get how long users are friends
      *
      * @param  User $currentUser
      * @return array
@@ -48,7 +48,7 @@ class FriendsService
     }
 
     /**
-     * removeFriend
+     * remove user from friends list
      *
      * @param  User $currentUser
      * @param  User $friendToRm
@@ -75,7 +75,7 @@ class FriendsService
     }
 
     /**
-     * getSentFriendsHistory
+     * get whole sent friend history
      *
      * @param  FriendHistory[] $friendsSentHistory
      * @return array
@@ -88,7 +88,7 @@ class FriendsService
     }
 
     /**
-     * getReceivedFriendsNames
+     * get whole received friend history
      *
      * @param  FriendHistory[] $receivedFriendsHistory
      * @return array
@@ -101,7 +101,7 @@ class FriendsService
     }
 
     /**
-     * getDates
+     * retrieves all dates when user accepted request
      *
      * @param  FriendHistory[] $friendHistory
      * @return \DateTime[] array

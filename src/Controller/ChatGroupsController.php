@@ -47,7 +47,7 @@ class ChatGroupsController extends AbstractController
     }
 
     /**
-     * index
+     * main group chat page
      *
      * @param  Request $request
      * @return Response
@@ -82,7 +82,7 @@ class ChatGroupsController extends AbstractController
     }
 
     /**
-     * groupChat
+     * group chat
      *
      * @param  Request $request
      * @param  int     $conversationId
@@ -121,7 +121,7 @@ class ChatGroupsController extends AbstractController
     }
 
     /**
-     * createChatGroup
+     * handles new group conversation creation
      *
      * @param  Request $request
      * @return Response
@@ -158,7 +158,7 @@ class ChatGroupsController extends AbstractController
     }
 
     /**
-     * processConversationNameChangeForm
+     * process change of conversation name
      *
      * @param  Request $request
      * @return Response
@@ -188,8 +188,7 @@ class ChatGroupsController extends AbstractController
     }
 
     /**
-     * removeConversation
-     * performs soft delete of conversation by setting the 
+     * performs soft delete of conversation
      * 
      * @param  Request $request
      * @return Response
@@ -220,7 +219,7 @@ class ChatGroupsController extends AbstractController
     }
 
     /**
-     * processResponse
+     * process response for index and chat
      *
      * @param  Request        $request
      * @param  ?Conversation  $groupConversation
@@ -258,7 +257,7 @@ class ChatGroupsController extends AbstractController
     }
 
     /**
-     * createChatForms
+     * creates main forms for chat conversation
      *
      * @param  Request      $request
      * @param  Conversation $conversation
@@ -282,7 +281,7 @@ class ChatGroupsController extends AbstractController
     }
 
     /**
-     * processGroupCreationForm
+     * process new chat creation form
      *
      * @param  Request $request
      * @return array
@@ -297,7 +296,7 @@ class ChatGroupsController extends AbstractController
     }
 
     /**
-     * processMessage
+     * message processing
      *
      * @param  Conversation $conversation
      * @param  Request      $request
@@ -317,7 +316,7 @@ class ChatGroupsController extends AbstractController
     }
 
     /**
-     * processFailedAttachmentUpload
+     * process error message if failed attachment upload
      *
      * @param  string[] $messages
      * @param  string   $prefix

@@ -32,7 +32,7 @@ class ChatService
     }
 
     /**
-     * getMsgPager
+     * get message pager
      *
      * @param  int          $page
      * @param  Conversation $conversation
@@ -50,7 +50,7 @@ class ChatService
     }
 
     /**
-     * getRemoveConversationMemberForms
+     * creates array of remove user forms for all conversation members
      *
      * @param  User[] $conversationMembers
      * @return array
@@ -72,7 +72,7 @@ class ChatService
     }
 
     /**
-     * getChangeConversationNameForm
+     * creates change conversation name form
      *
      * @return FormInterface
      */
@@ -82,7 +82,7 @@ class ChatService
     }
 
     /**
-     * removeMember
+     * removes member from conversation
      *
      * @param  NotificationType $type
      * @param  Conversation     $conversation
@@ -121,7 +121,7 @@ class ChatService
     }
 
     /**
-     * changeConversationName
+     * updates conversation name
      *
      * @param  Conversation $conversation
      * @param  string       $conversationName
@@ -150,7 +150,7 @@ class ChatService
     }
 
     /**
-     * createAddUsersForm
+     * creates new conversation members form
      *
      * @param  int $conversationId
      * @param  int $userId
@@ -165,7 +165,7 @@ class ChatService
     }
 
     /**
-     * createSearchForm
+     * creates search form
      *
      * @return FormInterface
      */
@@ -175,7 +175,7 @@ class ChatService
     }
 
     /**
-     * createRemoveConversationForm
+     * creates remove conversation form
      *
      * @return FormInterface
      */
@@ -185,7 +185,7 @@ class ChatService
     }
 
     /**
-     * createGroupCreationForm
+     * creates new group conversation form
      *
      * @return FormInterface
      */
@@ -195,7 +195,7 @@ class ChatService
     }
 
     /**
-     * checkIfUserIsMemberOfConversation
+     * check if user is on conversation members list
      *
      * @param  Conversation $conversation
      * @param  User         $user

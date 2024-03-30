@@ -35,7 +35,7 @@ class ChatComponentController extends AbstractController
     }
 
     /**
-     * processConversationSearch
+     * process conversation search
      *
      * @param  Request $request
      * @return Response
@@ -67,7 +67,7 @@ class ChatComponentController extends AbstractController
     }
 
     /**
-     * handleMessage
+     * handles messages render on message window
      *
      * @param  Request $request
      * @return Response

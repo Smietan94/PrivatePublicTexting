@@ -22,6 +22,12 @@ class UserProvider implements UserProviderInterface, PasswordUpgraderInterface
     ) {
     }
 
+    /**
+     * loads user by email but case insensitive
+     *
+     * @param  mixed $email
+     * @return UserInterface
+     */
     public function loadUserByIdentifier(string $email): UserInterface
     {
         $user = $this->entityManager
@@ -43,6 +49,12 @@ class UserProvider implements UserProviderInterface, PasswordUpgraderInterface
         return $user;
     }
 
+    /**
+     * refreshing user if credentials changed
+     *
+     * @param  mixed $user
+     * @return UserInterface
+     */
     public function refreshUser(UserInterface $user): UserInterface
     {
         if (!$user instanceof User) {

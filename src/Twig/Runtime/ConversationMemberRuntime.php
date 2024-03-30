@@ -25,6 +25,12 @@ class ConversationMemberRuntime implements RuntimeExtensionInterface
         $this->currentUser = $this->userRepository->findOneBy(['username' => $username]);
     }
 
+    /**
+     * get conversation receiver
+     *
+     * @param  mixed $conversation
+     * @return User
+     */
     public function getReceiver(Conversation $conversation): User
     {
         $members = $conversation->getConversationMembers()->toArray();
@@ -37,6 +43,12 @@ class ConversationMemberRuntime implements RuntimeExtensionInterface
         return $member[0];
     }
 
+    /**
+     * get conversation receivers ids
+     *
+     * @param  mixed $conversation
+     * @return array
+     */
     public function getReceiversIds(Conversation $conversation): array
     {
         $members = $conversation->getConversationMembers()->toArray();
@@ -47,6 +59,12 @@ class ConversationMemberRuntime implements RuntimeExtensionInterface
         }, $members)));
     }
 
+    /**
+     * get mercure conversation topics
+     *
+     * @param  mixed $conversation
+     * @return array
+     */
     public function getConversationTopics(Conversation $conversation): array
     {
         $members = $conversation->getConversationMembers()->toArray();
@@ -57,6 +75,12 @@ class ConversationMemberRuntime implements RuntimeExtensionInterface
         }, $members)));
     }
 
+    /**
+     * check if user status is deleted
+     *
+     * @param  mixed $conversation
+     * @return bool
+     */
     public function friendIsDeleted(Conversation $conversation): bool
     {
         $receiver = $this->getReceiver($conversation);

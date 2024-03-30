@@ -35,7 +35,7 @@ class FriendController extends AbstractController
     }
 
     /**
-     * index
+     * main friends list method
      *
      * @param  Request $request
      * @return Response
@@ -50,7 +50,7 @@ class FriendController extends AbstractController
     }
 
     /**
-     * friendListReload
+     * updates friends list
      *
      * @param  Request $request
      * @return Response
@@ -65,7 +65,7 @@ class FriendController extends AbstractController
     }
 
     /**
-     * removeFriend
+     * remove friend
      *
      * @param  Request $request
      * @return Response
@@ -99,7 +99,7 @@ class FriendController extends AbstractController
     }
 
     /**
-     * processFriendsList
+     * process response for index and friends list update
      *
      * @param  Request $request
      * @param  string  $path
@@ -120,15 +120,4 @@ class FriendController extends AbstractController
             'friendsSince' => $this->friendsService->getHowLongFriends($currentUser), // collecting date of accepting friend request
         ]);
     }
-
-    // #[Route('/deleteUser')]
-    // public function del(): Response
-    // {
-    //     $this->entityManager->remove($this->currentUser);
-    //     $this->entityManager->flush();
-
-    //     $this->security->logout(false);
-
-    //     return $this->redirectToRoute('app_home');
-    // }
 }

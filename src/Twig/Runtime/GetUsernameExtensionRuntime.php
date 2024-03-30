@@ -15,7 +15,13 @@ class GetUsernameExtensionRuntime implements RuntimeExtensionInterface
     ) {
     }
 
-    public function userName(int $value)
+    /**
+     * get username by user id
+     *
+     * @param  mixed $value
+     * @return string
+     */
+    public function userName(int $value): string
     {
         $user = $this->userRepository->find($value);
 

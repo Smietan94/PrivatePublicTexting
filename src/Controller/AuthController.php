@@ -48,7 +48,7 @@ class AuthController extends AbstractController
     }
 
     /**
-     * login
+     * login user
      *
      * @param  Request            $request
      * @param  AutheticationUtils $authenticationUtils
@@ -96,7 +96,7 @@ class AuthController extends AbstractController
     }
 
     /**
-     * register
+     * register user
      *
      * @param  Request $request
      * @return Response
@@ -125,7 +125,7 @@ class AuthController extends AbstractController
     }
 
     /**
-     * logout
+     * logout user
      *
      * @return Response
      */
@@ -139,7 +139,7 @@ class AuthController extends AbstractController
     }
 
     /**
-     * processRegisterForm
+     * process user register form
      *
      * @param  FormInterface $form
      * @return Response

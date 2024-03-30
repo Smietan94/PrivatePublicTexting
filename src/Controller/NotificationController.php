@@ -42,7 +42,7 @@ class NotificationController extends AbstractController
     }
 
     /**
-     * processMessagePreview
+     * update message preview
      *
      * @param  Request  $request
      * @return Response
@@ -70,7 +70,7 @@ class NotificationController extends AbstractController
     }
 
     /**
-     * processConversationLabelPreview
+     * updates conversation label
      *
      * @param  Request  $request
      * @return Response
@@ -101,7 +101,7 @@ class NotificationController extends AbstractController
     }
 
     /**
-     * createMercureEventSourceScriptTagForConversationLabel
+     * create new conversation mercure script tag
      *
      * @param  Request  $request
      * @return Response
@@ -124,7 +124,7 @@ class NotificationController extends AbstractController
     }
 
     /**
-     * redirectRemovedUser
+     * process removed removed from conversation user redirection
      *
      * @param  Request $request
      * @return Response
@@ -158,7 +158,7 @@ class NotificationController extends AbstractController
     }
 
     /**
-     * processConversationRemove
+     * process conversation remove
      *
      * @param  Request $request
      * @return Response
@@ -184,7 +184,7 @@ class NotificationController extends AbstractController
     }
 
     /**
-     * processConversationMembersList
+     * updates conversation members list
      *
      * @param  Request $request
      * @return Response
@@ -213,7 +213,7 @@ class NotificationController extends AbstractController
     }
 
     /**
-     * setActivityStatus
+     * set user activity status
      *
      * @param  Request $request
      * @return Response
@@ -237,7 +237,7 @@ class NotificationController extends AbstractController
     }
 
     /**
-     * getUnseenNotificationsNumber
+     * get number of unseen notifications
      * 
      * @param  Request $request
      * @return Response
@@ -252,7 +252,7 @@ class NotificationController extends AbstractController
     }
 
     /**
-     * reloadNotificationsModal
+     * reloads noifications modal
      *
      * @param  Request $request
      * @return Response
@@ -270,7 +270,7 @@ class NotificationController extends AbstractController
     }
 
     /**
-     * renderNotificationsModal
+     * rebders notification modal
      *
      * @param  Request $request
      * @return Response
@@ -289,8 +289,7 @@ class NotificationController extends AbstractController
     }
 
     /**
-     * 
-     * setNotificationDisplayStatus
+     * updates notification display status
      *
      * @param  Request $request
      * @return Response
@@ -314,7 +313,7 @@ class NotificationController extends AbstractController
     }
 
     /**
-     * reloadNotificationsFiltersList
+     * reloads notification filters list
      *
      * @param  Request $request
      * @return Response
@@ -331,7 +330,7 @@ class NotificationController extends AbstractController
     }
 
     /**
-     * processNotificationsModal
+     * process notification modal
      *
      * @param  Request $request
      * @param  string  $fileName
@@ -362,7 +361,7 @@ class NotificationController extends AbstractController
     }
 
     /**
-     * resetFilters
+     * reset notifications filters
      *
      * @param  Request $request
      * @param  Session $session
@@ -377,7 +376,7 @@ class NotificationController extends AbstractController
     }
 
     /**
-     * setSessionArgumentsIfNotSat
+     * set session arguments if not sat
      *
      * @param  Session $session
      * @return void
@@ -394,7 +393,7 @@ class NotificationController extends AbstractController
     }
 
     /**
-     * handleSortByDate
+     * handles notifications sort order by date
      *
      * @param  Request $request
      * @param  Session $session
@@ -409,7 +408,7 @@ class NotificationController extends AbstractController
     }
 
     /**
-     * handleNotificationFilter
+     * handle notifications filtering
      *
      * @param  Request $request
      * @param  Session $session

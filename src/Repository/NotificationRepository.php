@@ -29,7 +29,7 @@ class NotificationRepository extends ServiceEntityRepository
     }
 
     /**
-     * storeNotification
+     * save notification in db
      *
      * @param  int    $notificationType
      * @param  User   $sender
@@ -56,7 +56,7 @@ class NotificationRepository extends ServiceEntityRepository
     }
 
     /**
-     * getUnseenNotifications
+     * retrievs all unseen notifications
      *
      * @param  User $user
      * @return Notification[]
@@ -80,7 +80,7 @@ class NotificationRepository extends ServiceEntityRepository
     }
 
     /**
-     * setNotificationDisplayStatus
+     * sets notification display status
      *
      * @param  int $notificationId
      * @return Notification

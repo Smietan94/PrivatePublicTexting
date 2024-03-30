@@ -36,7 +36,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     /**
-     * changeActivityStatus
+     * updates user activity status
      *
      * @param  User $currentUser
      * @param  int  $status
@@ -54,7 +54,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     /**
-     * store
+     * saves new user in database
      *
      * @param  array $data
      * @return User
@@ -81,7 +81,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     /**
-     * upgradePassword
+     * updates password
      *
      * @param  User   $user
      * @param  string $newPassword
@@ -97,7 +97,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $user->setPassword($newHashedPassword);
     }
 
-
+    /**
+     * flushing user updates
+     *
+     * @param  mixed $currentUser
+     * @return User
+     */
     public function saveUpdates(User $currentUser): User
     {
         $this->entityManager->flush();
@@ -105,7 +110,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     /**
-     * getFriendsArray
+     * retrieves friends
      *
      * @param  User $user
      * @return User[] array
@@ -118,7 +123,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     /**
-     * checkPassword
+     * checks if valid password provided
      *
      * @param  array $data
      * @return bool
@@ -135,7 +140,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     /**
-     * loadUserByIdentifier
+     * load user by identifier
      *
      * @param  string $identifier
      * @return UserInterface
@@ -155,7 +160,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     /**
-     * getAllFriends
+     * retireves all friends
      *
      * @param  User $user
      * @return User[] array
@@ -168,7 +173,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     /**
-     * findUsers
+     * search users by username or email
      *
      * @param  string $searchTerm
      * @param  string $username
@@ -184,7 +189,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     /**
-     * findUsersQueryBuilder
+     * creates user search query builder
      *
      * @param  string $searchTerm
      * @param  string $username
@@ -211,7 +216,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     /**
-     * getNotConversationMemberFriends
+     * retrieves all friends which ARE NOT members of conversation
      *
      * @param  int          $userId
      * @param  Conversation $conversation

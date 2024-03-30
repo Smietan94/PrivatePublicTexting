@@ -39,7 +39,7 @@ class FriendRequestsController extends AbstractController
     }
 
     /**
-     * friendRequest
+     * main method for friends requests
      *
      * @return Response
      */
@@ -57,7 +57,7 @@ class FriendRequestsController extends AbstractController
     }
 
     /**
-     * renderReceivedRequests
+     * renders just received friends request
      *
      * @param  Request $request
      * @return Response
@@ -74,7 +74,7 @@ class FriendRequestsController extends AbstractController
     }
     
     /**
-     * renderSentRequests
+     * renders just sent requests
      *
      * @param  Request $request
      * @return Response
@@ -91,7 +91,7 @@ class FriendRequestsController extends AbstractController
     }
 
     /**
-     * sendFriendRequest
+     * sending request
      *
      * @param  Request $request
      * @return Response
@@ -120,7 +120,7 @@ class FriendRequestsController extends AbstractController
     }
 
     /**
-     * accept
+     * accept friend request
      *
      * @param  Request $request
      * @return Response
@@ -152,7 +152,7 @@ class FriendRequestsController extends AbstractController
     }
 
     /**
-     * deny
+     * deny friend request
      *
      * @param  Request $request
      * @return Response
@@ -189,7 +189,7 @@ class FriendRequestsController extends AbstractController
     }
 
     /**
-     * cancel
+     * cancel friend request
      *
      * @param  Request $request
      * @return Response
@@ -215,7 +215,7 @@ class FriendRequestsController extends AbstractController
     }
     
     /**
-     * preprocessFriendRequest
+     * preprocess friend request
      *
      * @param  Request $request
      * @param  string  $status

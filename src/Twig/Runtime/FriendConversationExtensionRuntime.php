@@ -21,6 +21,12 @@ class FriendConversationExtensionRuntime implements RuntimeExtensionInterface
         // Inject dependencies if needed
     }
 
+    /**
+     * get conversation id
+     *
+     * @param  mixed $friend
+     * @return int
+     */
     public function getConversationId(User $friend): int
     {
         $username     = $this->security->getUser()->getUserIdentifier();

@@ -20,7 +20,7 @@ class MessageAttachmentService
     }
 
     /**
-     * processAttachmentUpload
+     * process attachment upload
      *
      * @param  UploadedFile[] $files
      * @param  int            $senderId
@@ -49,7 +49,7 @@ class MessageAttachmentService
     }
 
     /**
-     * generateAttachmentName
+     * generates attachment name
      *
      * @param  int    $senderId
      * @param  string $extension
@@ -65,7 +65,7 @@ class MessageAttachmentService
     }
 
     /**
-     * processAttachmentsStore
+     * process saving all attachments data
      *
      * @param  UploadedFile[] $files
      * @param  string[]       $paths

@@ -33,7 +33,7 @@ class ConversationRepository extends ServiceEntityRepository
     }
 
     /**
-     * getFriendConversation
+     * get solo conversation of two users
      *
      * @param  User $currentUser
      * @param  User $friend
@@ -66,7 +66,7 @@ class ConversationRepository extends ServiceEntityRepository
     }
 
     /**
-     * getGroupConversations
+     * retrieves all users group conversations
      *
      * @param  User $currentUser
      * @param  int  $conversationType
@@ -99,7 +99,7 @@ class ConversationRepository extends ServiceEntityRepository
 
 
     /**
-     * storeConversation
+     * saves conversation in db
      *
      * @param  User     $user
      * @param  User[]   $conversationMembers
@@ -131,9 +131,9 @@ class ConversationRepository extends ServiceEntityRepository
 
         return $conversation;
     }
-    
+
     /**
-     * createDefaultConversationName
+     * creates default conversation name if user didnt set it
      *
      * @param  User[] $friends
      * @return string
@@ -145,7 +145,7 @@ class ConversationRepository extends ServiceEntityRepository
     }
     
     /**
-     * getConversations
+     * get searched conversations
      *
      * @param  User   $currentUser
      * @param  string $searchTerm
@@ -183,7 +183,7 @@ class ConversationRepository extends ServiceEntityRepository
     }
 
     /**
-     * addNewMember
+     * adds new members to conversation
      *
      * @param  int    $conversationId
      * @param  User[] $newMembers
@@ -225,7 +225,7 @@ class ConversationRepository extends ServiceEntityRepository
     }
 
     /**
-     * conversationSoftDelete
+     * conversation soft delete
      *
      * @param  Conversation $conversation
      * @return void
@@ -242,7 +242,7 @@ class ConversationRepository extends ServiceEntityRepository
     }
 
     /**
-     * updateLastMessage
+     * update newest message
      *
      * @param  int     $conversationId
      * @param  Message $message

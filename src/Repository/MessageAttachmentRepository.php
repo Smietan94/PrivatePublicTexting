@@ -29,7 +29,7 @@ class MessageAttachmentRepository extends ServiceEntityRepository
     }
 
     /**
-     * storeAttachment
+     * save attachment data in database
      *
      * @param  UploadedFile $file
      * @param  string       $path

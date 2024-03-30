@@ -40,7 +40,7 @@ class FileController extends AbstractController
     }
 
     /**
-     * getImage
+     * retrieves image in original quality
      *
      * @param  int $attachmentId
      * @return Response
@@ -70,7 +70,7 @@ class FileController extends AbstractController
     }
 
     /**
-     * processGetImgTag
+     * process img for conversation photo gallery
      *
      * @param  Request $request
      * @return Response
@@ -97,7 +97,7 @@ class FileController extends AbstractController
     }
 
     /**
-     * getResizedImg
+     * resizing image for thumbnails
      *
      * @param  mixed $attachmentId
      * @return Response
@@ -122,7 +122,7 @@ class FileController extends AbstractController
     }
 
     /**
-     * getAttachments
+     * get attachment pager for conversation photo gallery
      *
      * @param  Request $request
      * @param  int     $conversationId
@@ -155,7 +155,7 @@ class FileController extends AbstractController
     }
 
     /**
-     * checkIfUserHaveAccesToFile
+     * checks if user have access to attachment
      *
      * @param  MessageAttachment $messageAttachment
      * @return bool

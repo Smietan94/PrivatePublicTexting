@@ -31,7 +31,7 @@ class MessageRepository extends ServiceEntityRepository
     }
 
     /**
-     * storeMessage
+     * save message in db
      *
      * @param  Conversation $conversation
      * @param  int          $senderId

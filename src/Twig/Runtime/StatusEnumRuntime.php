@@ -14,6 +14,12 @@ class StatusEnumRuntime implements RuntimeExtensionInterface
         // Inject dependencies if needed
     }
 
+    /**
+     * gets friend status
+     *
+     * @param  mixed $value
+     * @return void
+     */
     public function formatEnum($value)
     {
         return FriendStatus::tryFrom((int) $value)->toString();

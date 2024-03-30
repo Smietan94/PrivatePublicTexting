@@ -19,7 +19,14 @@ class BasicStuffRuntime implements RuntimeExtensionInterface
         // Inject dependencies if needed
     }
 
-    public function push(array $array, $argument): array
+    /**
+     * pushes arguments to array
+     *
+     * @param  mixed       $array
+     * @param  mixed|mixed $argument
+     * @return array
+     */
+    public function push(array $array, array|mixed $argument): array
     {
         if (is_array($argument)) {
             foreach($argument as $arg) {
@@ -33,7 +40,7 @@ class BasicStuffRuntime implements RuntimeExtensionInterface
     }
 
     /**
-     * getRouteName
+     * get route name from RouteName
      *
      * @param  string $routeName // case insensitive
      * @return string
@@ -46,7 +53,7 @@ class BasicStuffRuntime implements RuntimeExtensionInterface
     }
 
     /**
-     * getConstant
+     * get constant from Constant
      *
      * @param  string $constName
      * @return mixed
@@ -59,7 +66,7 @@ class BasicStuffRuntime implements RuntimeExtensionInterface
     }
 
     /**
-     * getHref
+     * get Href from notification
      *
      * @param  Notification $notification
      * @return ?string

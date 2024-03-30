@@ -37,7 +37,7 @@ class NotificationService
     }
 
     /**
-     * getNotificationsPager
+     * gets notifications pager
      *
      * @param  int    $page
      * @param  User   $currentUser
@@ -68,7 +68,7 @@ class NotificationService
     }
 
     /**
-     * sortReceivedNotificationsCollection
+     * sorts notifications
      *
      * @param  Collection<int, Notification> $receivedNotifaction
      * @param  array                         $params
@@ -95,7 +95,7 @@ class NotificationService
     }
 
     /**
-     * messagePreviewMercureUpdater
+     * message preview mercure updater
      *
      * @param  Conversation $conversation
      * @param  string       $message
@@ -112,7 +112,7 @@ class NotificationService
     }
 
     /**
-     * processFirstGroupMessagePreview
+     * process first group message preview
      *
      * @param  Conversation $conversation
      * @return void
@@ -125,7 +125,7 @@ class NotificationService
     }
 
     /**
-     * processConversationMemberRemove
+     * process conversation member remove
      *
      * @param  Conversation $conversation
      * @param  int          $removedUserId
@@ -142,7 +142,7 @@ class NotificationService
     }
 
     /**
-     * processNameChange
+     * process conversation name change
      *
      * @param  Conversation $conversation
      * @return void
@@ -158,7 +158,7 @@ class NotificationService
     }
 
     /**
-     * processNewConversationMemberAddition
+     * process new conversation member addition
      *
      * @param  Conversation $conversation
      * @return void
@@ -174,7 +174,7 @@ class NotificationService
     }
 
     /**
-     * processConversationRemove
+     * process conversation remove
      *
      * @param  Conversation $conversation
      * @return void
@@ -187,7 +187,7 @@ class NotificationService
     }
 
     /**
-     * processFriendRemove
+     * process friend remove
      *
      * @param  User $currentUser
      * @param  User $friendToRm
@@ -205,7 +205,7 @@ class NotificationService
     }
 
     /**
-     * processFriendRequestReceive
+     * process friend request receive
      *
      * @param  FriendRequest $friendRequest
      * @return void
@@ -219,7 +219,7 @@ class NotificationService
     }
 
     /**
-     * processFriendReqeustDenied
+     * process friend request deny
      *
      * @param  FriendRequest $friendRequest
      * @return void
@@ -233,7 +233,7 @@ class NotificationService
     }
 
     /**
-     * processFriendRequestAccept
+     * process friend request accept
      *
      * @param  FriendRequest $friendRequest
      * @return void
@@ -247,7 +247,7 @@ class NotificationService
     }
 
     /**
-     * processConversationMemberRemoveNotification
+     * process conversatino remove notitication
      *
      * @param  User          $currentUser
      * @param  User          $removedUser
@@ -286,7 +286,7 @@ class NotificationService
     }
 
     /**
-     * processNameChangeNotification
+     * process conversation name change notification
      *
      * @param  User          $currentUser
      * @param  Conversation  $conversation
@@ -323,7 +323,7 @@ class NotificationService
     }
 
     /**
-     * processNewConversationMemberAdditionNotification
+     * process new conversation member addition notification
      *
      * @param  User          $currentUser
      * @param  User[]        $newMembers
@@ -366,7 +366,7 @@ class NotificationService
     }
 
     /**
-     * processNewConversationGroupNotification
+     * process new conversation group notification
      *
      * @param  User         $currentUser
      * @param  Conversation $conversation
@@ -382,7 +382,7 @@ class NotificationService
     }
 
     /**
-     * processConversationLeftNotification
+     * process conversation left notification
      *
      * @param  User         $currentUser
      * @param  Conversation $conversation
@@ -398,7 +398,7 @@ class NotificationService
     }
 
     /**
-     * processConversationRemoveNotification
+     * process conversation remove notification
      *
      * @param  User         $currentUser
      * @param  Conversation $conversation
@@ -414,7 +414,7 @@ class NotificationService
     }
 
     /**
-     * processFriendStatusNotification
+     * process friend status notification
      *
      * @param  NotificationType $type
      * @param  User             $sender
@@ -446,7 +446,7 @@ class NotificationService
     }
 
     /**
-     * processFriendAcceptNotification
+     * process friend accept notification
      *
      * @param  NotificationType $type
      * @param  User[]           $friends
@@ -475,13 +475,18 @@ class NotificationService
         return $notifications;
     }
 
+    /**
+     * create notifications filter form
+     *
+     * @return FormInterface
+     */
     public function createNotificationsFilterForm(): FormInterface
     {
         return $this->formFactory->create(NotificationsFilterType::class);
     }
 
     /**
-     * processConversationNotification
+     * process conversation notification
      *
      * @param  NotificationType $type
      * @param  User             $currentUser
@@ -523,7 +528,7 @@ class NotificationService
     }
 
     /**
-     * publishMercureUpdate
+     * publish mercure update
      *
      * @param  string|string[] $topics
      * @param  array           $data
@@ -541,7 +546,7 @@ class NotificationService
     }
 
     /**
-     * processConversationMercureUpdate
+     * process conversation mercure update
      *
      * @param  Conversation $conversation
      * @param  array        $data
@@ -557,7 +562,7 @@ class NotificationService
     }
 
     /**
-     * processNewMembersUsernamesWhenIsReceiver
+     * process new members usernames when current user is receiver
      *
      * @param  string[] $newMembersUsernames
      * @param  string   $targetUsername
@@ -574,7 +579,7 @@ class NotificationService
     }
 
     /**
-     * processNewMembersNames
+     * process new members names
      *
      * @param  string[] $newMembersUsernames
      * @return string
@@ -592,7 +597,7 @@ class NotificationService
     }
 
     /**
-     * processMessageForMemberAdditionNotification
+     * process message for member addition notification
      * 
      * @param User     $receiver
      * @param User     $currentUser

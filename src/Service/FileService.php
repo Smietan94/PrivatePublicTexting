@@ -28,7 +28,7 @@ class FileService
     }
 
     /**
-     * resizeImg
+     * resizing image
      *
      * @param  MessageAttachments $img
      * @return ImageInterface
@@ -55,7 +55,7 @@ class FileService
     }
 
     /**
-     * getAttachmentsPager
+     * get attachments pager
      *
      * @param  int                      $page
      * @param  Collection<int, Message> $messages
@@ -82,7 +82,7 @@ class FileService
     }
 
     /**
-     * getConversationAttachment
+     * retrives all attachments from conversation
      *
      * @param  Collection<int, Message> $messages
      * @return MessageAttachment[]
