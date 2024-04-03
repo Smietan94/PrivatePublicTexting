@@ -22,11 +22,11 @@ class BasicStuffRuntime implements RuntimeExtensionInterface
     /**
      * pushes arguments to array
      *
-     * @param  mixed       $array
-     * @param  mixed|mixed $argument
+     * @param  mixed $array
+     * @param  mixed $argument
      * @return array
      */
-    public function push(array $array, array|mixed $argument): array
+    public function push(array $array, mixed $argument): array
     {
         if (is_array($argument)) {
             foreach($argument as $arg) {
